@@ -7,7 +7,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
-import javax.swing.plaf.basic.BasicBorders.SplitPaneBorder;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.*;
@@ -22,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.filter.MedianFilter;
 
 public class Drivetrain extends SubsystemBase {
-    //public WPI_Pigeon2 gyro = new WPI_Pigeon2(Constants.Swerve.pigeonID);
     public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID);
 
     public SwerveModule[] mSwerveMods = new SwerveModule[] {
@@ -44,14 +42,9 @@ public class Drivetrain extends SubsystemBase {
 
     double yaw = gyro.getYaw().refresh().getValue();
 
-    GenericEntry targetX, targetY, targetRot;
-
     private MedianFilter filter = new MedianFilter(5);
 
     public Drivetrain() {
-        targetX = Shuffleboard.getTab("Swerve").add("movementX",0.0).getEntry();
-        targetY = Shuffleboard.getTab("Swerve").add("movementY",0.0).getEntry();
-        targetRot = Shuffleboard.getTab("Swerve").add("movementRot",0.0).getEntry();
         //gyro.configFactoryDefault();
         gyro.reset();
 
@@ -81,9 +74,6 @@ public class Drivetrain extends SubsystemBase {
                                     rotation)
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
-
-        targetX.setDouble(gyro.getYaw().refresh().getValue() * -1);
-        targetY.setDouble(getPoseY());
 
         for(SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);

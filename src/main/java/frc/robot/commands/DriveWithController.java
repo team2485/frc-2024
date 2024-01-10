@@ -48,9 +48,9 @@ public class DriveWithController extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("xbox right x", m_xSpeedSupplier.getAsDouble());
-    SmartDashboard.putNumber("xbox left x", m_ySpeedSupplier.getAsDouble());
-    SmartDashboard.putNumber("xbox left y", m_rotSpeedSupplier.getAsDouble());
+    // SmartDashboard.putNumber("xbox right x", m_xSpeedSupplier.getAsDouble());
+    // SmartDashboard.putNumber("xbox left x", m_ySpeedSupplier.getAsDouble());
+    // SmartDashboard.putNumber("xbox left y", m_rotSpeedSupplier.getAsDouble());
 
     final int xSign = (int)(Math.abs(m_xSpeedSupplier.getAsDouble())/m_xSpeedSupplier.getAsDouble());
     final double xSpeed =
