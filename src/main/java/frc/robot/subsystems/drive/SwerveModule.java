@@ -51,17 +51,11 @@ public class SwerveModule {
     
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
-    private GenericEntry working;
-    private GenericEntry target;
-
-    private double test = 0;
 
     private double absAngle = 0;
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
-        working = Shuffleboard.getTab("Swerve").add(String.valueOf(moduleNumber)+" current", 0.0).getEntry();
-        target = Shuffleboard.getTab("Swerve").add(String.valueOf(moduleNumber)+" target",0.0).getEntry();
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */
@@ -127,7 +121,6 @@ public class SwerveModule {
         else {
             // double velocity = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond, wheelCircumference, driveGearRatio);
             double velocity = (((desiredState.speedMetersPerSecond) / wheelCircumference));
-            target.setDouble(mAngleMotor.getPosition().getValue());
 
             //target.setDouble(desiredState.speedMetersPerSecond);
 
