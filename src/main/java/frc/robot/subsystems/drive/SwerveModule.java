@@ -59,7 +59,7 @@ public class SwerveModule {
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */
-        angleEncoder = new CANcoder(moduleConstants.cancoderID);
+        angleEncoder = new CANcoder(moduleConstants.cancoderID, "Drive");
         angleEncoderConfigurator = angleEncoder.getConfigurator();
         angleEncoderConfigurator.apply(Robot.ctreConfigs.swerveCanCoderConfig);
         mCanCoderConfigs.MagnetSensor.MagnetOffset = angleOffset.getRotations();
@@ -69,7 +69,7 @@ public class SwerveModule {
         // configAngleEncoder();
 
         /* Angle Motor Config */
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
+        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, "Drive");
         mAngleConfigurator = mAngleMotor.getConfigurator();
         mAngleConfigurator.apply(Robot.ctreConfigs.swerveAngleFXConfig);
         mAngleOutputConfigs.Inverted = angleMotorInvert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
@@ -79,7 +79,7 @@ public class SwerveModule {
         //configAngleMotor();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
+        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, "Drive");
         mDriveConfigurator = mDriveMotor.getConfigurator();
         mDriveConfigurator.apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveOutputConfigs.Inverted = moduleConstants.isInverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;

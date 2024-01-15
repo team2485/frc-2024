@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.filter.MedianFilter;
 
 public class Drivetrain extends SubsystemBase {
-    public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID);
+    public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID, "Drive");
 
     public SwerveModule[] mSwerveMods = new SwerveModule[] {
         new SwerveModule(0, Constants.Swerve.Mod0.constants),
