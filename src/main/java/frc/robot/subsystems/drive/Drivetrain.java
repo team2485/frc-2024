@@ -140,7 +140,7 @@ public class Drivetrain extends SubsystemBase {
     public SwerveModulePosition[] getModulePositionsInverted() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
         for(SwerveModule mod : mSwerveMods){
-            positions[mod.moduleNumber] = new SwerveModulePosition(-mod.getPosition().distanceMeters, mod.getPosition().angle);
+            positions[mod.moduleNumber] = new SwerveModulePosition(-mod.getPosition().distanceMeters, mod.getCanCoder());
         }
         return positions;
     }

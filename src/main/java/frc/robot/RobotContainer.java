@@ -9,9 +9,14 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Vision.PoseEstimation;
+import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.drive.Drivetrain;
+import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OIConstants.*;
@@ -27,6 +32,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   public final Drivetrain m_drivetrain = new Drivetrain();
+  //PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYaw, m_drivetrain::getModulePositionsInverted);
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
@@ -34,6 +40,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    //m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Field"));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -57,7 +64,6 @@ public class RobotContainer {
           m_drivetrain));
 
     m_driver.a().onTrue(new InstantCommand(()->m_drivetrain.zeroGyro()));
-
   }
 
   /**
