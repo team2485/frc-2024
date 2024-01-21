@@ -7,8 +7,10 @@ package frc.robot;
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithController;
+import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.NoteHandling.Intake;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -26,9 +28,11 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  public final Drivetrain m_drivetrain = new Drivetrain();
+  private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Intake m_intake = new Intake();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
@@ -56,8 +60,11 @@ public class RobotContainer {
           () -> !m_driver.rightBumper().getAsBoolean(),
           m_drivetrain));
 
-    m_driver.a().onTrue(new InstantCommand(()->m_drivetrain.zeroGyro()));
+    m_driver.a().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
+                .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
+    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake))
+                          .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake));
   }
 
   /**
