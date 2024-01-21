@@ -27,7 +27,6 @@ public class Intake extends SubsystemBase {
   private final CANSparkMax m_spark = new CANSparkMax(kIntakePort, MotorType.kBrushless);
   // Units depend on the units of the setpoint() and calculate() methods. This example will use meters
   private double desiredVoltage = 0;
-  PIDController m_controller = new PIDController(kIntakeKp, kIntakeKi, kIntakeKd);
 
   public Intake() {
     // Misc setup goes here
