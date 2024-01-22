@@ -19,11 +19,16 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagPoseEstimate;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 import static frc.robot.Constants.VisionConstants.*;
 
 public class Vision implements Runnable {
@@ -34,10 +39,13 @@ public class Vision implements Runnable {
     // creates a thread-safe object reference since mutliple robot poses could be reported concurrently and conflict
     // lowkey an interesting read, the atomic library gaslights machine instruction algos like compare-and-swap
     // that are instrinsically atomic into working for concurrency
+    GenericEntry cameraExists;
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
 
     public Vision() {
         PhotonPoseEstimator photonPoseEstimator = null;
+
+        cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
 
         this.m_camera = new PhotonCamera(kCameraName);
 
@@ -45,10 +53,9 @@ public class Vision implements Runnable {
             //sets the origin to the blue side every time but flips the tag positions if we are red.
             var layout = new AprilTagFieldLayout(kRedTagList, kFieldLengthMeters, kFieldWidthMeters); // attempt to load the AprilTagFieldLayout
             layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-            
 
             if (m_camera != null) {
-                photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_camera,
+                photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_RIO, m_camera,
                         kRobotToCamera); // MULTI_TAG_PNP uses all cameras in view for positioning
             }
         } catch (Exception e) {
@@ -64,9 +71,12 @@ public class Vision implements Runnable {
         if (m_photonPoseEstimator != null && m_camera != null) { // environment and camera must be initialized properly
             var photonResults = m_camera.getLatestResult(); // continuously get latest camera reading
             if (photonResults.hasTargets()
-                    && (photonResults.targets.size() > 1 || photonResults.targets.get(0).getPoseAmbiguity() < 0.2)) { // need accurate readings
+                    && (photonResults.targets.size() > 1 || photonResults.targets.get(0).getPoseAmbiguity() < 0.2)) { // need accurate readings       
                 m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
                     var estimatedPose = estimatedRobotPose.estimatedPose;
+
+                    //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
+                    cameraExists.setDouble(estimatedPose.getX());
 
                     if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
                             && estimatedPose.getY() > 0.0

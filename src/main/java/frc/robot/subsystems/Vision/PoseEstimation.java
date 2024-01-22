@@ -10,9 +10,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +35,8 @@ public class PoseEstimation extends SubsystemBase {
   private OriginPosition originPosition = OriginPosition.kBlueAllianceWallRightSide;
   private boolean sawTag = false;
 
+  GenericEntry visionTest;
+
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition) {
     this.rotation = rotation;
     this.modulePosition = modulePosition;
@@ -48,6 +52,7 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public void addDashboardWidgets(ShuffleboardTab tab) {
+    visionTest = Shuffleboard.getTab("Swerve").add("XDist", 0).getEntry();
     tab.add("Field", field2d).withPosition(0, 0).withSize(6, 4);
     tab.addString("Pose", this::getFormattedPose).withPosition(6, 2).withSize(2, 1);
   }
@@ -80,22 +85,17 @@ public class PoseEstimation extends SubsystemBase {
   @Override
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
-
     var visionPose = photonEstimator.grabLatestEstimatedPose();
     if (visionPose != null) {
       sawTag = true;
       var pose2d = visionPose.estimatedPose.toPose2d();
-      if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
-        pose2d = flipAlliance(pose2d);
-      }
+   
 
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
     }
 
     var dashboardPose = poseEstimator.getEstimatedPosition();
-    if (originPosition == OriginPosition.kRedAllianceWallRightSide) {
-      dashboardPose = flipAlliance(dashboardPose);
-    }
+
 
     field2d.setRobotPose(dashboardPose);
   }

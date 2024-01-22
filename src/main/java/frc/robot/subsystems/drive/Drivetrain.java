@@ -128,12 +128,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public SwerveModulePosition[] getModulePositions(){
-        SwerveModulePosition[] positions = new SwerveModulePosition[]{
-            new SwerveModulePosition(mSwerveMods[0].getPosition().distanceMeters, mSwerveMods[0].getCanCoder()),
-            new SwerveModulePosition(mSwerveMods[1].getPosition().distanceMeters, mSwerveMods[1].getCanCoder()),
-            new SwerveModulePosition(mSwerveMods[2].getPosition().distanceMeters, mSwerveMods[2].getCanCoder()),
-            new SwerveModulePosition(mSwerveMods[3].getPosition().distanceMeters, mSwerveMods[3].getCanCoder()),
-        };
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for(SwerveModule mod : mSwerveMods){
+            positions[mod.moduleNumber] = new SwerveModulePosition(mod.getPosition().distanceMeters, mod.getCanCoder());
+        }
         return positions;
     }
 
