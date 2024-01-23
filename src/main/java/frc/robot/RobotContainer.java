@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.commands.Autos;
+import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
@@ -72,6 +73,8 @@ public class RobotContainer {
 
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake))
                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake));
+
+    m_driver.b().whileTrue(DriveCommandBuilder.driveToPosition(m_drivetrain, m_poseEstimation, ()-> m_poseEstimation.getFieldConstants().getPickupPos()));
   }
 
   /**

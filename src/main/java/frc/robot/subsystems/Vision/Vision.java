@@ -51,7 +51,7 @@ public class Vision implements Runnable {
 
         try {
             //sets the origin to the blue side every time but flips the tag positions if we are red.
-            var layout = new AprilTagFieldLayout(kRedTagList, kFieldLengthMeters, kFieldWidthMeters); // attempt to load the AprilTagFieldLayout
+            var layout = new AprilTagFieldLayout(kBlueTagList, kFieldLengthMeters, kFieldWidthMeters); // attempt to load the AprilTagFieldLayout
             layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
             if (m_camera != null) {

@@ -81,7 +81,7 @@ public class Drivetrain extends SubsystemBase {
     }    
 
     public void driveAuto(ChassisSpeeds speeds) {
-        drive(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond), speeds.omegaRadiansPerSecond, true, false);
+        drive(new Translation2d(-speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),-speeds.omegaRadiansPerSecond, true, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -141,6 +141,10 @@ public class Drivetrain extends SubsystemBase {
             positions[mod.moduleNumber] = new SwerveModulePosition(-mod.getPosition().distanceMeters, mod.getCanCoder());
         }
         return positions;
+    }
+    
+    public ChassisSpeeds getChassisSpeeds() {
+        return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public void zeroGyro(){

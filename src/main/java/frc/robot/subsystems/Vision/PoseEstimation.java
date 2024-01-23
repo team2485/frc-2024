@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.BlueFieldConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.RedFieldConstants;
 import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
 
@@ -31,9 +34,6 @@ public class PoseEstimation extends SubsystemBase {
   private final Field2d field2d = new Field2d();
   private final Vision photonEstimator = new Vision();
   private final Notifier photonNotifier = new Notifier(photonEstimator);
-
-  private OriginPosition originPosition = OriginPosition.kBlueAllianceWallRightSide;
-  private boolean sawTag = false;
 
   GenericEntry visionTest;
 
@@ -56,41 +56,14 @@ public class PoseEstimation extends SubsystemBase {
     tab.add("Field", field2d).withPosition(0, 0).withSize(6, 4);
     tab.addString("Pose", this::getFormattedPose).withPosition(6, 2).withSize(2, 1);
   }
-  
-
-  public void setAlliance(Alliance alliance) {
-    boolean allianceChanged = false;
-
-    switch (alliance) {
-      case Blue:
-        allianceChanged = (originPosition == OriginPosition.kRedAllianceWallRightSide);
-        originPosition = OriginPosition.kBlueAllianceWallRightSide;
-        break;
-
-      case Red:
-        allianceChanged = (originPosition == OriginPosition.kBlueAllianceWallRightSide);
-        originPosition = OriginPosition.kRedAllianceWallRightSide;
-        break;
-
-      default:
-        break;
-    }
-
-    if (allianceChanged && sawTag) {
-      var newPose = flipAlliance(getCurrentPose());
-      poseEstimator.resetPosition(rotation.get(), modulePosition.get(), newPose);
-    }
-  }
 
   @Override
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
     var visionPose = photonEstimator.grabLatestEstimatedPose();
     if (visionPose != null) {
-      sawTag = true;
       var pose2d = visionPose.estimatedPose.toPose2d();
    
-
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
     }
 
@@ -117,7 +90,11 @@ public class PoseEstimation extends SubsystemBase {
     setCurrentPose(new Pose2d());
   }
 
-  private Pose2d flipAlliance(Pose2d poseToFlip) {
-    return poseToFlip.relativeTo(VisionConstants.kFlippingPose);
+  public FieldConstants getFieldConstants() {
+    RedFieldConstants redFieldConstants = new RedFieldConstants();
+    BlueFieldConstants blueFieldConstants = new BlueFieldConstants();
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+      return blueFieldConstants;
+    else return redFieldConstants;
   }
 }
