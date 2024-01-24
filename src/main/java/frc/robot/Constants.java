@@ -254,7 +254,7 @@ public final class Constants {
 
   public static final class RedFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
-    public Pose2d getSpeakerPos() { return new Pose2d(); }
+    public Pose2d getSpeakerPos() { return new Pose2d(15.1, 5.5, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -266,7 +266,7 @@ public final class Constants {
 
   public static final class BlueFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
-    public Pose2d getSpeakerPos() { return new Pose2d(); }
+    public Pose2d getSpeakerPos() { return new Pose2d(15.1, 5.5, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -311,8 +311,9 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(0.508, 0.0127, 0.6096),
-        new Rotation3d(0,-0.698,0));
+    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(0.508, -0.0127, 0.71),
+        new Rotation3d(0,0,0.139626));
+    //-0.698
 
     public static final double kFieldLengthMeters = 16.541;
     public static final double kFieldWidthMeters = 8.211;

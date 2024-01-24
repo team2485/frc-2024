@@ -14,6 +14,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.NoteHandling.Intake;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,16 +33,19 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final Drivetrain m_drivetrain = new Drivetrain();
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYaw, m_drivetrain::getModulePositionsInverted);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawAbsolute, m_drivetrain::getModulePositionsInverted);
   private final Intake m_intake = new Intake();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
+
+  GenericEntry constantsTest;
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    constantsTest = Shuffleboard.getTab("Swerve").add("GoalXPos", 0).getEntry();
     // Configure the trigger bindings
     configureBindings();
     m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Swerve"));
@@ -65,7 +69,7 @@ public class RobotContainer {
           () -> !m_driver.rightBumper().getAsBoolean(),
           m_drivetrain));
 
-    m_driver.a().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
+    m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
                 .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
     m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake))
@@ -74,7 +78,8 @@ public class RobotContainer {
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake))
                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake));
 
-    m_driver.b().whileTrue(DriveCommandBuilder.driveToPosition(m_drivetrain, m_poseEstimation, ()-> m_poseEstimation.getFieldConstants().getPickupPos()));
+    m_driver.b().whileTrue(DriveCommandBuilder.driveToPosition(m_drivetrain, m_poseEstimation, ()-> m_poseEstimation.getFieldConstants().getSpeakerPos()));
+                                              
   }
 
   /**

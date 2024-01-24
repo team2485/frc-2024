@@ -122,7 +122,7 @@ public class SwerveModule {
         }
         else {
             double velocity = (((desiredState.speedMetersPerSecond) / wheelCircumference));
-            wheelDistance.setDouble(getPosition().distanceMeters);
+            wheelDistance.setDouble(mDriveMotor.getPosition().getValue());
   
             if (velocity == 0) mDriveMotor.setVoltage(0);
             else mDriveMotor.setControl(mDriveVelocityVoltage.withVelocity(velocity));

@@ -22,6 +22,10 @@ import edu.wpi.first.math.filter.MedianFilter;
 
 public class Drivetrain extends SubsystemBase {
     public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID, "Drive");
+    GenericEntry absoluteGyroPos;
+    GenericEntry currentGyroPos;
+
+    private double absoluteGyroPostion = 0;
 
     public SwerveModule[] mSwerveMods = new SwerveModule[] {
         new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -38,14 +42,13 @@ public class Drivetrain extends SubsystemBase {
     });
 
     public Pigeon2Configuration config = new Pigeon2Configuration();
-    
-
-    double yaw = gyro.getYaw().refresh().getValue();
 
     private MedianFilter filter = new MedianFilter(5);
 
     public Drivetrain() {
         //gyro.configFactoryDefault();
+        absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroOffset", 0).getEntry();
+        currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroOffset", 0).getEntry();
         gyro.reset();
 
         // mSwerveMods = new SwerveModule[] {
@@ -74,14 +77,39 @@ public class Drivetrain extends SubsystemBase {
                                     rotation)
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        absoluteGyroPos.setDouble(absoluteGyroPostion);
+        currentGyroPos.setDouble(getYaw().times(-1).getDegrees());
 
         for(SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
-    }    
+    }
+    
+    public void driveWithSuppliedRotation(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, Rotation2d absoluteRotation) {
+        SwerveModuleState[] swerveModuleStates =
+            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    -rotation, 
+                                    absoluteRotation
+                                )
+                                : new ChassisSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation)
+                                );
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        absoluteGyroPos.setDouble(absoluteGyroPostion);
+        currentGyroPos.setDouble(getYaw().times(-1).getDegrees());
+
+        for(SwerveModule mod : mSwerveMods) {
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }
+    }
 
     public void driveAuto(ChassisSpeeds speeds) {
-        drive(new Translation2d(-speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),-speeds.omegaRadiansPerSecond, true, false);
+        driveWithSuppliedRotation(new Translation2d(-speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),-speeds.omegaRadiansPerSecond, true, false, getYawAbsolute());
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -148,6 +176,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void zeroGyro(){
+        absoluteGyroPostion += getYaw().times(-1).getDegrees();
         gyro.setYaw(0);
     }
 
@@ -160,6 +189,10 @@ public class Drivetrain extends SubsystemBase {
         return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(filter.calculate(360 - gyro.getYaw().refresh().getValue())) : Rotation2d.fromDegrees(filter.calculate(gyro.getYaw().refresh().getValue()));
     }
 
+    public Rotation2d getYawAbsolute() {
+        return Rotation2d.fromDegrees(absoluteGyroPostion).minus(getYaw()).times(-1);
+    }
+
     public void resetToAbsolute(){
         for(SwerveModule mod : mSwerveMods){
             mod.resetToAbsolute();
@@ -168,7 +201,7 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic(){
-        swerveOdometry.update(getYaw().times(-1), new SwerveModulePosition[]{
+        swerveOdometry.update(Rotation2d.fromDegrees(absoluteGyroPostion).minus(getYaw().times(-1)), new SwerveModulePosition[]{
             new SwerveModulePosition(mSwerveMods[0].getPosition().distanceMeters, mSwerveMods[0].getCanCoder()),
             new SwerveModulePosition(mSwerveMods[1].getPosition().distanceMeters, mSwerveMods[1].getCanCoder()),
             new SwerveModulePosition(mSwerveMods[2].getPosition().distanceMeters, mSwerveMods[2].getCanCoder()),

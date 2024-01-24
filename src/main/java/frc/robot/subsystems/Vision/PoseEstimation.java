@@ -38,6 +38,7 @@ public class PoseEstimation extends SubsystemBase {
   GenericEntry visionTest;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition) {
+    visionTest = Shuffleboard.getTab("Swerve").add("XDist", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
 
@@ -52,7 +53,6 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public void addDashboardWidgets(ShuffleboardTab tab) {
-    visionTest = Shuffleboard.getTab("Swerve").add("XDist", 0).getEntry();
     tab.add("Field", field2d).withPosition(0, 0).withSize(6, 4);
     tab.addString("Pose", this::getFormattedPose).withPosition(6, 2).withSize(2, 1);
   }
@@ -75,7 +75,7 @@ public class PoseEstimation extends SubsystemBase {
 
   private String getFormattedPose() {
     var pose = getCurrentPose();
-    return String.format("(%.3f, %.3f) %.2f degrees", pose.getX(), pose.getY(), pose.getRotation().getRadians());
+    return String.format("(%.3f, %.3f) %.2f radians", pose.getX(), pose.getY(), pose.getRotation().getRadians());
   }
 
   public Pose2d getCurrentPose() {
@@ -93,8 +93,13 @@ public class PoseEstimation extends SubsystemBase {
   public FieldConstants getFieldConstants() {
     RedFieldConstants redFieldConstants = new RedFieldConstants();
     BlueFieldConstants blueFieldConstants = new BlueFieldConstants();
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      visionTest.setDouble(0);
       return blueFieldConstants;
-    else return redFieldConstants;
+    }
+    else {
+      visionTest.setDouble(1);
+      return redFieldConstants;
+    }
   }
 }
