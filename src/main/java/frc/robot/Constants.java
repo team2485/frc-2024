@@ -4,12 +4,9 @@
 
 package frc.robot;
 
-import static java.util.Map.entry;
-
 import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
@@ -24,8 +21,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import java.util.Map;
-import java.util.TreeMap;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -187,49 +182,16 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    // Ports and zeros
-    /** Zeros found with bevel gears facing right. Applied offset is the negative of the zero. */
-    public static final int kPigeonPort = 9;
-
-    public static final boolean kDriveInverted = true;
-    public static final int kFLDriveTalonPort = 5;
-    public static final int kFLTurningTalonPort = 6;
-    public static final int kFLCANCoderPort = 12;
-    // public static final Rotation2d kFLCANCoderZero = Rotation2d.fromDegrees(56.0 - 1.66);
-    public static final Rotation2d kFLCANCoderZero = Rotation2d.fromDegrees(47.96);
-
-    public static final int kFRDriveTalonPort = 7;
-    public static final int kFRTurningTalonPort = 8;
-    public static final int kFRCANCoderPort = 13;
-    // public static final Rotation2d kFRCANCoderZero = Rotation2d.fromDegrees(-85.48 - 135);
-    public static final Rotation2d kFRCANCoderZero = Rotation2d.fromDegrees(136.48 - 180);
-
-    public static final int kBRDriveTalonPort = 1;
-    public static final int kBRTurningTalonPort = 2;
-    public static final int kBRCANCoderPort = 10;
-    // public static final Rotation2d kBRCANCoderZero = Rotation2d.fromDegrees(-3.6 - 5.18);
-    public static final Rotation2d kBRCANCoderZero = Rotation2d.fromDegrees(170.89);
-
-    public static final int kBLDriveTalonPort = 3;
-    public static final int kBLTurningTalonPort = 4;
-    public static final int kBLCANCoderPort = 11;
-    // public static final Rotation2d kBLCANCoderZero = Rotation2d.fromDegrees(-167.7 + 4.33 -
-    // 3.06);
-    public static final Rotation2d kBLCANCoderZero = Rotation2d.fromDegrees(-168.98);
-
-    // Drivebase dimensions
-    public static final double kWheelbaseLengthMeters = 0.635; // meters
-    public static final double kWheelbaseWidthMeters = 0.508; // meters
 
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(kWheelbaseLengthMeters / 2, kWheelbaseWidthMeters / 2),
-            new Translation2d(kWheelbaseLengthMeters / 2, -kWheelbaseWidthMeters / 2),
-            new Translation2d(-kWheelbaseLengthMeters / 2, kWheelbaseWidthMeters / 2),
-            new Translation2d(-kWheelbaseLengthMeters / 2, -kWheelbaseWidthMeters / 2));
+            new Translation2d(Swerve.widthBetweenModules/ 2, Swerve.lengthBetweenModules / 2),
+            new Translation2d(Swerve.lengthBetweenModules / 2, -Swerve.widthBetweenModules / 2),
+            new Translation2d(-Swerve.lengthBetweenModules / 2, Swerve.widthBetweenModules / 2),
+            new Translation2d(-Swerve.lengthBetweenModules / 2, -Swerve.widthBetweenModules / 2));
 
     public static final double kTurningRadiusMeters =
-        Math.sqrt(Math.pow(kWheelbaseLengthMeters / 2, 2) + Math.pow(kWheelbaseWidthMeters / 2, 2));
+        Math.sqrt(Math.pow(Swerve.lengthBetweenModules / 2, 2) + Math.pow(Swerve.widthBetweenModules / 2, 2));
 
     // Max speed teleoperated
     public static final double kTeleopMaxSpeedMetersPerSecond = 3; // meters per second
@@ -352,22 +314,6 @@ public final class Constants {
                                                                     new Rotation3d(new Quaternion(-0.4999999999999998, -0.0, 0.0, 0.8660254037844386))))                                                                                                                                              
                                                                     );                                    
 
-    public static final Pose2d kFlippingPose = new Pose2d(
-        new Translation2d(kFieldLengthMeters, kFieldWidthMeters),
-        new Rotation2d(Math.PI));
-
-    // public static final int kTagOfInterest = 1;
-    // public static final Transform2d kTagToGoal = new Transform2d(new
-    // Translation2d(1, 0),
-    // Rotation2d.fromDegrees(180.0));
-
-
-    public static final double kOffsetToNextScoringStation = 0.61;
-
-    public static final double kTopTagYPos = kFieldWidthMeters - 4.42;
-    public static final double kMiddleTagYPos = kFieldWidthMeters - 2.75;
-    public static final double kBottomTagYPos = kFieldWidthMeters - 1.07;
-
   }
 
   public static final class IntakeConstants {
@@ -395,8 +341,8 @@ public final class Constants {
         COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
     /* Drivetrain Constants */
-    public static final double trackWidth = 0.5842;
-    public static final double wheelBase = 0.5842;
+    public static final double lengthBetweenModules = 0.5842;
+    public static final double widthBetweenModules = 0.5842;
     public static final double driveRadius = 0.413091;
     public static final double wheelCircumference = chosenModule.wheelCircumference;
 
@@ -409,10 +355,10 @@ public final class Constants {
      * rectangular/square 4 module swerve
      */
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+        new Translation2d(Swerve.lengthBetweenModules / 2.0, -Swerve.widthBetweenModules / 2.0),
+        new Translation2d(Swerve.lengthBetweenModules / 2.0, Swerve.widthBetweenModules / 2.0),
+        new Translation2d(-Swerve.lengthBetweenModules / 2.0, Swerve.widthBetweenModules / 2.0),
+        new Translation2d(-Swerve.lengthBetweenModules / 2.0, -Swerve.widthBetweenModules / 2.0));
 
     
     /* Module Gear Ratios */

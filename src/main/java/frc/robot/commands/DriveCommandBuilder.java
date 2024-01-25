@@ -25,7 +25,7 @@ public class DriveCommandBuilder {
     
         AutoBuilder.configureHolonomic(
             m_poseEstimation::getCurrentPose,
-            m_drivetrain::resetOdometry,
+            m_poseEstimation::setCurrentPose,
             m_drivetrain::getChassisSpeeds,
             m_drivetrain::driveAuto, 
             kPathFollowingConfig, 

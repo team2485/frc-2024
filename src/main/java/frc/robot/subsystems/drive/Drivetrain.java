@@ -34,13 +34,6 @@ public class Drivetrain extends SubsystemBase {
         new SwerveModule(3, Constants.Swerve.Mod3.constants)
     };
 
-    public SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, gyro.getRotation2d(), new SwerveModulePosition[]{
-        new SwerveModulePosition(mSwerveMods[0].getPosition().distanceMeters, mSwerveMods[0].getCanCoder()),
-        new SwerveModulePosition(mSwerveMods[1].getPosition().distanceMeters, mSwerveMods[1].getCanCoder()),
-        new SwerveModulePosition(mSwerveMods[2].getPosition().distanceMeters, mSwerveMods[2].getCanCoder()),
-        new SwerveModulePosition(mSwerveMods[3].getPosition().distanceMeters, mSwerveMods[3].getCanCoder()),
-    });
-
     public Pigeon2Configuration config = new Pigeon2Configuration();
 
     private MedianFilter filter = new MedianFilter(5);
@@ -122,30 +115,11 @@ public class Drivetrain extends SubsystemBase {
     }    
 
 
-    public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
-    }
-
-    public double getPoseX() {
-        return swerveOdometry.getPoseMeters().getX();
-    }
-
-    public double getPoseY() {
-        return swerveOdometry.getPoseMeters().getY();
-    }
-
-    public double getPoseRotation() {
-        return swerveOdometry.getPoseMeters().getRotation().getDegrees();
-    }
-
     public double getPitch(){
         //return gyro.getRoll() + 4;
         return gyro.getPitch().refresh().getValue();
     }
 
-    public void resetOdometry(Pose2d pose) {
-        swerveOdometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
-    }
 
     public SwerveModuleState[] getModuleStates(){
         SwerveModuleState[] states = new SwerveModuleState[4];
@@ -201,12 +175,8 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic(){
-        swerveOdometry.update(Rotation2d.fromDegrees(absoluteGyroPostion).minus(getYaw().times(-1)), new SwerveModulePosition[]{
-            new SwerveModulePosition(mSwerveMods[0].getPosition().distanceMeters, mSwerveMods[0].getCanCoder()),
-            new SwerveModulePosition(mSwerveMods[1].getPosition().distanceMeters, mSwerveMods[1].getCanCoder()),
-            new SwerveModulePosition(mSwerveMods[2].getPosition().distanceMeters, mSwerveMods[2].getCanCoder()),
-            new SwerveModulePosition(mSwerveMods[3].getPosition().distanceMeters, mSwerveMods[3].getCanCoder()),
-        });  
+    
+        }
 
     //     for(SwerveModule mod : mSwerveMods){
     //         SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
@@ -215,4 +185,3 @@ public class Drivetrain extends SubsystemBase {
         
     // }
     }
-}
