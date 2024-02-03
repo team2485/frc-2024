@@ -12,6 +12,7 @@ import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.NoteHandling.Intake;
+import frc.robot.subsystems.NoteHandling.Shooter;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.networktables.GenericEntry;
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
+  private final Shooter m_shooter = new Shooter();
 
   GenericEntry constantsTest;
 
@@ -79,8 +81,11 @@ public class RobotContainer {
                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake));
 
     m_driver.b().whileTrue(DriveCommandBuilder.driveToPosition(m_drivetrain, m_poseEstimation, ()-> m_poseEstimation.getFieldConstants().getSpeakerPos()));
+
+    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shooterDefault(m_shooter));
                                               
   }
+    
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

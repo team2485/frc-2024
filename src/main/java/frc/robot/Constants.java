@@ -330,6 +330,18 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
+    public static final int kShooterLeftPort = 17;
+    public static final int kShooterRightPort = 18;
+    public static final double kCoastVelocity = 25;
+
+    public static final double kSShooter = 0;
+    public static final double kVShooter = 0;
+    public static final double kPShooter = 0;
+    public static final double kIShooter = 0;
+    public static final double kDShooter = 0;
+
+    public static final double kShooterErrorTolerance = 1;
+
 
   }
 
