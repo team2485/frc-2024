@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.commands.Autos;
+import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
@@ -16,6 +17,7 @@ import frc.robot.subsystems.NoteHandling.Pivot;
 import frc.robot.subsystems.NoteHandling.Shooter;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -35,7 +37,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final Drivetrain m_drivetrain = new Drivetrain();
-  private final PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYaw, m_drivetrain::getModulePositionsInverted);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawAbsolute, m_drivetrain::getModulePositionsInverted);
   private final Intake m_intake = new Intake();
   private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
   private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
@@ -46,11 +48,14 @@ public class RobotContainer {
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
+  GenericEntry constantsTest;
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    constantsTest = Shuffleboard.getTab("Swerve").add("GoalXPos", 0).getEntry();
     // Configure the trigger bindings
     configureBindings();
     m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Swerve"));

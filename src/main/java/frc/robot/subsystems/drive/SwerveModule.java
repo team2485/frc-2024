@@ -48,7 +48,7 @@ public class SwerveModule {
     private MotorOutputConfigs mDriveOutputConfigs = new MotorOutputConfigs();
     private MotorOutputConfigs mAngleOutputConfigs = new MotorOutputConfigs();
     private CANcoderConfiguration mCanCoderConfigs = new CANcoderConfiguration();
-    
+    private GenericEntry wheelDistance;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
 
@@ -57,6 +57,7 @@ public class SwerveModule {
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
+        wheelDistance = Shuffleboard.getTab("Swerve").add("Distance: " + moduleNumber, 0).getEntry();
         
         /* Angle Encoder Config */
         angleEncoder = new CANcoder(moduleConstants.cancoderID, "Drive");
@@ -120,43 +121,19 @@ public class SwerveModule {
             mDriveMotor.set(percentOutput);
         }
         else {
-            // double velocity = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond, wheelCircumference, driveGearRatio);
             double velocity = (((desiredState.speedMetersPerSecond) / wheelCircumference));
-
-            //target.setDouble(desiredState.speedMetersPerSecond);
-
-            // double sign = Math.abs(velocity) / velocity;
-
-            // velocity = Math.min(Math.abs(velocity), 50) * sign;
-
-            // target.setDouble(getPosition().distanceMeters);
-            // working.setDouble(getAngle().getDegrees());
+            wheelDistance.setDouble(mDriveMotor.getPosition().getValue());
+  
             if (velocity == 0) mDriveMotor.setVoltage(0);
             else mDriveMotor.setControl(mDriveVelocityVoltage.withVelocity(velocity));
-
-            // mDriveMotor.set(ControlMode.Velocity, velocity, DemandType.ArbitraryFeedForward, feedforward.calculate(desiredState.speedMetersPerSecond));
-            // mDriveMotor.setControl(mDriveVelocityVoltage.withFeedForward(feedforward.calculate(desiredState.speedMetersPerSecond)).withVelocity(velocity));
-            // mDriveMotor.setControl(mDriveVelocityVoltage.withVelocity(velocity));
         }
     }
 
     private void setAngle(SwerveModuleState desiredState) {
         Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (maxSpeed * 0.005)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
 
-        //target.setDouble(getCanCoder().getDegrees());
-
-        // working.setDouble(getCanCoder().getRotations());
-        //target.setDouble(getCanCoder().getRotations());
-        //error.setDouble(angleOffset.getRotations());
-        //working.setDouble(getAngle().getDegrees());
-        //error.setDouble(getCanCoder().getDegrees());
-
         mAngleMotor.setControl(mAnglePositionVoltage.withPosition(angle.getRotations()));
 
-        //mAngleMotor.setControl(mAnglePositionVoltage.withPosition(absAngle + angle.getRotations() % 1));
-
-
-        //lastAngle = Rotation2d.fromRotations(absAngle).plus(angle);
         lastAngle = angle;
     } 
 
