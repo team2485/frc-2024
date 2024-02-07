@@ -11,7 +11,10 @@ import frc.robot.commands.DriveWithController;
 import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
+import frc.robot.subsystems.NoteHandling.Pivot;
+import frc.robot.subsystems.NoteHandling.Shooter;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.networktables.GenericEntry;
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OIConstants.*;
+import static frc.robot.Constants.GeneralRollerConstants.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,6 +39,12 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawAbsolute, m_drivetrain::getModulePositionsInverted);
   private final Intake m_intake = new Intake();
+  private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
+  private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
+  private final Shooter m_shooter = new Shooter();
+
+  //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
+  private final Pivot m_pivot = new Pivot();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
@@ -72,14 +82,25 @@ public class RobotContainer {
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
                 .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
-    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake))
-                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake));
+    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer))
+                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer));
 
-    m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake))
-                          .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake));
+    m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer))
+                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer));
 
-    m_driver.b().whileTrue(DriveCommandBuilder.driveToPosition(m_drivetrain, m_poseEstimation, ()-> m_poseEstimation.getFieldConstants().getSpeakerPos()));
-                                              
+    m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
+
+    m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
+
+    // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder))
+    //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder));
+    // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
+    //                          .whileFalse(NoteHandlingCommandBuilder.shooterCoast(m_shooter));
+    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
+                            .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+
+    m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder, m_indexer))
+                            .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder, m_indexer));
   }
 
   /**

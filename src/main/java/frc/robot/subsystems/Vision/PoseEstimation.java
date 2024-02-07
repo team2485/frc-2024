@@ -35,6 +35,9 @@ public class PoseEstimation extends SubsystemBase {
   private final Vision photonEstimator = new Vision();
   private final Notifier photonNotifier = new Notifier(photonEstimator);
 
+  private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
+  private boolean sawTag = false;
+
   GenericEntry visionTest;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition) {
@@ -64,11 +67,14 @@ public class PoseEstimation extends SubsystemBase {
     if (visionPose != null) {
       var pose2d = visionPose.estimatedPose.toPose2d();
    
+
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
     }
 
     var dashboardPose = poseEstimator.getEstimatedPosition();
-
+    // if (originPosition == OriginPosition.kRedAllianceWallRightSide) {
+    //   dashboardPose = flipAlliance(dashboardPose);
+    // }
 
     field2d.setRobotPose(dashboardPose);
   }

@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -325,12 +327,50 @@ public final class Constants {
     public static final double kIntakeKd = 0;
   }
 
-  public static final class IndexerConstants {
-    
+  public static final class GeneralRollerConstants {
+    public static final int kGeneralRollerCurrentLimit = 80;
+    public static final int kIndexerPort = 16;
+    public static final int kFeederPort = 15;
+
   }
 
   public static final class ShooterConstants {
+    public static final int kShooterLeftPort = 17;
+    public static final int kShooterRightPort = 18;
 
+    public static final double kSShooter = .25;
+    public static final double kVShooter = .12;
+    public static final double kAShooter = .56;
+    public static final double kPShooter = .04;
+    public static final double kIShooter = 0;
+    public static final double kDShooter = 0.01;
+    public static final double kSensorToMechanismGearRatio = 36/28;
+    public static final double kShooterCruiseVelocity = 80;
+    public static final double kShooterAcceleration = 160;
+    public static final double kShooterJerk = 1600; 
+    public static final double kShooterErrorTolerance = 2;
+    public static final boolean kShooterClockwisePositive = false;
+    public static final int kCurrentLimit = 80;
+  }
+
+  public static final class PivotConstants {
+    public static final int kPivotPort = 19;
+    public static final double kSPivot = .91;
+    public static final double kVPivot = 1.35;
+    public static final double kPPivot = 32;
+    public static final double kIPivot = 0;
+    public static final double kDPivot = .01;
+    public static final double kPivotCruiseVelocity = Math.PI*4;
+    public static final double kPivotAcceleration = Math.PI;
+    public static final double kPivotJerk = Math.PI*80; 
+    public static final boolean kPivotClockwisePositive = true;
+    public static final double kPivotErrorTolerance = .01;
+    public static final double kSensorToMechanismGearRatio = 75;
+    public static final int kCurrentLimit = 40;
+  }
+
+  public static final class IndexerConstants {
+    
   }
 
   public static final class Swerve {
