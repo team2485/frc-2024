@@ -394,31 +394,33 @@ public final class Constants {
 
     public static final double kSShooter = .25;
     public static final double kVShooter = .12;
-    public static final double kPShooter = .01;
     public static final double kAShooter = .56;
-    public static final double kIShooter = 0.01;
-    public static final double kDShooter = 0;
-    public static final double kSensorToMechanismGearRatio = 6/5;
-    public static final double kShooterCruiseVelocity = 10;
-    public static final double kShooterAcceleration = 20;
-    public static final double kShooterJerk = 40; 
+    public static final double kPShooter = .04;
+    public static final double kIShooter = 0;
+    public static final double kDShooter = 0.01;
+    public static final double kSensorToMechanismGearRatio = 36/28;
+    public static final double kShooterCruiseVelocity = 80;
+    public static final double kShooterAcceleration = 160;
+    public static final double kShooterJerk = 1600; 
     public static final double kShooterErrorTolerance = 2;
     public static final boolean kShooterClockwisePositive = false;
+    public static final int kCurrentLimit = 80;
   }
 
   public static final class PivotConstants {
     public static final int kPivotPort = 19;
     public static final double kSPivot = .91;
     public static final double kVPivot = 1.35;
-    public static final double kPPivot = 16;
+    public static final double kPPivot = 32;
     public static final double kIPivot = 0;
-    public static final double kDPivot = 0;
-    public static final double kPivotCruiseVelocity = Math.PI*2;
-    public static final double kPivotAcceleration = Math.PI*4;
-    public static final double kPivotJerk = Math.PI*8; 
+    public static final double kDPivot = .01;
+    public static final double kPivotCruiseVelocity = Math.PI*4;
+    public static final double kPivotAcceleration = Math.PI;
+    public static final double kPivotJerk = Math.PI*80; 
     public static final boolean kPivotClockwisePositive = true;
     public static final double kPivotErrorTolerance = .01;
     public static final double kSensorToMechanismGearRatio = 75;
+    public static final int kCurrentLimit = 40;
   }
 
   public static final class IndexerConstants {

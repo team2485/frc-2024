@@ -34,7 +34,7 @@ public class GeneralRoller extends SubsystemBase {
     m_spark.setSmartCurrentLimit(kGeneralRollerCurrentLimit);
     m_spark.setInverted(setInverted); 	
     m_spark.enableVoltageCompensation(kNominalVoltage);
-    m_spark.setIdleMode(IdleMode.kBrake);
+    m_spark.setIdleMode(IdleMode.kCoast);
 
     m_subsystemNameCurrentState = GeneralRollerStates.StateOff;
     m_subsystemNameRequestedState = GeneralRollerStates.StateOff;
@@ -47,13 +47,13 @@ public class GeneralRoller extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateForward:
-        desiredVoltage = 4;
+        desiredVoltage = 3;
         break;
       case StateReverse:
-        desiredVoltage = -4;
+        desiredVoltage = -3;
         break;
       case StateForwardFast:
-        desiredVoltage = 8;
+        desiredVoltage = 10;
         break;
     }
 	

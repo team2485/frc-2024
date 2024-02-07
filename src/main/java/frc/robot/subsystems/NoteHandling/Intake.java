@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
     m_spark.setSmartCurrentLimit(kIntakeCurrentLimit);
     m_spark.setInverted(kIntakeInverted); 	
     m_spark.enableVoltageCompensation(kNominalVoltage);
-    m_spark.setIdleMode(IdleMode.kBrake);
+    m_spark.setIdleMode(IdleMode.kCoast);
 
     m_subsystemNameCurrentState = IntakeStates.StateOff;
     m_subsystemNameRequestedState = IntakeStates.StateOff;
@@ -46,10 +46,10 @@ public class Intake extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateIntake:
-        desiredVoltage = 4;
+        desiredVoltage = 3;
         break;
       case StateOuttake:
-        desiredVoltage = -4;
+        desiredVoltage = -3;
         break;
     }
 	

@@ -97,7 +97,7 @@ public class RobotContainer {
     // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
     //                          .whileFalse(NoteHandlingCommandBuilder.shooterCoast(m_shooter));
     m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
-                            .whileFalse(NoteHandlingCommandBuilder.shooterCoast(m_shooter, m_feeder, m_indexer));
+                            .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder, m_indexer))
                             .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder, m_indexer));

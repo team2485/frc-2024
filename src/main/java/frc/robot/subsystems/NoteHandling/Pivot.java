@@ -70,6 +70,10 @@ public class Pivot extends SubsystemBase {
     var feedbackConfigs = talonFXConfigs.Feedback;
     feedbackConfigs.SensorToMechanismRatio = kSensorToMechanismGearRatio;
 
+    var currentConfigs = talonFXConfigs.CurrentLimits;
+    currentConfigs.StatorCurrentLimitEnable = true;
+    currentConfigs .StatorCurrentLimit = kCurrentLimit;
+
     m_talon.getConfigurator().apply(talonFXConfigs);
 
     m_PivotCurrentState = PivotStates.StateDown;
@@ -91,7 +95,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0;
         break;
       case StateAmp:
-        desiredPosition = .25;
+        desiredPosition = .0575;
         break;
     }
  

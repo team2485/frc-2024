@@ -71,9 +71,9 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
-    public static Command shooterCoast(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
+    public static Command shooterOff(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new ParallelCommandGroup(
-            new InstantCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter),
+            new InstantCommand(()->shooter.requestState(ShooterStates.StateOff), shooter),
             feederOff(feeder, indexer));
         return command;
     }

@@ -74,7 +74,7 @@ public class Shooter extends SubsystemBase {
 
         var currentConfigs = talonFXConfigs.CurrentLimits;
         currentConfigs.StatorCurrentLimitEnable = true;
-        currentConfigs.StatorCurrentLimit = 40;
+        currentConfigs.StatorCurrentLimit = kCurrentLimit;
 
         m_talonLeft.getConfigurator().apply(talonFXConfigs);
         
@@ -85,8 +85,8 @@ public class Shooter extends SubsystemBase {
 
         m_talonRight.getConfigurator().apply(talonFXConfigs);
         
-        m_shooterCurrentState = ShooterStates.StateCoast;
-        m_shooterRequestedState = ShooterStates.StateCoast;
+        m_shooterCurrentState = ShooterStates.StateOff;
+        m_shooterRequestedState = ShooterStates.StateOff;
 
         shooterError = Shuffleboard.getTab("Swerve").add("ShooterError", 0).getEntry();
     }
@@ -94,9 +94,11 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (m_shooterCurrentState == ShooterStates.StateSpeaker)
-            shooterError.setDouble(1);
-        else shooterError.setDouble(0);
+        // if (m_shooterCurrentState == ShooterStates.StateSpeaker)
+        //     shooterError.setDouble(1);
+        // else shooterError.setDouble(0);
+
+       shooterError.setDouble(getError());
 
         switch (m_shooterRequestedState) {
           case StateOff:
@@ -104,8 +106,9 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 0;
             break;
           case StateCoast:
+            //desiredVelocity = 0;
             desiredVelocity = 0;
-            desiredVoltage = 5;
+            desiredVoltage = 3;
             break;
           case StateSpeaker:
             desiredVelocity = 80;
@@ -145,7 +148,7 @@ public class Shooter extends SubsystemBase {
             m_talonLeft.setVoltage(desiredVoltage);
             m_talonRight.setVoltage(desiredVoltage);
         }
-    }
+      }
     
       private double getVelocity() {
         return m_talonLeft.getVelocity().getValue();
