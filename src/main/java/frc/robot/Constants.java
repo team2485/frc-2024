@@ -5,6 +5,9 @@
 package frc.robot;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.*;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,6 +32,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import frc.robot.commands.Interpolation.ShotParameter;
 import frc.util.COTSFalconSwerveConstants;
 import frc.util.SwerveModuleConstants;
 
@@ -335,6 +339,14 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
+
+    public static final TreeMap<Double, ShotParameter> kShootingMap = 
+      new TreeMap<>(
+        Map.ofEntries(
+          Map.entry(1.3081, new ShotParameter(80, 0)),
+              Map.entry(2.4003, new ShotParameter(80, 0.05)),
+              Map.entry(3.683, new ShotParameter(80, 0.07))));
+
     public static final int kShooterLeftPort = 17;
     public static final int kShooterRightPort = 18;
 
