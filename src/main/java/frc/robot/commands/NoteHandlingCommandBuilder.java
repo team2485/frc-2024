@@ -16,10 +16,11 @@ import frc.robot.subsystems.NoteHandling.Shooter;
 import frc.robot.subsystems.NoteHandling.Shooter.ShooterStates;
 
 public class NoteHandlingCommandBuilder {
-    public static Command intake(Intake intake, GeneralRoller indexer) {
+    public static Command intake(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
-                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer)
+                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
+                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
                                 );
         return command;
     }
@@ -32,10 +33,12 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
     
-    public static Command intakeOff(Intake intake, GeneralRoller indexer) {
+    public static Command intakeOff(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
-                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
+                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
+                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
+
                                 );
         return command;
     }
@@ -57,6 +60,7 @@ public class NoteHandlingCommandBuilder {
                                 );
         return command;
     }
+
 
     public static Command feederOff(GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(

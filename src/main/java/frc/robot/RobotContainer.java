@@ -82,11 +82,11 @@ public class RobotContainer {
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
                 .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
-    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer))
-                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer));
+    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder))
+                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder));
 
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer))
-                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer));
+                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder));
 
     m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
 
