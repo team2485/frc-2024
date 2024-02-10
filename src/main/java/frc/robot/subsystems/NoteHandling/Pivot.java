@@ -1,11 +1,19 @@
 package frc.robot.subsystems.NoteHandling;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.proto.Wpimath;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.Constants.PivotConstants.*; 
+import static frc.robot.Constants.PivotConstants.*;
+
+import java.util.function.DoubleSupplier;
+
+import frc.robot.commands.Interpolation.InterpolatingTable;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -21,6 +29,7 @@ public class Pivot extends SubsystemBase {
     StateDown,
     StateAmp,
     StateMovingToRequestedState,
+    StateShooter
   }
 
   public static PivotStates m_PivotCurrentState;
@@ -30,11 +39,14 @@ public class Pivot extends SubsystemBase {
 
   // You may need more than one motor
   private final TalonFX m_talon = new TalonFX(kPivotPort, "Mast");
+  DoubleSupplier distance; 
   private final MotionMagicVoltage request = new MotionMagicVoltage(0).withSlot(0);
   // Unit default for TalonFX libraries is rotations
   private double desiredPosition = 0;
 
-  public Pivot() {
+  public Pivot(DoubleSupplier distance) {
+
+    this.distance = distance;
     // Misc setup goes here
 
     armPosition = Shuffleboard.getTab("Swerve").add("ArmPosition", 0).getEntry();
@@ -88,15 +100,19 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
 
-    armPosition.setDouble(getPosition());
+    armPosition.setDouble(MathUtil.clamp(InterpolatingTable.get(distance.getAsDouble()).pivotAngleRotations, 0, .25));
 
     switch (m_PivotRequestedState) {
       case StateDown:
         desiredPosition = 0;
         break;
       case StateAmp:
-        desiredPosition = .05;
+        desiredPosition = .25;
         break;
+      case StateShooter:
+        desiredPosition = MathUtil.clamp(InterpolatingTable.get(distance.getAsDouble()).pivotAngleRotations, 0, .25);
+        break;
+      
     }
  
     runControlLoop();

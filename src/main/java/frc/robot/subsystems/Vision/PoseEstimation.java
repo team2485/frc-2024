@@ -77,6 +77,8 @@ public class PoseEstimation extends SubsystemBase {
     // }
 
     field2d.setRobotPose(dashboardPose);
+
+    visionTest.setDouble(getDistanceToSpeaker());
   }
 
   private String getFormattedPose() {
@@ -96,15 +98,23 @@ public class PoseEstimation extends SubsystemBase {
     setCurrentPose(new Pose2d());
   }
 
+  public double getDistanceToSpeaker() {
+    return dist(getFieldConstants().getSpeakerPos().getX(), getFieldConstants().getSpeakerPos().getY(), getCurrentPose().getX(), getCurrentPose().getY());
+  }
+
+  public double dist(double x1, double y1, double x2, double y2) {
+    double xDiff = x2-x1;
+    double yDiff = y2-y1;
+    return Math.sqrt(xDiff*xDiff + yDiff*yDiff);
+  }
+
   public FieldConstants getFieldConstants() {
     RedFieldConstants redFieldConstants = new RedFieldConstants();
     BlueFieldConstants blueFieldConstants = new BlueFieldConstants();
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      visionTest.setDouble(0);
       return blueFieldConstants;
     }
     else {
-      visionTest.setDouble(1);
       return redFieldConstants;
     }
   }

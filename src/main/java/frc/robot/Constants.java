@@ -222,7 +222,7 @@ public final class Constants {
 
   public static final class RedFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
-    public Pose2d getSpeakerPos() { return new Pose2d(15.1, 5.5, new Rotation2d()); }
+    public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -234,7 +234,7 @@ public final class Constants {
 
   public static final class BlueFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
-    public Pose2d getSpeakerPos() { return new Pose2d(15.1, 5.5, new Rotation2d()); }
+    public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -280,7 +280,7 @@ public final class Constants {
 
     // TODO: ensure validity of measurements
     public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(0.508, -0.0127, 0.71),
-        new Rotation3d(0,0,0.139626));
+        new Rotation3d(0,0,0));
     //-0.698
 
     public static final double kFieldLengthMeters = 16.541;
@@ -344,8 +344,8 @@ public final class Constants {
       new TreeMap<>(
         Map.ofEntries(
           Map.entry(1.3081, new ShotParameter(80, 0)),
-              Map.entry(2.4003, new ShotParameter(80, 0.05)),
-              Map.entry(3.683, new ShotParameter(80, 0.07))));
+              Map.entry(2.4003, new ShotParameter(80, 0.06)),
+              Map.entry(3.683, new ShotParameter(80, 0.08))));
 
     public static final int kShooterLeftPort = 17;
     public static final int kShooterRightPort = 18;
@@ -376,7 +376,7 @@ public final class Constants {
     public static final double kPivotAcceleration = Math.PI;
     public static final double kPivotJerk = Math.PI*80; 
     public static final boolean kPivotClockwisePositive = true;
-    public static final double kPivotErrorTolerance = .01;
+    public static final double kPivotErrorTolerance = .02;
     public static final double kSensorToMechanismGearRatio = 75;
     public static final int kCurrentLimit = 40;
   }

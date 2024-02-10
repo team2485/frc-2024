@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 public class InterpolatingTable {
 
   /* Private constructor because this is a utility class */
-  private InterpolatingTable() {}
+  public InterpolatingTable() {}
 
   // Method to get shot parameters based on vision distances
   public static ShotParameter get(double distance) {

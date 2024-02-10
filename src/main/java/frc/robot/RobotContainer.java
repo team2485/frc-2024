@@ -37,14 +37,14 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final Drivetrain m_drivetrain = new Drivetrain();
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawAbsolute, m_drivetrain::getModulePositionsInverted);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawAbsolute, m_drivetrain::getModulePositions);
   private final Intake m_intake = new Intake();
   private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
   private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
   private final Shooter m_shooter = new Shooter();
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
-  private final Pivot m_pivot = new Pivot();
+  private final Pivot m_pivot = new Pivot(m_poseEstimation::getDistanceToSpeaker);
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
@@ -96,8 +96,11 @@ public class RobotContainer {
     //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder));
     // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
     //                          .whileFalse(NoteHandlingCommandBuilder.shooterCoast(m_shooter));
-    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
-                            .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
+    //                         .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+
+    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
+                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer));
 
     m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder, m_indexer))
                             .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder, m_indexer));
