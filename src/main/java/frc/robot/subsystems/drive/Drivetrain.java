@@ -25,7 +25,7 @@ public class Drivetrain extends SubsystemBase {
     GenericEntry absoluteGyroPos;
     GenericEntry currentGyroPos;
 
-    private double absoluteGyroPostion = 0;
+    private double absoluteGyroPosition = 0;
 
     public SwerveModule[] mSwerveMods = new SwerveModule[] {
         new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -43,6 +43,7 @@ public class Drivetrain extends SubsystemBase {
         absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroOffset", 0).getEntry();
         currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroOffset", 0).getEntry();
         gyro.reset();
+        absoluteGyroPosition = 0;
 
         // mSwerveMods = new SwerveModule[] {
         //     new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -70,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
                                     rotation)
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
-        absoluteGyroPos.setDouble(absoluteGyroPostion);
+        absoluteGyroPos.setDouble(getYawAbsolute().getDegrees() % 180);
         currentGyroPos.setDouble(getYaw().times(-1).getDegrees());
 
         for(SwerveModule mod : mSwerveMods) {
@@ -93,7 +94,7 @@ public class Drivetrain extends SubsystemBase {
                                     rotation)
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
-        absoluteGyroPos.setDouble(absoluteGyroPostion);
+        absoluteGyroPos.setDouble(absoluteGyroPosition);
         currentGyroPos.setDouble(getYaw().times(-1).getDegrees());
 
         for(SwerveModule mod : mSwerveMods) {
@@ -150,7 +151,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void zeroGyro(){
-        absoluteGyroPostion += getYaw().times(-1).getDegrees();
+        absoluteGyroPosition += getYaw().times(-1).getDegrees();
         gyro.setYaw(0);
     }
 
@@ -164,7 +165,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Rotation2d getYawAbsolute() {
-        return Rotation2d.fromDegrees(absoluteGyroPostion).minus(getYaw()).times(-1);
+        return Rotation2d.fromDegrees(absoluteGyroPosition).minus(getYaw()).times(-1);
     }
 
     public void resetToAbsolute(){
@@ -175,7 +176,7 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic(){
-    
+
         }
 
     //     for(SwerveModule mod : mSwerveMods){

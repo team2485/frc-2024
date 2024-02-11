@@ -6,11 +6,13 @@ package frc.robot;
 
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.commands.Autos;
+import frc.robot.commands.ClimbCommandBuilder;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Climb.Climber;
 import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
 import frc.robot.subsystems.NoteHandling.Pivot;
@@ -45,6 +47,8 @@ public class RobotContainer {
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
   private final Pivot m_pivot = new Pivot(m_poseEstimation::getDistanceToSpeaker);
+  private final Climber m_climber = new Climber();
+  
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
@@ -77,6 +81,8 @@ public class RobotContainer {
           m_driver::getLeftX,
           m_driver::getRightX,
           () -> !m_driver.rightBumper().getAsBoolean(),
+          () -> m_operator.rightTrigger().getAsBoolean(),
+          m_poseEstimation::getAngleToSpeaker,
           m_drivetrain));
 
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
@@ -87,6 +93,10 @@ public class RobotContainer {
 
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer))
                          .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder));
+    // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
+
+    m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
+    m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
 
     m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
 
@@ -100,7 +110,10 @@ public class RobotContainer {
     //                         .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
-                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer));
+                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+
+    m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
+                  .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder, m_indexer))
                             .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder, m_indexer));

@@ -9,9 +9,11 @@ import static frc.robot.Constants.OIConstants.*;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 
@@ -24,8 +26,11 @@ public class DriveWithController extends Command {
   private final DoubleSupplier m_ySpeedSupplier;
   private final DoubleSupplier m_rotSpeedSupplier;
   private final BooleanSupplier m_fieldRelative;
-
+  private final BooleanSupplier m_aimingAtSpeaker;
+  private final DoubleSupplier m_speakerAngle;
   private final Drivetrain m_drivetrain;
+
+  private final PIDController rotationOverrideController = new PIDController(.075, 0, .01);
 
 
   public DriveWithController(
@@ -33,12 +38,17 @@ public class DriveWithController extends Command {
       DoubleSupplier ySpeedSupplier,
       DoubleSupplier rotSpeedSupplier,
       BooleanSupplier fieldRelative,
+      BooleanSupplier aimingAtSpeaker,
+      DoubleSupplier speakerAngle,
       Drivetrain drivetrain) {
 
     this.m_xSpeedSupplier = xSpeedSupplier;
     this.m_ySpeedSupplier = ySpeedSupplier;
     this.m_rotSpeedSupplier = rotSpeedSupplier;
     this.m_fieldRelative = fieldRelative;
+    this.m_aimingAtSpeaker = aimingAtSpeaker;
+    this.m_speakerAngle = speakerAngle;
+
 
     this.m_drivetrain = drivetrain;
 
@@ -64,10 +74,19 @@ public class DriveWithController extends Command {
 
 
     final int rotSign = (int)(Math.abs(m_rotSpeedSupplier.getAsDouble())/m_rotSpeedSupplier.getAsDouble());
-    final double rot = Math.abs(map(-MathUtil.applyDeadband(m_rotSpeedSupplier.getAsDouble()*m_rotSpeedSupplier.getAsDouble(), kDriverRightXDeadband)
+    double rot = Math.abs(map(-MathUtil.applyDeadband(m_rotSpeedSupplier.getAsDouble()*m_rotSpeedSupplier.getAsDouble(), kDriverRightXDeadband)
             * kTeleopMaxAngularSpeedRadiansPerSecond, 0, 1, 0, Swerve.maxAngularVelocity)) * rotSign;
 
     final boolean fieldRelative = m_fieldRelative.getAsBoolean();
+
+    final boolean aimingAtSpeaker = m_aimingAtSpeaker.getAsBoolean();
+
+    final double speakerAngle = m_speakerAngle.getAsDouble();
+
+    if (aimingAtSpeaker) {
+      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, speakerAngle);
+    }
+
     m_drivetrain.drive(new Translation2d(xSpeed, ySpeed), rot, fieldRelative, false);
 
     // System.out.println(m_driver.getRightTriggerAxis());

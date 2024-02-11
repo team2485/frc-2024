@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
 import frc.robot.subsystems.NoteHandling.Pivot;
@@ -35,10 +36,9 @@ public class NoteHandlingCommandBuilder {
     
     public static Command intakeOff(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
         Command command = new ParallelCommandGroup(
-                                new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
-                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
-                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
-
+                                new RunCommand(()->intake.requestState(IntakeStates.StateOff), intake),
+                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
+                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
                                 );
         return command;
     }
@@ -55,8 +55,8 @@ public class NoteHandlingCommandBuilder {
 
     public static Command runFeeder(GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
-                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
-                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)                 
+                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
+                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)                 
                                 );
         return command;
     }
@@ -84,23 +84,24 @@ public class NoteHandlingCommandBuilder {
 
     public static Command autoShooterSpeaker(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
-                        new RunCommand(()->pivot.requestState(PivotStates.StateShooter)), 
-                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker)),
-                        new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff)),
-                        new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff))
+                        new RunCommand(()->pivot.requestState(PivotStates.StateShooter), pivot), 
+                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
+                        new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
+                        new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
                         ).until(()->pivot.getCurrentState() == PivotStates.StateShooter && shooter.getCurrentState() == ShooterStates.StateSpeaker)
                         .andThen(
                             new ParallelCommandGroup(
-                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast)),
-                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast))
+                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
+                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)
                             )
                         );
-        return command;
+        return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
-    public static Command autoShooterOff(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
+    public static Command autoShooterOff(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, Intake intake) {
         Command command = new ParallelCommandGroup(
                         new InstantCommand(()->pivot.requestState(PivotStates.StateDown)),
+                        new InstantCommand(()->intake.requestState(IntakeStates.StateOff)),
                         shooterOff(shooter, feeder, indexer)
                         );
         return command;

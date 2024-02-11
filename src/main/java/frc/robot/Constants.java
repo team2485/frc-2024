@@ -343,9 +343,13 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.3081, new ShotParameter(80, 0)),
-              Map.entry(2.4003, new ShotParameter(80, 0.06)),
-              Map.entry(3.683, new ShotParameter(80, 0.08))));
+          Map.entry(1.11, new ShotParameter(80, 0)),
+          Map.entry(1.45, new ShotParameter(80, 0.03)),
+          Map.entry(1.73, new ShotParameter(80, 0.045)),
+          Map.entry(2.0, new ShotParameter(80, 0.055)),
+          Map.entry(2.3, new ShotParameter(80, 0.06)),
+          Map.entry(2.6, new ShotParameter(80, 0.065)),
+          Map.entry(2.9, new ShotParameter(80, 0.07))));
 
     public static final int kShooterLeftPort = 17;
     public static final int kShooterRightPort = 18;
@@ -360,7 +364,7 @@ public final class Constants {
     public static final double kShooterCruiseVelocity = 80;
     public static final double kShooterAcceleration = 160;
     public static final double kShooterJerk = 1600; 
-    public static final double kShooterErrorTolerance = 2;
+    public static final double kShooterErrorTolerance = 5;
     public static final boolean kShooterClockwisePositive = false;
     public static final int kCurrentLimit = 80;
   }
@@ -379,6 +383,25 @@ public final class Constants {
     public static final double kPivotErrorTolerance = .02;
     public static final double kSensorToMechanismGearRatio = 75;
     public static final int kCurrentLimit = 40;
+  }
+
+  public static final class ClimberConstants {
+    public static final int kClimberLeftPort = 21;
+    public static final int kClimberRightPort = 20;
+    public static final double kSClimberLeft = .91;
+    public static final double kSClimberRight = 1;
+    public static final double kVClimber = 2;
+    public static final double kPClimber = 3;
+    public static final double kIClimber = 0;
+    public static final double kDClimber = .01;
+    public static final double kClimberCruiseVelocity = Math.PI;
+    public static final double kClimberAcceleration = Math.PI*2;
+    public static final double kClimberJerk = Math.PI*10; 
+    public static final boolean kClimberClockwisePositive = true;
+    public static final double kClimberErrorTolerance = .25;
+    public static final double kSensorToMechanismGearRatio = 100;
+    public static final int kCurrentLimit = 60;
+    public static final int kCurrentLimitThreshold = 30;
   }
 
   public static final class IndexerConstants {
