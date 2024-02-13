@@ -30,7 +30,7 @@ public class DriveWithController extends Command {
   private final DoubleSupplier m_speakerAngle;
   private final Drivetrain m_drivetrain;
 
-  private final PIDController rotationOverrideController = new PIDController(.075, 0, .01);
+  private final PIDController rotationOverrideController = new PIDController(.1, 0, .01);
 
 
   public DriveWithController(

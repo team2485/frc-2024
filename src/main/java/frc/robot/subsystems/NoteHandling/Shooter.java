@@ -127,7 +127,7 @@ public class Shooter extends SubsystemBase {
       public void runControlLoop() {
         if(desiredVelocity!=0){
             m_talonRight.setControl(request.withVelocity(desiredVelocity).withLimitReverseMotion(true));
-            m_talonLeft.setControl(request.withVelocity(desiredVelocity));
+            m_talonLeft.setVoltage(m_talonRight.getMotorVoltage().getValueAsDouble());
             // m_talonLeft.setVoltage(.25);
             // m_talonRight.setVoltage(.25);
 

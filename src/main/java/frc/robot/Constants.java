@@ -345,8 +345,8 @@ public final class Constants {
         Map.ofEntries(
           Map.entry(1.11, new ShotParameter(80, 0)),
           Map.entry(1.45, new ShotParameter(80, 0.03)),
-          Map.entry(1.73, new ShotParameter(80, 0.045)),
-          Map.entry(2.0, new ShotParameter(80, 0.055)),
+          Map.entry(1.73, new ShotParameter(80, 0.046)),
+          Map.entry(2.0, new ShotParameter(80, 0.05)),
           Map.entry(2.3, new ShotParameter(80, 0.06)),
           Map.entry(2.6, new ShotParameter(80, 0.065)),
           Map.entry(2.9, new ShotParameter(80, 0.07))));
@@ -358,7 +358,7 @@ public final class Constants {
     public static final double kVShooter = .12;
     public static final double kAShooter = .56;
     public static final double kPShooter = .04;
-    public static final double kIShooter = 0;
+    public static final double kIShooter = .01;
     public static final double kDShooter = 0.01;
     public static final double kSensorToMechanismGearRatio = 36/28;
     public static final double kShooterCruiseVelocity = 80;
@@ -390,13 +390,13 @@ public final class Constants {
     public static final int kClimberRightPort = 20;
     public static final double kSClimberLeft = .91;
     public static final double kSClimberRight = 1;
-    public static final double kVClimber = 2;
-    public static final double kPClimber = 3;
+    public static final double kVClimber = 4;
+    public static final double kPClimber = 12;
     public static final double kIClimber = 0;
-    public static final double kDClimber = .01;
-    public static final double kClimberCruiseVelocity = Math.PI;
-    public static final double kClimberAcceleration = Math.PI*2;
-    public static final double kClimberJerk = Math.PI*10; 
+    public static final double kDClimber = 0;
+    public static final double kClimberCruiseVelocity = Math.PI*4;
+    public static final double kClimberAcceleration = Math.PI*16;
+    public static final double kClimberJerk = Math.PI*160; 
     public static final boolean kClimberClockwisePositive = true;
     public static final double kClimberErrorTolerance = .25;
     public static final double kSensorToMechanismGearRatio = 100;
