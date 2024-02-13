@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.drive.CTREConfigs;
@@ -42,13 +43,17 @@ public class SwerveModule {
     private CANcoder angleEncoder;
     private CANcoderConfigurator angleEncoderConfigurator;
     private CANcoderConfiguration angleEncoderConfiguration;
+    final TrapezoidProfile m_profile = new TrapezoidProfile(
+        new TrapezoidProfile.Constraints(4, 8)
+    );
+    TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
     private TalonFXConfigurator mDriveConfigurator;
     private TalonFXConfigurator mAngleConfigurator;
     private MotorOutputConfigs mDriveOutputConfigs = new MotorOutputConfigs();
     private MotorOutputConfigs mAngleOutputConfigs = new MotorOutputConfigs();
     private CANcoderConfiguration mCanCoderConfigs = new CANcoderConfiguration();
-    private GenericEntry wheelDistance;
+    private GenericEntry current;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
 
@@ -57,7 +62,7 @@ public class SwerveModule {
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
-        wheelDistance = Shuffleboard.getTab("Swerve").add("Distance: " + moduleNumber, 0).getEntry();
+        current = Shuffleboard.getTab("Swerve").add("Current: " + moduleNumber, 0).getEntry();
         
         /* Angle Encoder Config */
         angleEncoder = new CANcoder(moduleConstants.cancoderID, "Drive");
@@ -122,7 +127,6 @@ public class SwerveModule {
         }
         else {
             double velocity = (((desiredState.speedMetersPerSecond) / wheelCircumference));
-            wheelDistance.setDouble(mDriveMotor.getPosition().getValue());
   
             if (velocity == 0) mDriveMotor.setVoltage(0);
             else mDriveMotor.setControl(mDriveVelocityVoltage.withVelocity(velocity));
@@ -130,9 +134,15 @@ public class SwerveModule {
     }
 
     private void setAngle(SwerveModuleState desiredState) {
+        //current.setDouble(mAngleMotor.getTorqueCurrent().getValueAsDouble());
         Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (maxSpeed * 0.005)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
 
-        mAngleMotor.setControl(mAnglePositionVoltage.withPosition(angle.getRotations()));
+        
+        TrapezoidProfile.State m_goal = new TrapezoidProfile.State(angle.getRotations(), 0);
+        m_setpoint = m_profile.calculate(angleContinuousCurrentLimit, m_setpoint, m_goal);
+        
+
+        mAngleMotor.setControl(mAnglePositionVoltage.withPosition(m_setpoint.position));
 
         lastAngle = angle;
     } 

@@ -39,6 +39,7 @@ public class Shooter extends SubsystemBase {
 
     private final MotionMagicVelocityVoltage request = new MotionMagicVelocityVoltage(0).withSlot(0);
 
+
     private double desiredVelocity = 0;
     private double desiredVoltage = 0;
 
@@ -106,24 +107,11 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 0;
             break;
           case StateCoast:
-            //desiredVelocity = 0;
             desiredVelocity = 0;
-            desiredVoltage = 3;
+            desiredVoltage = 2;
             break;
           case StateSpeaker:
             desiredVelocity = 80;
-            desiredVoltage = 0;
-            break;
-          case StateSubwoofer:
-            desiredVelocity = 0; // might have to be dynamic
-            desiredVoltage = 0;
-            break;
-          case StateAmp:
-            desiredVelocity = 0;
-            desiredVoltage = 0;
-            break;
-          case StatePodium:
-            desiredVelocity = 0;
             desiredVoltage = 0;
             break;
         }
@@ -138,7 +126,7 @@ public class Shooter extends SubsystemBase {
     
       public void runControlLoop() {
         if(desiredVelocity!=0){
-            m_talonRight.setControl(request.withVelocity(desiredVelocity));
+            m_talonRight.setControl(request.withVelocity(desiredVelocity).withLimitReverseMotion(true));
             m_talonLeft.setControl(request.withVelocity(desiredVelocity));
             // m_talonLeft.setVoltage(.25);
             // m_talonRight.setVoltage(.25);
