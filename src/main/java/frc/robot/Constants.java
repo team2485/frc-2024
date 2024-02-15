@@ -204,13 +204,15 @@ public final class Constants {
     public static final double kTeleopMaxAngularSpeedRadiansPerSecond =
         1.5 / kTurningRadiusMeters; // radians per second
 
+    public static final double kDriveTolerance = .1;
+
     public static final double kTeleopMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kTeleopMaxAngularAccelerationRadiansPerSecondSquared = 1.5 * Math.PI;
 
     public static final int kPoseHistoryCapacity = 500;
 
     public static final double kPRotation = 2;
-    public static final double kRotationTolerance = 0.05;
+    public static final double kRotationTolerance = 3;
   }
 
   public interface FieldConstants {
@@ -223,11 +225,11 @@ public final class Constants {
   public static final class RedFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
     public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getAmpPos() { return new Pose2d(); }
+    public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.2, Rotation2d.fromDegrees(90)); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
-            new Pose2d(),
-            new Pose2d(),
+            new Pose2d(13.5, 7, new Rotation2d()),
+            new Pose2d(13.5, 5.4, new Rotation2d()),
         };
     }
   }
@@ -472,7 +474,7 @@ public final class Constants {
     // public static final double angleKD = chosenModule.angleKD;
     // public static final double angleKF = chosenModule.angleKF;
 
-    public static final double angleKP = 60;
+    public static final double angleKP = 30;
     public static final double angleKI = 0;
     public static final double angleKD = .05;
     public static final double angleKF = 0;
@@ -504,7 +506,7 @@ public final class Constants {
       public static final int driveMotorID = 1;
       public static final int angleMotorID = 2;
       public static final int canCoderID = 10;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.3662109375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.372314453125);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }
@@ -514,7 +516,7 @@ public final class Constants {
       public static final int driveMotorID = 3;
       public static final int angleMotorID = 4;
       public static final int canCoderID = 11;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.116455078125);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.409912109375);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -524,7 +526,7 @@ public final class Constants {
       public static final int driveMotorID = 5;
       public static final int angleMotorID = 6;
       public static final int canCoderID = 12;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.1572265625);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.155517578125);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -534,7 +536,7 @@ public final class Constants {
       public static final int driveMotorID = 7;
       public static final int angleMotorID = 8;
       public static final int canCoderID = 13;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.18701171875);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.191162109375);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }

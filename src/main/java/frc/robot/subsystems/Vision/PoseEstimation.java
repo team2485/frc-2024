@@ -64,7 +64,7 @@ public class PoseEstimation extends SubsystemBase {
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
     var visionPose = photonEstimator.grabLatestEstimatedPose();
-    if (visionPose != null && visionPose.targetsUsed.get(0).getArea() > .4 && visionPose.targetsUsed.get(0).getPoseAmbiguity() > 0) {
+    if (visionPose != null && visionPose.targetsUsed.get(0).getPoseAmbiguity() > 0) {
       var pose2d = visionPose.estimatedPose.toPose2d();
    
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
@@ -98,18 +98,24 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getDistanceToSpeaker() {
-    return dist(getFieldConstants().getSpeakerPos().getX(), getFieldConstants().getSpeakerPos().getY(), getCurrentPose().getX(), getCurrentPose().getY());
+    return dist(getFieldConstants().getSpeakerPos(), getCurrentPose());
   }
 
-  public double dist(double x1, double y1, double x2, double y2) {
-    double xDiff = x2-x1;
-    double yDiff = y2-y1;
+  public double dist(Pose2d pos1, Pose2d pos2) {
+    double xDiff = pos2.getX()-pos1.getX();
+    double yDiff = pos2.getY()-pos1.getY();
     return Math.sqrt(xDiff*xDiff + yDiff*yDiff);
   }
 
   public double getAngleToSpeaker() {
     double deltaY = getFieldConstants().getSpeakerPos().getY() - getCurrentPose().getY();
     double deltaX = (getFieldConstants().getSpeakerPos().getX()+.5) - getCurrentPose().getX();
+    return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
+  }
+
+  public double getAngleToPos(Pose2d pos) {
+    double deltaY = pos.getY() - getCurrentPose().getY();
+    double deltaX = pos.getX() - getCurrentPose().getX();
     return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
   }
 

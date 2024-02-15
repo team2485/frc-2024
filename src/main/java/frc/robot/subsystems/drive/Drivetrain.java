@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.MedianFilter;
 
 public class Drivetrain extends SubsystemBase {
@@ -37,6 +38,9 @@ public class Drivetrain extends SubsystemBase {
     public Pigeon2Configuration config = new Pigeon2Configuration();
 
     private MedianFilter filter = new MedianFilter(5);
+
+    private final PIDController rotationOverrideController = new PIDController(.1, 0, .01);
+    private Rotation2d rotationOverride = new Rotation2d();
 
     public Drivetrain() {
         //gyro.configFactoryDefault();
@@ -102,9 +106,21 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    public void driveAuto(ChassisSpeeds speeds) {
-        driveWithSuppliedRotation(new Translation2d(-speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),-speeds.omegaRadiansPerSecond, true, false, getYawAbsolute());
+    public void setRotationOverride(Rotation2d rotationOverride) {
+        this.rotationOverride = rotationOverride;
     }
+
+    public void driveAuto(ChassisSpeeds speeds) {
+        double rot = -rotationOverrideController.calculate(getYawAbsolute().getDegrees() % 180, rotationOverride.getDegrees());
+        if (speeds.vxMetersPerSecond < .5 && speeds.vyMetersPerSecond < .5)
+            rot = 0;
+        speeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getYawAbsolute());
+        driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),rot, true, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
+    }
+
+    // public void driveAuto(ChassisSpeeds speeds) {
+    //     driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),-speeds.omegaRadiansPerSecond, true, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
+    // }
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {

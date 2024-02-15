@@ -50,7 +50,7 @@ public class DriveAuto extends Command {
   @Override
   public void execute() {
 
-    m_drivetrain.driveAuto(new ChassisSpeeds(m_xSpeedSupplier.getAsDouble(), m_ySpeedSupplier.getAsDouble(), m_rotSpeedSupplier.getAsDouble()));
+    m_drivetrain.driveAuto(new ChassisSpeeds(-m_xSpeedSupplier.getAsDouble(), m_ySpeedSupplier.getAsDouble(), m_rotSpeedSupplier.getAsDouble()));
     
     // System.out.println(m_driver.getRightTriggerAxis());
   }

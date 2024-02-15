@@ -1,5 +1,11 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.DriveConstants.kDriveTolerance;
+import static frc.robot.Constants.DriveConstants.kRotationTolerance;
+
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -15,6 +21,8 @@ import frc.robot.subsystems.NoteHandling.Intake.IntakeStates;
 import frc.robot.subsystems.NoteHandling.Pivot.PivotStates;
 import frc.robot.subsystems.NoteHandling.Shooter;
 import frc.robot.subsystems.NoteHandling.Shooter.ShooterStates;
+import frc.robot.subsystems.Vision.PoseEstimation;
+import frc.robot.subsystems.drive.Drivetrain;
 
 public class NoteHandlingCommandBuilder {
     public static Command intake(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
@@ -36,9 +44,9 @@ public class NoteHandlingCommandBuilder {
     
     public static Command intakeOff(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
         Command command = new ParallelCommandGroup(
-                                new RunCommand(()->intake.requestState(IntakeStates.StateOff), intake),
-                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
-                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
+                                new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
+                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
+                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
                                 );
         return command;
     }
@@ -100,8 +108,8 @@ public class NoteHandlingCommandBuilder {
 
     public static Command autoShooterOff(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, Intake intake) {
         Command command = new ParallelCommandGroup(
-                        new InstantCommand(()->pivot.requestState(PivotStates.StateDown)),
-                        new InstantCommand(()->intake.requestState(IntakeStates.StateOff)),
+                        new InstantCommand(()->pivot.requestState(PivotStates.StateDown), pivot),
+                        new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
                         shooterOff(shooter, feeder, indexer)
                         );
         return command;
@@ -109,10 +117,24 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shoot(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new SequentialCommandGroup(
-                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker)).until(()->shooter.getCurrentState() == ShooterStates.StateSpeaker),
+                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter).until(()->shooter.getCurrentState() == ShooterStates.StateSpeaker),
                         runFeeder(feeder, indexer)
                         );
 
+        return command;
+    }
+
+    public static Command autoAmp(Drivetrain drivetrain, Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PoseEstimation poseEstimation, Supplier<Pose2d> ampPos) {
+        Command command = new SequentialCommandGroup(
+            DriveCommandBuilder.driveToPosition(drivetrain, poseEstimation, ampPos)
+                .until(()->poseEstimation.dist(poseEstimation.getCurrentPose(), ampPos.get()) < kDriveTolerance
+                           && Math.abs(drivetrain.getYawAbsolute().getDegrees()-ampPos.get().getRotation().getDegrees()) < kRotationTolerance),
+            new ParallelCommandGroup(
+                new RunCommand(()->pivot.requestState(PivotStates.StateAmp), pivot),
+                new RunCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter)
+            ).until(()->pivot.getCurrentState() == PivotStates.StateAmp),
+            runFeeder(feeder, indexer)
+        );
         return command;
     }
 }

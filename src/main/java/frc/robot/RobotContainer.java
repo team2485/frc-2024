@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.WarlordsLib.WL_CommandXboxController;
-import frc.robot.commands.Autos;
+import frc.robot.commands.AutoCommandBuilder;
 import frc.robot.commands.ClimbCommandBuilder;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
@@ -21,6 +21,7 @@ import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -52,6 +53,12 @@ public class RobotContainer {
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
+  public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
+
+  SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
+
+  DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
+
   GenericEntry constantsTest;
 
 
@@ -63,6 +70,12 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Swerve"));
+
+    m_autoChooser.setDefaultOption("BabysFirstAuto", 
+                autoBuilder.twoNoteAt1(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
+    
+    // m_autoChooser.addOption("TwoNoteAutoAt1", 
+    //             autoBuilder.twoNoteAt1(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));      
   }
 
   /**
@@ -115,8 +128,12 @@ public class RobotContainer {
     m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder, m_indexer))
-                            .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder, m_indexer));
+    // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder, m_indexer))
+    //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder, m_indexer));
+
+    m_operator.rightBumper().whileTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, 
+                            m_feeder, m_indexer, m_poseEstimation, ()->m_poseEstimation.getFieldConstants().getAmpPos()))
+                            .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
   }
 
   /**
@@ -124,8 +141,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+
+   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return m_autoChooser.getSelected();
   }
 }

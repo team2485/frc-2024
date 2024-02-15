@@ -44,7 +44,7 @@ public class SwerveModule {
     private CANcoderConfigurator angleEncoderConfigurator;
     private CANcoderConfiguration angleEncoderConfiguration;
     final TrapezoidProfile m_profile = new TrapezoidProfile(
-        new TrapezoidProfile.Constraints(4, 8)
+        new TrapezoidProfile.Constraints(8, 16)
     );
     TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 

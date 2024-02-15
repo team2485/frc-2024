@@ -9,10 +9,12 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindHolonomic;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.PS4Controller;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -21,9 +23,9 @@ import frc.robot.subsystems.drive.Drivetrain;
 import static frc.robot.Constants.Swerve.*;
 
 public class DriveCommandBuilder {
-    public static Command driveToPosition(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation, Supplier<Pose2d> fieldEndPos) {
-    
-        AutoBuilder.configureHolonomic(
+
+    public DriveCommandBuilder(PoseEstimation m_poseEstimation, Drivetrain m_drivetrain) {
+            AutoBuilder.configureHolonomic(
             m_poseEstimation::getCurrentPose,
             m_poseEstimation::setCurrentPose,
             m_drivetrain::getChassisSpeeds,
@@ -31,18 +33,19 @@ public class DriveCommandBuilder {
             kPathFollowingConfig, 
             () -> false, 
             m_drivetrain);
-    
-        
+    }
+
+    public static Command driveToPosition(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation, Supplier<Pose2d> fieldEndPos) {
+ 
     
         // Since we are using a holonomic drivetrain, the rotation component of this pose
         // represents the goal holonomic rotation
-        Pose2d targetPose = fieldEndPos.get();
+        Pose2d targetPose = new Pose2d(fieldEndPos.get().getTranslation(), new Rotation2d());
 
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
                 kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
-
 
         // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision
         
@@ -59,6 +62,8 @@ public class DriveCommandBuilder {
         //                                 m_drivetrain // Reference to drive subsystem to set requirements
         //                                 );
         // return pathfindingCommand;
+        m_drivetrain.setRotationOverride(fieldEndPos.get().getRotation());
+
 
         Command pathfindingCommand = AutoBuilder.pathfindToPose(
             targetPose,
