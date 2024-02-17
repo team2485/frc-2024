@@ -108,7 +108,7 @@ public class RobotContainer {
           m_poseEstimation::getAngleToSpeaker,
           () -> m_driver.y().getAsBoolean(),
           m_poseEstimation::getAngleToAmp,
-          m_drivetrain));
+          m_drivetrain, m_poseEstimation));
 
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
                 .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));

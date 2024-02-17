@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.Swerve;
+import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -19,6 +20,9 @@ import edu.wpi.first.networktables.GenericEntry;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class DriveWithController extends Command {
@@ -33,6 +37,7 @@ public class DriveWithController extends Command {
   private final Drivetrain m_drivetrain;
 
   private final PIDController rotationOverrideController = new PIDController(.05, 0, .01);
+  private final PoseEstimation mPoseEstimation;
 
 
   public DriveWithController(
@@ -44,7 +49,8 @@ public class DriveWithController extends Command {
       DoubleSupplier speakerAngle,
       BooleanSupplier aimingAtAmp,
       DoubleSupplier ampAngle,
-      Drivetrain drivetrain) {
+      Drivetrain drivetrain,
+      PoseEstimation poseEstimation) {
 
     this.m_xSpeedSupplier = xSpeedSupplier;
     this.m_ySpeedSupplier = ySpeedSupplier;
@@ -54,8 +60,9 @@ public class DriveWithController extends Command {
     this.m_speakerAngle = speakerAngle;
     this.m_aimingAtAmp = aimingAtAmp;
     this.m_ampAngle = ampAngle;
+    
 
-
+    this.mPoseEstimation = poseEstimation;
     this.m_drivetrain = drivetrain;
 
     addRequirements(m_drivetrain);
@@ -69,12 +76,12 @@ public class DriveWithController extends Command {
     // SmartDashboard.putNumber("xbox left y", m_rotSpeedSupplier.getAsDouble());
 
     final int xSign = (int)(Math.abs(m_xSpeedSupplier.getAsDouble())/m_xSpeedSupplier.getAsDouble());
-    final double xSpeed =
+    double xSpeed =
         map(-MathUtil.applyDeadband(Math.abs(m_xSpeedSupplier.getAsDouble()*m_xSpeedSupplier.getAsDouble()), kDriverLeftYDeadband)
             * kTeleopMaxSpeedMetersPerSecond, 0, 1, 0, Swerve.maxSpeed) * -xSign;
 
     final int ySign = (int)(Math.abs(m_ySpeedSupplier.getAsDouble())/m_ySpeedSupplier.getAsDouble());
-    final double ySpeed =
+    double ySpeed =
         map(-MathUtil.applyDeadband(Math.abs(m_ySpeedSupplier.getAsDouble()*m_ySpeedSupplier.getAsDouble()), kDriverLeftXDeadband)
           * kTeleopMaxSpeedMetersPerSecond, 0, 1, 0, Swerve.maxSpeed) * ySign;
 
@@ -94,7 +101,13 @@ public class DriveWithController extends Command {
     final double ampAngle = m_ampAngle.getAsDouble();
 
     if (aimingAtSpeaker) {
-      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, speakerAngle);
+      xSpeed*=.2;
+      ySpeed*=.2;
+      double targetAngle = speakerAngle;
+      double distance = mPoseEstimation.getDistanceToSpeaker();
+      targetAngle+= ySpeed*5*distance; 
+      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, targetAngle);
+      
     }
 
     if (aimingAtAmp) {
