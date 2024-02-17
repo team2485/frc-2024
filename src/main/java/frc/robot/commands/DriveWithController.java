@@ -28,9 +28,11 @@ public class DriveWithController extends Command {
   private final BooleanSupplier m_fieldRelative;
   private final BooleanSupplier m_aimingAtSpeaker;
   private final DoubleSupplier m_speakerAngle;
+  private final BooleanSupplier m_aimingAtAmp;
+  private final DoubleSupplier m_ampAngle;
   private final Drivetrain m_drivetrain;
 
-  private final PIDController rotationOverrideController = new PIDController(.1, 0, .01);
+  private final PIDController rotationOverrideController = new PIDController(.05, 0, .01);
 
 
   public DriveWithController(
@@ -40,6 +42,8 @@ public class DriveWithController extends Command {
       BooleanSupplier fieldRelative,
       BooleanSupplier aimingAtSpeaker,
       DoubleSupplier speakerAngle,
+      BooleanSupplier aimingAtAmp,
+      DoubleSupplier ampAngle,
       Drivetrain drivetrain) {
 
     this.m_xSpeedSupplier = xSpeedSupplier;
@@ -48,6 +52,8 @@ public class DriveWithController extends Command {
     this.m_fieldRelative = fieldRelative;
     this.m_aimingAtSpeaker = aimingAtSpeaker;
     this.m_speakerAngle = speakerAngle;
+    this.m_aimingAtAmp = aimingAtAmp;
+    this.m_ampAngle = ampAngle;
 
 
     this.m_drivetrain = drivetrain;
@@ -83,11 +89,20 @@ public class DriveWithController extends Command {
 
     final double speakerAngle = m_speakerAngle.getAsDouble();
 
+    final boolean aimingAtAmp = m_aimingAtAmp.getAsBoolean();
+
+    final double ampAngle = m_ampAngle.getAsDouble();
+
     if (aimingAtSpeaker) {
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, speakerAngle);
     }
 
-    m_drivetrain.drive(new Translation2d(xSpeed, ySpeed), rot, fieldRelative, false);
+    if (aimingAtAmp) {
+      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, ampAngle);
+    }
+
+
+    m_drivetrain.drive(new Translation2d(xSpeed, ySpeed), rot, fieldRelative, true);
 
     // System.out.println(m_driver.getRightTriggerAxis());
   }

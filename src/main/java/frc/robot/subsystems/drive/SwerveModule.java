@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -56,7 +57,9 @@ public class SwerveModule {
     private GenericEntry current;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
-
+    PIDController angleContoller = new PIDController(1, 0, 0);
+    
+    
     private double absAngle = 0;
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){

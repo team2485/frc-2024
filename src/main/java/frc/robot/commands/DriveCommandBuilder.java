@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +26,7 @@ import static frc.robot.Constants.Swerve.*;
 public class DriveCommandBuilder {
 
     public DriveCommandBuilder(PoseEstimation m_poseEstimation, Drivetrain m_drivetrain) {
+
             AutoBuilder.configureHolonomic(
             m_poseEstimation::getCurrentPose,
             m_poseEstimation::setCurrentPose,
@@ -40,8 +42,8 @@ public class DriveCommandBuilder {
     
         // Since we are using a holonomic drivetrain, the rotation component of this pose
         // represents the goal holonomic rotation
-        Pose2d targetPose = new Pose2d(fieldEndPos.get().getTranslation(), new Rotation2d());
-
+        Pose2d targetPose = fieldEndPos.get();
+        
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
                 kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
@@ -62,7 +64,6 @@ public class DriveCommandBuilder {
         //                                 m_drivetrain // Reference to drive subsystem to set requirements
         //                                 );
         // return pathfindingCommand;
-        m_drivetrain.setRotationOverride(fieldEndPos.get().getRotation());
 
 
         Command pathfindingCommand = AutoBuilder.pathfindToPose(

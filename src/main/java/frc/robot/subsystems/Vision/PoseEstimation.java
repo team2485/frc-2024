@@ -109,8 +109,12 @@ public class PoseEstimation extends SubsystemBase {
 
   public double getAngleToSpeaker() {
     double deltaY = getFieldConstants().getSpeakerPos().getY() - getCurrentPose().getY();
-    double deltaX = (getFieldConstants().getSpeakerPos().getX()+.5) - getCurrentPose().getX();
+    double deltaX = (getFieldConstants().getSpeakerPos().getX()) - getCurrentPose().getX();
     return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
+  }
+
+  public double getAngleToAmp() {
+    return getAngleToPos(getFieldConstants().getAmpPos());
   }
 
   public double getAngleToPos(Pose2d pos) {

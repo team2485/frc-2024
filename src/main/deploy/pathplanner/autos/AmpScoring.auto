@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 14.54726492905197,
+      "y": 6.745441850370149
+    },
+    "rotation": 90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreInAmp"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

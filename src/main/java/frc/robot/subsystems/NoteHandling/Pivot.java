@@ -100,7 +100,7 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
 
-    armPosition.setDouble(MathUtil.clamp(InterpolatingTable.get(distance.getAsDouble()).pivotAngleRotations, 0, .25));
+    armPosition.setDouble(getError());
 
     switch (m_PivotRequestedState) {
       case StateDown:

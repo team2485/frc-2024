@@ -9,6 +9,7 @@ import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
 import frc.robot.subsystems.NoteHandling.Pivot;
 import frc.robot.subsystems.NoteHandling.Shooter;
+import frc.robot.subsystems.NoteHandling.GeneralRoller.GeneralRollerStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,13 +19,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class AutoCommandBuilder {
   /** Example static factory for an autonomous command. */
   public static final Command Fire(Drivetrain drivetrain, PoseEstimation poseEstimation, Intake intake, Shooter shooter, Pivot pivot, GeneralRoller feeder, GeneralRoller indexer) {
     Command command = NoteHandlingCommandBuilder.autoShooterSpeaker(pivot, shooter, feeder, indexer)
-                      .alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, poseEstimation::getAngleToSpeaker, drivetrain))
-                      .withTimeout(2)
+                      .alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, poseEstimation::getAngleToSpeaker, ()-> false, poseEstimation::getAngleToAmp, drivetrain))
+                      .until(()->feeder.getCurrentState() == GeneralRollerStates.StateForwardFast)
+                      .andThen(new WaitCommand(.5))
                       .andThen(NoteHandlingCommandBuilder.autoShooterOff(pivot, shooter, feeder, indexer, intake));
     return command;
   }
@@ -33,18 +36,22 @@ public class AutoCommandBuilder {
     Command command = new SequentialCommandGroup(
       Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
       NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
-      driveToNote(drivetrain, poseEstimation, 0),
+      driveToNote(drivetrain, poseEstimation, 0, -50),
       Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
-      driveToNote(drivetrain, poseEstimation, 1),
-      NoteHandlingCommandBuilder.intakeOff(intake, indexer, feeder),
-      Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer));
+      NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
+      driveToNote(drivetrain, poseEstimation, 1, 140),
+      Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
+      NoteHandlingCommandBuilder.intakeOff(intake, indexer, feeder)
+
+      );
     return command;
   }
 
-  public static final Command driveToNote(Drivetrain drivetrain, PoseEstimation poseEstimation, int index) {
+  public static final Command driveToNote(Drivetrain drivetrain, PoseEstimation poseEstimation, int index, double degrees) {
       Pose2d pos = poseEstimation.getFieldConstants().getRingPositions()[index];
+      Rotation2d rotation = Rotation2d.fromDegrees(degrees);
       Command command = new SequentialCommandGroup(
-      DriveCommandBuilder.driveToPosition(drivetrain, poseEstimation, ()->new Pose2d(pos.getTranslation(), Rotation2d.fromDegrees(90))).until(()->poseEstimation.dist(poseEstimation.getCurrentPose(), pos)<.25),
+      DriveCommandBuilder.driveToPosition(drivetrain, poseEstimation, ()->new Pose2d(pos.getTranslation(), rotation)).until(()->poseEstimation.dist(poseEstimation.getCurrentPose(), pos)<.25),
       new InstantCommand(()->drivetrain.drive(new Translation2d(0, 0), 0, false, false)));
     return command;
   } 

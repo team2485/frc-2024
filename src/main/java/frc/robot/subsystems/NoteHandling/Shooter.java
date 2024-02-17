@@ -111,7 +111,7 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 2;
             break;
           case StateSpeaker:
-            desiredVelocity = 80;
+            desiredVelocity = 70;
             desiredVoltage = 0;
             break;
         }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
+
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +32,7 @@ import org.opencv.core.Mat;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import frc.robot.commands.Interpolation.ShotParameter;
@@ -202,7 +205,7 @@ public final class Constants {
     // Max speed teleoperated
     public static final double kTeleopMaxSpeedMetersPerSecond = 3; // meters per second
     public static final double kTeleopMaxAngularSpeedRadiansPerSecond =
-        1.5 / kTurningRadiusMeters; // radians per second
+        4; // radians per second
 
     public static final double kDriveTolerance = .1;
 
@@ -225,11 +228,11 @@ public final class Constants {
   public static final class RedFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
     public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.2, Rotation2d.fromDegrees(90)); }
+    public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.5, new Rotation2d()); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
             new Pose2d(13.5, 7, new Rotation2d()),
-            new Pose2d(13.5, 5.4, new Rotation2d()),
+            new Pose2d(13.5, 5, new Rotation2d()),
         };
     }
   }
@@ -346,12 +349,13 @@ public final class Constants {
       new TreeMap<>(
         Map.ofEntries(
           Map.entry(1.11, new ShotParameter(80, 0)),
-          Map.entry(1.45, new ShotParameter(80, 0.03)),
-          Map.entry(1.73, new ShotParameter(80, 0.046)),
-          Map.entry(2.0, new ShotParameter(80, 0.05)),
-          Map.entry(2.3, new ShotParameter(80, 0.06)),
-          Map.entry(2.6, new ShotParameter(80, 0.065)),
-          Map.entry(2.9, new ShotParameter(80, 0.07))));
+          Map.entry(1.41, new ShotParameter(80, 0.02)),
+          Map.entry(1.71, new ShotParameter(80, 0.035)),
+          Map.entry(2.01, new ShotParameter(80, 0.047)),
+          Map.entry(2.31, new ShotParameter(80, 0.052)),
+          Map.entry(2.61, new ShotParameter(80, 0.062)),
+          Map.entry(2.91, new ShotParameter(80, 0.065))
+          ));
 
     public static final int kShooterLeftPort = 17;
     public static final int kShooterRightPort = 18;
@@ -366,7 +370,7 @@ public final class Constants {
     public static final double kShooterCruiseVelocity = 80;
     public static final double kShooterAcceleration = 160;
     public static final double kShooterJerk = 1600; 
-    public static final double kShooterErrorTolerance = 5;
+    public static final double kShooterErrorTolerance = 2;
     public static final boolean kShooterClockwisePositive = false;
     public static final int kCurrentLimit = 80;
   }
@@ -375,7 +379,7 @@ public final class Constants {
     public static final int kPivotPort = 19;
     public static final double kSPivot = .91;
     public static final double kVPivot = 1.35;
-    public static final double kPPivot = 32;
+    public static final double kPPivot = 40;
     public static final double kIPivot = 0;
     public static final double kDPivot = .01;
     public static final double kPivotCruiseVelocity = Math.PI*4;
@@ -424,7 +428,12 @@ public final class Constants {
     public static final double wheelCircumference = chosenModule.wheelCircumference;
 
     public static final ReplanningConfig kReplanningConfig = new ReplanningConfig();
-    public static final HolonomicPathFollowerConfig kPathFollowingConfig = new HolonomicPathFollowerConfig(DriveConstants.kTeleopMaxSpeedMetersPerSecond, driveRadius, kReplanningConfig);
+    public static final HolonomicPathFollowerConfig kPathFollowingConfig = new HolonomicPathFollowerConfig(// HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5, 0, 0), // Rotation PID constants
+                        kTeleopMaxAngularSpeedRadiansPerSecond, // Max module speed, in m/s
+                        driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig());
 
     /*
      * Swerve Kinematics
@@ -506,7 +515,7 @@ public final class Constants {
       public static final int driveMotorID = 1;
       public static final int angleMotorID = 2;
       public static final int canCoderID = 10;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.372314453125);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.3642578125);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }
@@ -516,7 +525,7 @@ public final class Constants {
       public static final int driveMotorID = 3;
       public static final int angleMotorID = 4;
       public static final int canCoderID = 11;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.409912109375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.428466796875);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -536,7 +545,7 @@ public final class Constants {
       public static final int driveMotorID = 7;
       public static final int angleMotorID = 8;
       public static final int canCoderID = 13;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.191162109375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.18798828125);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }

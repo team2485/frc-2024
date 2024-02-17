@@ -39,9 +39,6 @@ public class Drivetrain extends SubsystemBase {
 
     private MedianFilter filter = new MedianFilter(5);
 
-    private final PIDController rotationOverrideController = new PIDController(.1, 0, .01);
-    private Rotation2d rotationOverride = new Rotation2d();
-
     public Drivetrain() {
         //gyro.configFactoryDefault();
         absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroOffset", 0).getEntry();
@@ -106,21 +103,17 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    public void setRotationOverride(Rotation2d rotationOverride) {
-        this.rotationOverride = rotationOverride;
-    }
+    // public void driveAuto(ChassisSpeeds speeds) {
+    //     double rot = -rotationOverrideController.calculate(getYawAbsolute().getDegrees() % 180, rotationOverride.getDegrees());
+    //     if (speeds.vxMetersPerSecond < .5 && speeds.vyMetersPerSecond < .5)
+    //         rot = 0;
+    //     speeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getYawAbsolute());
+    //     driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),rot, true, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
+    // }
 
     public void driveAuto(ChassisSpeeds speeds) {
-        double rot = -rotationOverrideController.calculate(getYawAbsolute().getDegrees() % 180, rotationOverride.getDegrees());
-        if (speeds.vxMetersPerSecond < .5 && speeds.vyMetersPerSecond < .5)
-            rot = 0;
-        speeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getYawAbsolute());
-        driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),rot, true, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
+        driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),speeds.omegaRadiansPerSecond, false, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
     }
-
-    // public void driveAuto(ChassisSpeeds speeds) {
-    //     driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),-speeds.omegaRadiansPerSecond, true, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
-    // }
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
@@ -182,6 +175,10 @@ public class Drivetrain extends SubsystemBase {
 
     public Rotation2d getYawAbsolute() {
         return Rotation2d.fromDegrees(absoluteGyroPosition).minus(getYaw()).times(-1);
+    }
+
+    public Rotation2d getYawMod() {
+        return Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180);
     }
 
     public void resetToAbsolute(){

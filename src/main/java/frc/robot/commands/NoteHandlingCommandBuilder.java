@@ -5,6 +5,10 @@ import static frc.robot.Constants.DriveConstants.kRotationTolerance;
 
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.math.geometry.Pose2d;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
@@ -124,11 +128,8 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
-    public static Command autoAmp(Drivetrain drivetrain, Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PoseEstimation poseEstimation, Supplier<Pose2d> ampPos) {
+    public static Command autoAmp(Drivetrain drivetrain, Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PoseEstimation poseEstimation) {
         Command command = new SequentialCommandGroup(
-            DriveCommandBuilder.driveToPosition(drivetrain, poseEstimation, ampPos)
-                .until(()->poseEstimation.dist(poseEstimation.getCurrentPose(), ampPos.get()) < kDriveTolerance
-                           && Math.abs(drivetrain.getYawAbsolute().getDegrees()-ampPos.get().getRotation().getDegrees()) < kRotationTolerance),
             new ParallelCommandGroup(
                 new RunCommand(()->pivot.requestState(PivotStates.StateAmp), pivot),
                 new RunCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter)
@@ -137,4 +138,19 @@ public class NoteHandlingCommandBuilder {
         );
         return command;
     }
+    
+
+    // public static Command autoAmp(Drivetrain drivetrain, Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PoseEstimation poseEstimation, Supplier<Pose2d> ampPos) {
+    //     Command command = new SequentialCommandGroup(
+    //         DriveCommandBuilder.driveToPosition(drivetrain, poseEstimation, ampPos)
+    //             .until(()->poseEstimation.dist(poseEstimation.getCurrentPose(), ampPos.get()) < kDriveTolerance
+    //                        && Math.abs(drivetrain.getYawAbsolute().getDegrees()-ampPos.get().getRotation().getDegrees()) < kRotationTolerance),
+    //         new ParallelCommandGroup(
+    //             new RunCommand(()->pivot.requestState(PivotStates.StateAmp), pivot),
+    //             new RunCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter)
+    //         ).until(()->pivot.getCurrentState() == PivotStates.StateAmp),
+    //         runFeeder(feeder, indexer)
+    //     );
+    //     return command;
+    // }
 }
