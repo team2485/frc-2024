@@ -37,6 +37,7 @@ public class DriveWithController extends Command {
   private final Drivetrain m_drivetrain;
 
   private final PIDController rotationOverrideController = new PIDController(.05, 0, .01);
+  private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
 
 
@@ -111,7 +112,10 @@ public class DriveWithController extends Command {
     }
 
     if (aimingAtAmp) {
-      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, ampAngle);
+      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, 90);
+      xSpeed = xOverrideController.calculate(mPoseEstimation.getCurrentPose().getX(), mPoseEstimation.getFieldConstants().getAmpPos().getX());
+    
+    
     }
 
 
