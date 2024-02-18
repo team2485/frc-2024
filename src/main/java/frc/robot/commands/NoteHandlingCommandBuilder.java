@@ -38,19 +38,33 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
-    public static Command outtake(Intake intake, GeneralRoller indexer) {
-        Command command = new ParallelCommandGroup(
-                                new InstantCommand(()->intake.requestState(IntakeStates.StateOuttake), intake),
-                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateReverse), indexer)
+
+    // public static Command outtake(Intake intake, GeneralRoller indexer) {
+    //     Command command = new ParallelCommandGroup(
+    //                             new InstantCommand(()->intake.requestState(IntakeStates.StateOuttake), intake),
+    //                             new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateReverse), indexer)
+    //                             );
+    //     return command;
+    // }
+
+    public static Command outtake(Intake intake, GeneralRoller indexer, GeneralRoller feeder, Pivot pivot) {
+        Command command = new SequentialCommandGroup(
+                                new RunCommand(()->pivot.requestState(PivotStates.StateOuttake)).until(()->pivot.getCurrentState() == PivotStates.StateOuttake),
+                                new ParallelCommandGroup(
+                                    new InstantCommand(()->intake.requestState(IntakeStates.StateOuttake), intake),
+                                    new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateReverse), indexer),
+                                    new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
+                                )
                                 );
         return command;
     }
     
-    public static Command intakeOff(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
+    public static Command intakeOff(Intake intake, GeneralRoller indexer, GeneralRoller feeder, Pivot pivot) {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
-                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
+                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
+                                new InstantCommand(()->pivot.requestState(PivotStates.StateDown), pivot)
                                 );
         return command;
     }

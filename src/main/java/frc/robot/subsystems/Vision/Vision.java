@@ -55,7 +55,7 @@ public class Vision implements Runnable {
             layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
             if (m_camera != null) {
-                photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_RIO, m_camera,
+                photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_camera,
                         kRobotToCamera); // MULTI_TAG_PNP uses all cameras in view for positioning
             }
         } catch (Exception e) {
@@ -71,12 +71,12 @@ public class Vision implements Runnable {
         if (m_photonPoseEstimator != null && m_camera != null) { // environment and camera must be initialized properly
             var photonResults = m_camera.getLatestResult(); // continuously get latest camera reading
             if (photonResults.hasTargets()
-                    && (photonResults.targets.size() >= 1 && photonResults.targets.get(0).getPoseAmbiguity()<.2)) { // need accurate readings       
+                    && (photonResults.targets.size() > 1 || (photonResults.targets.get(0).getPoseAmbiguity()<.2 && photonResults.targets.get(0).getPoseAmbiguity() > 0))) { // need accurate readings       
                 m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
                     var estimatedPose = estimatedRobotPose.estimatedPose;
 
                     //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
-                    cameraExists.setDouble(estimatedPose.getX());
+                    cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
 
                     if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
                             && estimatedPose.getY() > 0.0

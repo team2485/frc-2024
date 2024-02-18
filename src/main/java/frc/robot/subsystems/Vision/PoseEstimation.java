@@ -64,7 +64,7 @@ public class PoseEstimation extends SubsystemBase {
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
     var visionPose = photonEstimator.grabLatestEstimatedPose();
-    if (visionPose != null && visionPose.targetsUsed.get(0).getPoseAmbiguity() > 0) {
+    if (visionPose != null) {
       var pose2d = visionPose.estimatedPose.toPose2d();
    
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);

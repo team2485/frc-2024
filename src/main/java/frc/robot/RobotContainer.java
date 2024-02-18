@@ -114,18 +114,18 @@ public class RobotContainer {
                 .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
     m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder))
-                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder));
+                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot));
 
-    m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer))
-                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder));
+    m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer, m_feeder, m_pivot))
+                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot));
     // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
 
     m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
     m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
 
-    m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
+    // m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
 
-    m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
+    // m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
     // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder))
     //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder));
@@ -137,8 +137,8 @@ public class RobotContainer {
     m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    // m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
-    //               .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
+                  .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
                             .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));

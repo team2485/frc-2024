@@ -29,7 +29,8 @@ public class Pivot extends SubsystemBase {
     StateDown,
     StateAmp,
     StateMovingToRequestedState,
-    StateShooter
+    StateShooter,
+    StateOuttake
   }
 
   public static PivotStates m_PivotCurrentState;
@@ -109,10 +110,12 @@ public class Pivot extends SubsystemBase {
       case StateAmp:
         desiredPosition = .25;
         break;
+      case StateOuttake:
+        desiredPosition = .06;
+        break;
       case StateShooter:
         desiredPosition = MathUtil.clamp(InterpolatingTable.get(distance.getAsDouble()).pivotAngleRotations, 0, .25);
         break;
-      
     }
  
     runControlLoop();

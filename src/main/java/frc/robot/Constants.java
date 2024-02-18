@@ -352,7 +352,7 @@ public final class Constants {
           Map.entry(1.41, new ShotParameter(80, 0.02)),
           Map.entry(1.71, new ShotParameter(80, 0.035)),
           Map.entry(2.01, new ShotParameter(80, 0.047)),
-          Map.entry(2.31, new ShotParameter(80, 0.052)),
+          Map.entry(2.31, new ShotParameter(80, 0.05)),
           Map.entry(2.61, new ShotParameter(80, 0.062)),
           Map.entry(2.91, new ShotParameter(80, 0.065))
           ));

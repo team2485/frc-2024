@@ -102,19 +102,19 @@ public class DriveWithController extends Command {
     final double ampAngle = m_ampAngle.getAsDouble();
 
     if (aimingAtSpeaker) {
-      xSpeed*=.2;
-      ySpeed*=.2;
-      double targetAngle = speakerAngle;
-      double distance = mPoseEstimation.getDistanceToSpeaker();
-      targetAngle+= ySpeed*5*distance; 
-      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, targetAngle);
+      // xSpeed*=.2;
+      // ySpeed*=.2;
+      // double targetAngle = speakerAngle;
+      // double distance = mPoseEstimation.getDistanceToSpeaker();
+      // targetAngle+= ySpeed*5*distance; 
+      rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, speakerAngle);
       
     }
 
     if (aimingAtAmp) {
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, 90);
       xSpeed = xOverrideController.calculate(mPoseEstimation.getCurrentPose().getX(), mPoseEstimation.getFieldConstants().getAmpPos().getX());
-    
+      ySpeed *= .4;
     
     }
 

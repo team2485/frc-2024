@@ -41,7 +41,7 @@ public class AutoCommandBuilder {
       NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
       driveToNote(drivetrain, poseEstimation, 1, 140),
       Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
-      NoteHandlingCommandBuilder.intakeOff(intake, indexer, feeder)
+      NoteHandlingCommandBuilder.intakeOff(intake, indexer, feeder, pivot)
 
       );
     return command;
