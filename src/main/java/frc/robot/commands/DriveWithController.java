@@ -23,6 +23,7 @@ import java.util.function.DoubleSupplier;
 
 import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class DriveWithController extends Command {
@@ -65,6 +66,8 @@ public class DriveWithController extends Command {
 
     this.mPoseEstimation = poseEstimation;
     this.m_drivetrain = drivetrain;
+
+    rotationOverrideController.enableContinuousInput(-180, 180);
 
     addRequirements(m_drivetrain);
   }
@@ -114,6 +117,8 @@ public class DriveWithController extends Command {
     if (aimingAtAmp) {
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, 90);
       xSpeed = xOverrideController.calculate(mPoseEstimation.getCurrentPose().getX(), mPoseEstimation.getFieldConstants().getAmpPos().getX());
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+        xSpeed *= -1;
       ySpeed *= .4;
     
     }

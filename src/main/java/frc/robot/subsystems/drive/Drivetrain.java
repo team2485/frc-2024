@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.PIDController;
@@ -41,10 +42,11 @@ public class Drivetrain extends SubsystemBase {
 
     public Drivetrain() {
         //gyro.configFactoryDefault();
-        absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroOffset", 0).getEntry();
+        absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroPos", 0).getEntry();
         currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroOffset", 0).getEntry();
         gyro.reset();
-        absoluteGyroPosition = 0;
+        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+            absoluteGyroPosition = 180;
 
         // mSwerveMods = new SwerveModule[] {
         //     new SwerveModule(0, Constants.Swerve.Mod0.constants),
