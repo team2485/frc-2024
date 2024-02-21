@@ -137,7 +137,7 @@ public class RobotContainer {
     m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter))
+    m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))

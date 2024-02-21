@@ -96,8 +96,12 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
-    public static Command shooterSpeaker(Shooter shooter){
-        Command command = new InstantCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter);
+    public static Command shooterSpeaker(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
+        Command command = new SequentialCommandGroup(
+            new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter).until(()->shooter.getCurrentState() ==ShooterStates.StateSpeaker),
+            runFeeder(feeder, indexer)
+            );
+
         return command;
     }
 
