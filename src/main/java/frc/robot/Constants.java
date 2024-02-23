@@ -407,7 +407,7 @@ public final class Constants {
     public static final double kClimberErrorTolerance = .25;
     public static final double kSensorToMechanismGearRatio = 100;
     public static final int kCurrentLimit = 60;
-    public static final int kCurrentLimitThreshold = 30;
+    public static final int kCurrentLimitThreshold = 6;
   }
 
   public static final class IndexerConstants {
@@ -429,7 +429,7 @@ public final class Constants {
 
     public static final ReplanningConfig kReplanningConfig = new ReplanningConfig();
     public static final HolonomicPathFollowerConfig kPathFollowingConfig = new HolonomicPathFollowerConfig(// HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(10, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5, 0, 0), // Rotation PID constants
                         kTeleopMaxAngularSpeedRadiansPerSecond, // Max module speed, in m/s
                         driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.

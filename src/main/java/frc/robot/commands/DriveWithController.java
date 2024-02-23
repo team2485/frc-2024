@@ -111,7 +111,6 @@ public class DriveWithController extends Command {
       // double distance = mPoseEstimation.getDistanceToSpeaker();
       // targetAngle+= ySpeed*5*distance; 
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawAbsolute().getDegrees() % 180, speakerAngle);
-      
     }
 
     if (aimingAtAmp) {

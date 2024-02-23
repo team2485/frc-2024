@@ -87,6 +87,14 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
+    public static Command runFeederIsh(GeneralRoller feeder, GeneralRoller indexer) {
+        Command command = new ParallelCommandGroup(
+                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForward), feeder),
+                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)                 
+                                );
+        return command;
+    }
+
 
     public static Command feederOff(GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
@@ -137,9 +145,20 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
+
+
     public static Command shoot(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new SequentialCommandGroup(
                         new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter).until(()->shooter.getCurrentState() == ShooterStates.StateSpeaker),
+                        runFeeder(feeder, indexer)
+                        );
+
+        return command;
+    }
+
+    public static Command shootTrap(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
+        Command command = new SequentialCommandGroup(
+                        new RunCommand(()->shooter.requestState(ShooterStates.StateTrap), shooter).until(()->shooter.getCurrentState() == ShooterStates.StateSpeaker),
                         runFeeder(feeder, indexer)
                         );
 
@@ -152,7 +171,7 @@ public class NoteHandlingCommandBuilder {
                 new RunCommand(()->pivot.requestState(PivotStates.StateAmp), pivot),
                 new RunCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter)
             ).until(()->pivot.getCurrentState() == PivotStates.StateAmp),
-            runFeeder(feeder, indexer)
+            runFeederIsh(feeder, indexer)
         );
         return command;
     }

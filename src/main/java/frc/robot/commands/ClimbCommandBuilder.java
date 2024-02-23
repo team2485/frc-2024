@@ -29,7 +29,9 @@ public class ClimbCommandBuilder {
 
         public static Command climb(Climber climber) {
             Command command = new SequentialCommandGroup(
-                            new RunCommand(()->climber.requestState(ClimberStates.StateDownVoltage), climber)
+                            new RunCommand(()->climber.requestState(ClimberStates.StateDownVoltage), climber).until(()->climber.getCurrentState() == ClimberStates.StateDownVoltage),
+                            new InstantCommand(()->climber.zeroClimber(), climber),
+                            new InstantCommand(()->climber.requestState(ClimberStates.StateDownPosition), climber)
             );   
             return command;
         }

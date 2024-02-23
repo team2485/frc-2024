@@ -47,8 +47,11 @@ public class Climber extends SubsystemBase {
   private double desiredPosition = 0;
   private double desiredVoltage = 0;
 
+  private boolean leftSet = false;
+  private boolean rightSet = false;
+
   public Climber() {
-    climberPosition = Shuffleboard.getTab("Swerve").add("ClimberPos", 0).getEntry();
+    climberPosition = Shuffleboard.getTab("Swerve").add("Current", 0).getEntry();
     // Misc setup goes here
     var talonFXConfigs = new TalonFXConfiguration();
     // These will be derived experimentally but in case you are wondering
@@ -108,7 +111,7 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    climberPosition.setDouble(getPositionLeft());
+    climberPosition.setDouble(m_talonLeft.getTorqueCurrent().getValueAsDouble());
 
     switch (m_ClimberRequestedState) {
       case StateUp:
@@ -117,7 +120,7 @@ public class Climber extends SubsystemBase {
         break;
       case StateDownVoltage:
         desiredPosition = 0;
-        desiredVoltage = 0;
+        desiredVoltage = -3;
         break;
       case StateDownPosition:
         desiredPosition = -.5;
@@ -135,10 +138,10 @@ public class Climber extends SubsystemBase {
 
   public void runControlLoop() {    
     if (desiredVoltage != 0) {
-      if (getErrorLeft() != 0)
         m_talonLeft.setVoltage(desiredVoltage);
-      if (getErrorRight() != 0)
+        if (leftSet) m_talonLeft.setVoltage(0);
         m_talonRight.setVoltage(desiredVoltage);
+        if (rightSet) m_talonRight.setVoltage(0);
     }
     else {
       m_talonLeft.setControl(request.withPosition(desiredPosition));
@@ -150,28 +153,35 @@ public class Climber extends SubsystemBase {
     return m_talonLeft.getPosition().getValue();
   }
 
+
   public double getErrorLeft() {
     if (getRequestedState() != ClimberStates.StateDownVoltage)
       return Math.abs(getPositionLeft() - desiredPosition);
     else {
-      if (m_talonLeft.getTorqueCurrent().getValueAsDouble() < kCurrentLimitThreshold) 
+      if ((Math.abs(m_talonLeft.getTorqueCurrent().getValueAsDouble()) < kCurrentLimitThreshold && !leftSet) || getPositionLeft() > 1.9) 
         return kClimberErrorTolerance + 1;
-      else return 0;
+      else {
+        leftSet = true;
+        return 0;
+      }
     }
   }
 
   private double getPositionRight() {
-    if (getRequestedState() != ClimberStates.StateDownVoltage)
-      return Math.abs(getPositionLeft() - desiredPosition);
-    else {
-      if (m_talonLeft.getTorqueCurrent().getValueAsDouble() < kCurrentLimitThreshold) 
-        return kClimberErrorTolerance + 1;
-      else return 0;
-    }
+    return m_talonRight.getPosition().getValue();
   }
 
   public double getErrorRight() {
-    return Math.abs(getPositionRight() - desiredPosition);
+    if (getRequestedState() != ClimberStates.StateDownVoltage)
+      return Math.abs(getPositionRight() - desiredPosition);
+    else {
+      if ((Math.abs(m_talonRight.getTorqueCurrent().getValueAsDouble()) < kCurrentLimitThreshold && !rightSet) || getPositionRight() > 1.9) 
+        return kClimberErrorTolerance + 1;
+      else {
+        rightSet = true;
+        return 0;
+      }
+    }
   }
 
   public void zeroClimber() {

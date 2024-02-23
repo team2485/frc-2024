@@ -110,8 +110,8 @@ public class RobotContainer {
           m_poseEstimation::getAngleToAmp,
           m_drivetrain, m_poseEstimation));
 
-    m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
-                .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
+    //m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
+    //            .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
     m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder))
                            .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot));
@@ -122,10 +122,6 @@ public class RobotContainer {
 
     m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
     m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
-
-    // m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
-
-    // m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
     // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder))
     //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder));
@@ -139,6 +135,14 @@ public class RobotContainer {
 
     m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+
+    m_operator.x().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
+                  .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+
+
+    m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
+
+    m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
     m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
                             .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));

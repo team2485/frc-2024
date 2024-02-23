@@ -27,6 +27,7 @@ public class Shooter extends SubsystemBase {
         StateSubwoofer,
         StatePodium,
         StateAmp,
+        StateTrap
     }
 
     public static ShooterStates m_shooterRequestedState;
@@ -112,6 +113,10 @@ public class Shooter extends SubsystemBase {
             break;
           case StateSpeaker:
             desiredVelocity = 70;
+            desiredVoltage = 0;
+            break;
+          case StateAmp:
+            desiredVelocity = 47.5;
             desiredVoltage = 0;
             break;
         }
