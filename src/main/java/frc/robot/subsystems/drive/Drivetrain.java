@@ -43,7 +43,7 @@ public class Drivetrain extends SubsystemBase {
     public Drivetrain() {
         //gyro.configFactoryDefault();
         absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroPos", 0).getEntry();
-        currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroOffset", 0).getEntry();
+        currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroPos", 0).getEntry();
         gyro.reset();
         if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
             absoluteGyroPosition = 180;
@@ -180,8 +180,24 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Rotation2d getYawMod() {
-        return Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180);
+        return Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 360);
     }
+
+    public void setCustomYawAbsolute(double yawAbsolute) {
+        absoluteGyroPosition = yawAbsolute;
+    }
+
+    public void setCustomYaw(double yaw) {
+        gyro.setYaw(yaw);
+    }
+
+    // public double continiousLoop(double value, double min, double max) {
+    //     double mapValue = value / 360; 
+    //     // value of 360 is 1 time 
+    //     if (value < min)
+    //         return max - (min - value);
+    //     return value;
+    // }
 
     public void resetToAbsolute(){
         for(SwerveModule mod : mSwerveMods){

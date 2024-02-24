@@ -71,7 +71,7 @@ public class Vision implements Runnable {
         if (m_photonPoseEstimator != null && m_camera != null) { // environment and camera must be initialized properly
             var photonResults = m_camera.getLatestResult(); // continuously get latest camera reading
             if (photonResults.hasTargets()
-                    && (photonResults.targets.size() > 1 || (photonResults.targets.get(0).getPoseAmbiguity()<.2 && photonResults.targets.get(0).getPoseAmbiguity() > 0))) { // need accurate readings       
+                    && (photonResults.targets.size() > 1 || (photonResults.targets.get(0).getPoseAmbiguity()<.15 && photonResults.targets.get(0).getPoseAmbiguity() > 0))) { // need accurate readings       
                 m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
                     var estimatedPose = estimatedRobotPose.estimatedPose;
 

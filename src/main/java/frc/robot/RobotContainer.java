@@ -79,6 +79,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Fire", AutoCommandBuilder.Fire(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
     NamedCommands.registerCommand("Intake", NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder));
     NamedCommands.registerCommand("ScoreInAmp", NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation));
+    NamedCommands.registerCommand("SetupGyro", NoteHandlingCommandBuilder.autoSetGyro(m_drivetrain, m_poseEstimation));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
 

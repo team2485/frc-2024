@@ -5,6 +5,7 @@ import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRa
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -15,10 +16,14 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
@@ -26,16 +31,18 @@ import static frc.robot.Constants.Swerve.*;
 
 public class DriveCommandBuilder {
 
+    static GenericEntry angleGetTest;
+
     public DriveCommandBuilder(PoseEstimation m_poseEstimation, Drivetrain m_drivetrain) {
 
-            AutoBuilder.configureHolonomic(
-            m_poseEstimation::getCurrentPose,
-            m_poseEstimation::setCurrentPose,
-            m_drivetrain::getChassisSpeeds,
-            m_drivetrain::driveAuto, 
-            kPathFollowingConfig, 
-            () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 
-            m_drivetrain);
+        AutoBuilder.configureHolonomic(
+        m_poseEstimation::getCurrentPose,
+        m_poseEstimation::setCurrentPose,
+        m_drivetrain::getChassisSpeeds,
+        m_drivetrain::driveAuto, 
+        kPathFollowingConfig, 
+        () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 
+        m_drivetrain);
     }
 
     public static Command driveToPosition(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation, Supplier<Pose2d> fieldEndPos) {

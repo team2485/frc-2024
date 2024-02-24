@@ -10,12 +10,15 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
@@ -29,6 +32,7 @@ import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 
 public class NoteHandlingCommandBuilder {
+
     public static Command intake(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
@@ -134,6 +138,12 @@ public class NoteHandlingCommandBuilder {
                             )
                         );
         return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    public static Command autoSetGyro(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation) {
+        // if (angle > 90) angle = 180 - angle;
+        // if (angle < -90) angle = -180 - angle; 
+        return new SequentialCommandGroup(new WaitCommand(.015), new InstantCommand(()-> m_drivetrain.setCustomYaw(m_poseEstimation.getAngleFromTags())));
     }
 
     public static Command autoShooterOff(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, Intake intake) {
