@@ -37,12 +37,12 @@ public class PoseEstimation extends SubsystemBase {
 
   private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
   private boolean sawTag = false;
-  private double angleToTags = 19;
+  private double angleToTags = 0;
 
   GenericEntry visionTest;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition) {
-    visionTest = Shuffleboard.getTab("Swerve").add("Angle", 0).getEntry();
+    visionTest = Shuffleboard.getTab("Swerve").add("DistanceToTag", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
 
@@ -78,7 +78,7 @@ public class PoseEstimation extends SubsystemBase {
 
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
-    visionTest.setDouble(angleToTags);
+    visionTest.setDouble(getDistanceToSpeaker());
   }
 
   private String getFormattedPose() {

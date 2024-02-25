@@ -429,7 +429,7 @@ public final class Constants {
 
     public static final ReplanningConfig kReplanningConfig = new ReplanningConfig();
     public static final HolonomicPathFollowerConfig kPathFollowingConfig = new HolonomicPathFollowerConfig(// HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(10, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(10, 0.0, 0), // Translation PID constants
                         new PIDConstants(5, 0, 0), // Rotation PID constants
                         kTeleopMaxAngularSpeedRadiansPerSecond, // Max module speed, in m/s
                         driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.

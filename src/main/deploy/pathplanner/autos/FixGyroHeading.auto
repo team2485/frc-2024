@@ -10,12 +10,6 @@
           "data": {
             "name": "SetupGyro"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Fire"
-          }
         }
       ]
     }

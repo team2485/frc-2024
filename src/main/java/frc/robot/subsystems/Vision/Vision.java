@@ -28,6 +28,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.VisionConstants.*;
 
@@ -46,6 +47,7 @@ public class Vision implements Runnable {
         PhotonPoseEstimator photonPoseEstimator = null;
 
         cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
+    
 
         this.m_camera = new PhotonCamera(kCameraName);
 
@@ -75,6 +77,7 @@ public class Vision implements Runnable {
                 m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
                     var estimatedPose = estimatedRobotPose.estimatedPose;
 
+                    SmartDashboard.putBoolean("Camera Positioned For Auto", true);
                     //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
                     cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
 
@@ -85,6 +88,7 @@ public class Vision implements Runnable {
                     }
                 });
             }
+            else SmartDashboard.putBoolean("Camera Positioned For Auto", false);
         }
     }
 

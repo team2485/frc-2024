@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 15.800324439450591,
+      "y": 4.567226252854788
+    },
+    "rotation": 57.7243556854223
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -12,9 +18,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Fire"
+            "pathName": "2NoteRightPath0"
           }
         }
       ]
