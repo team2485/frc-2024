@@ -4,6 +4,8 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.proto.Wpimath;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
@@ -50,8 +52,15 @@ public class Climber extends SubsystemBase {
   private boolean leftSet = false;
   private boolean rightSet = false;
 
+  Debouncer m_climberLeftDebouncer;
+  Debouncer m_climberRightDebouncer;
+
   public Climber() {
     climberPosition = Shuffleboard.getTab("Swerve").add("Current", 0).getEntry();
+
+    m_climberLeftDebouncer = new Debouncer(1, DebounceType.kBoth);
+    m_climberRightDebouncer = new Debouncer(1, DebounceType.kBoth);
+
     // Misc setup goes here
     var talonFXConfigs = new TalonFXConfiguration();
     // These will be derived experimentally but in case you are wondering
@@ -64,7 +73,7 @@ public class Climber extends SubsystemBase {
     var slot0Configs = talonFXConfigs.Slot0;
     slot0Configs.kS = kSClimberLeft;
     slot0Configs.kV = kVClimber;
-    slot0Configs.kP = kPClimber;
+    slot0Configs.kP = kPClimberLeft;
     slot0Configs.kI = kIClimber;
     slot0Configs.kD = kDClimber;
 
@@ -91,6 +100,7 @@ public class Climber extends SubsystemBase {
     m_talonLeft.getConfigurator().apply(talonFXConfigs);
 
     slot0Configs.kS = kSClimberRight;
+    slot0Configs.kP = kPClimberRight;
 
     if (kClimberClockwisePositive) {
       motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -120,10 +130,10 @@ public class Climber extends SubsystemBase {
         break;
       case StateDownVoltage:
         desiredPosition = 0;
-        desiredVoltage = -3;
+        desiredVoltage = -5;
         break;
       case StateDownPosition:
-        desiredPosition = -.5;
+        desiredPosition = -1;
         desiredVoltage = 0;
         break;
     }
@@ -158,7 +168,7 @@ public class Climber extends SubsystemBase {
     if (getRequestedState() != ClimberStates.StateDownVoltage)
       return Math.abs(getPositionLeft() - desiredPosition);
     else {
-      if ((Math.abs(m_talonLeft.getTorqueCurrent().getValueAsDouble()) < kCurrentLimitThreshold && !leftSet) || getPositionLeft() > 1.9) 
+      if (m_climberLeftDebouncer.calculate(Math.abs(m_talonLeft.getTorqueCurrent().getValueAsDouble()) < kCurrentLimitThreshold) && !leftSet || getPositionLeft() > 1.9) 
         return kClimberErrorTolerance + 1;
       else {
         leftSet = true;
@@ -175,7 +185,7 @@ public class Climber extends SubsystemBase {
     if (getRequestedState() != ClimberStates.StateDownVoltage)
       return Math.abs(getPositionRight() - desiredPosition);
     else {
-      if ((Math.abs(m_talonRight.getTorqueCurrent().getValueAsDouble()) < kCurrentLimitThreshold && !rightSet) || getPositionRight() > 1.9) 
+      if (m_climberRightDebouncer.calculate(Math.abs(m_talonRight.getTorqueCurrent().getValueAsDouble()) < kCurrentLimitThreshold) && !rightSet || getPositionRight() > 1.9) 
         return kClimberErrorTolerance + 1;
       else {
         rightSet = true;

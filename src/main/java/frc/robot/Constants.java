@@ -395,9 +395,10 @@ public final class Constants {
     public static final int kClimberLeftPort = 21;
     public static final int kClimberRightPort = 20;
     public static final double kSClimberLeft = .91;
-    public static final double kSClimberRight = 1;
+    public static final double kSClimberRight = 1.5;
     public static final double kVClimber = 4;
-    public static final double kPClimber = 12;
+    public static final double kPClimberLeft = 12;
+    public static final double kPClimberRight = 20;
     public static final double kIClimber = 0;
     public static final double kDClimber = 0;
     public static final double kClimberCruiseVelocity = Math.PI*4;
