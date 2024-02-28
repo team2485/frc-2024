@@ -133,7 +133,7 @@ public class Climber extends SubsystemBase {
         desiredVoltage = -5;
         break;
       case StateDownPosition:
-        desiredPosition = -1;
+        desiredPosition = 0;
         desiredVoltage = 0;
         break;
     }

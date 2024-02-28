@@ -8,6 +8,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.GenericEntry;
@@ -87,7 +88,13 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public Pose2d getCurrentPose() {
-    return poseEstimator.getEstimatedPosition();
+    var pos = poseEstimator.getEstimatedPosition();
+    if (pos.getX() < 0)
+      pos = new Pose2d(new Translation2d(0, poseEstimator.getEstimatedPosition().getY()), poseEstimator.getEstimatedPosition().getRotation());
+    if (pos.getX() > VisionConstants.kFieldLengthMeters)
+      pos = new Pose2d(new Translation2d(VisionConstants.kFieldLengthMeters, poseEstimator.getEstimatedPosition().getY()), poseEstimator.getEstimatedPosition().getRotation());
+    
+    return pos;
   }
 
   public void setCurrentPose(Pose2d newPose) {
