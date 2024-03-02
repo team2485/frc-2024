@@ -110,7 +110,7 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shooterSpeaker(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new SequentialCommandGroup(
-            new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter).until(()->shooter.getCurrentState() ==ShooterStates.StateSpeaker),
+            new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter).until(()->shooter.getCurrentState()==ShooterStates.StateSpeaker),
             runFeeder(feeder, indexer)
             );
 

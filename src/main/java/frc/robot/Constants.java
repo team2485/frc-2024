@@ -348,13 +348,13 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.11, new ShotParameter(80, 0)),
-          Map.entry(1.41, new ShotParameter(80, 0.02)),
-          Map.entry(1.71, new ShotParameter(80, 0.035)),
-          Map.entry(2.01, new ShotParameter(80, 0.047)),
-          Map.entry(2.31, new ShotParameter(80, 0.05)),
-          Map.entry(2.61, new ShotParameter(80, 0.062)),
-          Map.entry(2.91, new ShotParameter(80, 0.065))
+          Map.entry(1.11 + 0.06, new ShotParameter(80, 0)),
+          Map.entry(1.41 + 0.06, new ShotParameter(80, 0.02)),
+          Map.entry(1.71 + 0.06, new ShotParameter(80, 0.035)),
+          Map.entry(2.01 + 0.06, new ShotParameter(80, 0.047)),
+          Map.entry(2.31 + 0.06, new ShotParameter(80, 0.05)),
+          Map.entry(2.61 + 0.06, new ShotParameter(80, 0.062)),
+          Map.entry(2.91 + 0.06, new ShotParameter(80, 0.065))
           ));
 
     public static final int kShooterLeftPort = 17;
@@ -395,10 +395,10 @@ public final class Constants {
     public static final int kClimberLeftPort = 21;
     public static final int kClimberRightPort = 20;
     public static final double kSClimberLeft = .91;
-    public static final double kSClimberRight = 1.5;
+    public static final double kSClimberRight = .91;
     public static final double kVClimber = 4;
     public static final double kPClimberLeft = 12;
-    public static final double kPClimberRight = 20;
+    public static final double kPClimberRight = 12;
     public static final double kIClimber = 0;
     public static final double kDClimber = 0;
     public static final double kClimberCruiseVelocity = Math.PI*4;
