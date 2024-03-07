@@ -114,7 +114,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = .06;
         break;
       case StateShooter:
-        desiredPosition = MathUtil.clamp(InterpolatingTable.get(distance.getAsDouble()).pivotAngleRotations, 0, .25);
+        desiredPosition = MathUtil.clamp(distance.getAsDouble(), 0, .25);
         break;
     }
  

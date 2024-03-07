@@ -45,7 +45,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final Drivetrain m_drivetrain = new Drivetrain();
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds);
   private final Intake m_intake = new Intake();
   private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
   private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
@@ -107,7 +107,7 @@ public class RobotContainer {
           m_driver::getRightX,
           () -> !m_driver.rightBumper().getAsBoolean(),
           () -> m_operator.rightTrigger().getAsBoolean(),
-          m_poseEstimation::getAngleToSpeaker,
+          m_poseEstimation::getAngleToSpeakerCalculated,
           () -> m_driver.y().getAsBoolean(),
           m_poseEstimation::getAngleToAmp,
           m_drivetrain, m_poseEstimation));

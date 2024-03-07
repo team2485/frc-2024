@@ -5,11 +5,11 @@ import edu.wpi.first.math.geometry.Translation3d;
 
 public class ShotCalculator
 {
-  private static double m_forwardDistance, m_forwardVelocity;
-  private static double m_verticalDistance, m_verticalVelocity;
-  private static double m_horizontalDistance, m_horizontalVelocity;
+  private static double m_forwardDistance = 0, m_forwardVelocity = 0;
+  private static double m_verticalDistance = 0, m_verticalVelocity = 0;
+  private static double m_horizontalDistance = 0, m_horizontalVelocity = 0;
   
-  private static double m_ballSpeed = 100;
+  private static double m_ballSpeed = 10;
   private static double m_ballGravity = -9.8;
   private static double m_maxShotTime = 30;
   
@@ -25,15 +25,16 @@ public class ShotCalculator
 
   public static void setPositions(Translation2d robotPos, Translation2d targetPos) {
     ShotCalculator.m_forwardDistance = targetPos.getX()-robotPos.getX();
-    ShotCalculator.m_verticalDistance = 2;
+    // ShotCalculator.m_verticalDistance = 1.56;
     ShotCalculator.m_horizontalDistance = targetPos.getY()-robotPos.getY();
+    ShotCalculator.m_verticalDistance = InterpolatingTable.get(Math.hypot(Math.abs(m_forwardDistance), Math.abs(m_horizontalDistance))).pivotAngleRotations;
   }
   
   public static void setVelocities(double m_forwardVelocity, double m_verticalVelocity, double m_horizontalVelocity) 
   {
-    ShotCalculator.m_forwardVelocity = m_forwardVelocity;
+    ShotCalculator.m_forwardVelocity = -m_forwardVelocity;
     ShotCalculator.m_verticalVelocity = -m_verticalVelocity;
-    ShotCalculator.m_horizontalVelocity = m_horizontalVelocity;
+    ShotCalculator.m_horizontalVelocity = -m_horizontalVelocity;
   }
   
   public static void setSpeed(double m_ballSpeed) 
@@ -93,8 +94,8 @@ public class ShotCalculator
 
     Time = bisectionMethod(timeInterval2, timeInterval1);
     
-    double longXComponent = (m_forwardDistance / Time) - m_forwardVelocity;
-    double longZComponent = (m_horizontalDistance / Time) - m_horizontalVelocity;
+    double longXComponent = (m_forwardDistance / Time);
+    double longZComponent = (m_horizontalDistance / Time);
     double longYComponent = Math.sqrt(m_ballSpeed*m_ballSpeed - longXComponent*longXComponent - longZComponent*longZComponent);
     
   
@@ -126,9 +127,13 @@ public class ShotCalculator
     double gPos = getGPos(timeInput) - m_verticalDistance;
     double forward = m_forwardDistance - (m_forwardVelocity * timeInput); 
     double vertical = gPos - (m_verticalVelocity * timeInput);
-    double horizontal = m_horizontalDistance;
+    double horizontal = m_horizontalDistance - (m_horizontalVelocity * timeInput);
 
     return d - Math.sqrt((forward*forward) + (vertical*vertical) + (horizontal*horizontal));
+  }
+
+  public static Translation3d getRelativePos() {
+    return new Translation3d(m_forwardDistance, m_horizontalDistance, m_verticalDistance);
   }
 
   private static double getGPos(double time)
