@@ -24,6 +24,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.RedFieldConstants;
 import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.Interpolation.ShotCalculator;
 
 public class PoseEstimation extends SubsystemBase {
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
@@ -137,6 +138,36 @@ public class PoseEstimation extends SubsystemBase {
     double deltaY = pos.getY() - getCurrentPose().getY();
     double deltaX = pos.getX() - getCurrentPose().getX();
     return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
+  }
+
+  public double getAngleToSpeakerCalculated() {
+    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
+    ShotCalculator.setVelocities(0, 0, 0);
+    // v[0] = forward v[1] = vertical v[2] = horizontal
+    double[] velocities = ShotCalculator.shoot();
+    double x = velocities[0];
+    double y = velocities[2];
+    double z = velocities[1];
+    double theta = Math.atan(y/x);
+    return theta;
+  }
+
+  public double getPivotAngleCalculated() {
+    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
+    ShotCalculator.setVelocities(0, 0, 0);
+    // v[0] = forward v[1] = vertical v[2] = horizontal
+    double[] velocities = ShotCalculator.shoot();
+    double x = velocities[0];
+    double y = velocities[2];
+    double z = velocities[1];
+    double phi = Rotation2d.fromRadians(Math.acos(z/Math.sqrt(x*x+y*y+z*z))).getRotations();
+    double mappedPivotAngle = map(phi, .125, 0, 0, .25);
+
+    return mappedPivotAngle;
+  }
+
+  private double map(double x, double in_min, double in_max, double out_min, double out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   }
 
   public FieldConstants getFieldConstants() {

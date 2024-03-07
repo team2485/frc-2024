@@ -52,7 +52,7 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
-  private final Pivot m_pivot = new Pivot(m_poseEstimation::getDistanceToSpeaker);
+  private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
   private final Climber m_climber = new Climber();
   
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
