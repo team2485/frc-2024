@@ -366,7 +366,7 @@ public final class Constants {
     public static final double kPShooter = .04;
     public static final double kIShooter = .01;
     public static final double kDShooter = 0.01;
-    public static final double kSensorToMechanismGearRatio = 36/28;
+    public static final double kSensorToMechanismGearRatio = 36/27;
     public static final double kShooterCruiseVelocity = 80;
     public static final double kShooterAcceleration = 160;
     public static final double kShooterJerk = 1600; 

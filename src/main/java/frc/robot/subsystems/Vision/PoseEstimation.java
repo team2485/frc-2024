@@ -43,7 +43,7 @@ public class PoseEstimation extends SubsystemBase {
   GenericEntry visionTest;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition) {
-    visionTest = Shuffleboard.getTab("Swerve").add("DistanceToTag", 0).getEntry();
+    visionTest = Shuffleboard.getTab("Swerve").add("AngleToSpeaker", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
 
@@ -79,7 +79,7 @@ public class PoseEstimation extends SubsystemBase {
 
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
-    visionTest.setDouble(getDistanceToSpeaker());
+    visionTest.setDouble(getAngleToSpeaker());
   }
 
   private String getFormattedPose() {
@@ -118,7 +118,9 @@ public class PoseEstimation extends SubsystemBase {
   public double getAngleToSpeaker() {
     double deltaY = getFieldConstants().getSpeakerPos().getY() - getCurrentPose().getY();
     double deltaX = getFieldConstants().getSpeakerPos().getX() - getCurrentPose().getX();
-    return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
+    Pose2d anglePos = new Pose2d(deltaX, deltaY, new Rotation2d());
+    // return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
+    return anglePos.getTranslation().getAngle().getDegrees();
   }
 
   public double getAngleFromTags() {

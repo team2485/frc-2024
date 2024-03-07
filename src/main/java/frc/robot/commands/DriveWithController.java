@@ -41,7 +41,6 @@ public class DriveWithController extends Command {
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
 
-
   public DriveWithController(
       DoubleSupplier xSpeedSupplier,
       DoubleSupplier ySpeedSupplier,
@@ -68,7 +67,6 @@ public class DriveWithController extends Command {
     this.m_drivetrain = drivetrain;
 
     rotationOverrideController.enableContinuousInput(-180, 180);
-
     addRequirements(m_drivetrain);
   }
 

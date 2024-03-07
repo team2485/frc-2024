@@ -104,7 +104,7 @@ public class Shooter extends SubsystemBase {
 
         switch (m_shooterRequestedState) {
           case StateOff:
-            desiredVelocity = 0;
+            desiredVelocity = 0; //21
             desiredVoltage = 0;
             break;
           case StateCoast:
