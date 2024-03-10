@@ -35,13 +35,13 @@ public class AutoCommandBuilder {
   public static final Command twoNoteAt1(Drivetrain drivetrain, PoseEstimation poseEstimation, Intake intake, Shooter shooter, Pivot pivot, GeneralRoller feeder, GeneralRoller indexer) {
     Command command = new SequentialCommandGroup(
       Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
-      NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
+      // NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
       driveToNote(drivetrain, poseEstimation, 0, -50),
       Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
-      NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
+      // NoteHandlingCommandBuilder.intake(intake, indexer, feeder),
       driveToNote(drivetrain, poseEstimation, 1, 140),
-      Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer),
-      NoteHandlingCommandBuilder.intakeOff(intake, indexer, feeder, pivot)
+      Fire(drivetrain, poseEstimation, intake, shooter, pivot, feeder, indexer)
+      //NoteHandlingCommandBuilder.intakeOff(intake, indexer, feeder, pivot)
 
       );
     return command;

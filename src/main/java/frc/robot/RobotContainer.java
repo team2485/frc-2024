@@ -20,6 +20,7 @@ import frc.robot.subsystems.NoteHandling.Shooter;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,8 +48,8 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions);
   private final Intake m_intake = new Intake();
-  private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
-  private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
+  private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true, false);
+  private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true, true);
   private final Shooter m_shooter = new Shooter();
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
@@ -77,7 +78,7 @@ public class RobotContainer {
     m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Swerve"));
 
     NamedCommands.registerCommand("Fire", AutoCommandBuilder.Fire(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
-    NamedCommands.registerCommand("Intake", NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder));
+    NamedCommands.registerCommand("Intake", NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver));
     NamedCommands.registerCommand("ScoreInAmp", NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation));
     NamedCommands.registerCommand("SetupGyro", NoteHandlingCommandBuilder.autoSetGyro(m_drivetrain, m_poseEstimation));
 
@@ -115,11 +116,11 @@ public class RobotContainer {
     //m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
     //            .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
-    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder))
-                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot));
+    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver))
+                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
 
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer, m_feeder, m_pivot))
-                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot));
+                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
     // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
 
     m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));

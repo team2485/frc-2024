@@ -1,4 +1,7 @@
 package frc.robot.subsystems.NoteHandling;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,13 +25,15 @@ public class GeneralRoller extends SubsystemBase {
 
   public GeneralRollerStates m_subsystemNameCurrentState;
   public GeneralRollerStates m_subsystemNameRequestedState;
+  public LinearFilter filter = LinearFilter.singlePoleIIR(0.5, 0.2);
+  private boolean isDetector;
 
   // You may need more than one motor
   private final CANSparkMax m_spark;
   // Units depend on the units of the setpoint() and calculate() methods. This example will use meters
   private double desiredVoltage = 0;
 
-  public GeneralRoller(int port, boolean setInverted) {
+  public GeneralRoller(int port, boolean setInverted, boolean isDetector) {
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
 
     m_spark.setSmartCurrentLimit(kGeneralRollerCurrentLimit);
@@ -38,6 +43,8 @@ public class GeneralRoller extends SubsystemBase {
 
     m_subsystemNameCurrentState = GeneralRollerStates.StateOff;
     m_subsystemNameRequestedState = GeneralRollerStates.StateOff;
+
+    this.isDetector = isDetector;
   }
 
   @Override
@@ -55,12 +62,15 @@ public class GeneralRoller extends SubsystemBase {
       case StateForwardFast:
         desiredVoltage = 12;
         break;
-
     }
-	
+    // if(isDetector) SmartDashboard.putNumber("feederCurrent", m_spark.getOutputCurrent());
     runControlLoop();
 
     m_subsystemNameCurrentState = m_subsystemNameRequestedState;
+  }
+
+  public double getCurrent() {
+    return filter.calculate(m_spark.getOutputCurrent());
   }
 
   public void runControlLoop() {
