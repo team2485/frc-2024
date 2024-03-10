@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.GenericEntry;
@@ -24,6 +25,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.RedFieldConstants;
 import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.Interpolation.ShotCalculator;
 
 public class PoseEstimation extends SubsystemBase {
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
@@ -39,13 +41,15 @@ public class PoseEstimation extends SubsystemBase {
   private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
   private boolean sawTag = false;
   private double angleToTags = 0;
+  Supplier<ChassisSpeeds> speeds;
 
   GenericEntry visionTest;
 
-  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition) {
-    visionTest = Shuffleboard.getTab("Swerve").add("AngleToSpeaker", 0).getEntry();
+  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds) {
+    visionTest = Shuffleboard.getTab("Swerve").add("RequestedAngle", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
+    this.speeds = chassisSpeeds;
 
     poseEstimator = new SwerveDrivePoseEstimator(
         Swerve.swerveKinematics,
@@ -79,7 +83,7 @@ public class PoseEstimation extends SubsystemBase {
 
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
-    visionTest.setDouble(getAngleToSpeaker());
+    visionTest.setDouble(getAngleToSpeakerCalculated());
   }
 
   private String getFormattedPose() {
@@ -137,6 +141,35 @@ public class PoseEstimation extends SubsystemBase {
     double deltaY = pos.getY() - getCurrentPose().getY();
     double deltaX = pos.getX() - getCurrentPose().getX();
     return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
+  }
+
+  public double getAngleToSpeakerCalculated() {
+    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
+    ShotCalculator.setVelocities(0, 0, 0);
+    // v[0] = forward v[1] = vertical v[2] = horizontal
+    double[] velocities = ShotCalculator.shoot();
+    double x = velocities[0];
+    double y = velocities[2];
+    double z = velocities[1];
+    double theta = Rotation2d.fromRadians(Math.atan2(y,x)).getDegrees();
+    return theta;
+  }
+
+  public double getPivotAngleCalculated() {
+    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
+    ShotCalculator.setVelocities(0, 0, 0);
+    // v[0] = forward v[1] = vertical v[2] = horizontal
+    double[] velocities = ShotCalculator.shoot();
+    double x = velocities[0];
+    double y = velocities[2];
+    double z = velocities[1];
+    double phi = 90-Rotation2d.fromRadians(Math.acos(z/Math.sqrt((x*x)+(y*y)+(z*z)))).getDegrees();
+    double mappedPivotAngle = map(phi, 54, 0, 0, .25);
+    return mappedPivotAngle;
+  }
+
+  private double map(double x, double in_min, double in_max, double out_min, double out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   }
 
   public FieldConstants getFieldConstants() {
