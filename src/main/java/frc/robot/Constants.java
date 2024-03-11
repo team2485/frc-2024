@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
+import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
 
 import java.util.List;
 import java.util.Map;
@@ -221,6 +222,7 @@ public final class Constants {
   public interface FieldConstants {
     public Pose2d getPickupPos();
     public Pose2d getSpeakerPos();
+    public Pose2d getSpeakerAnglePos();
     public Pose2d getAmpPos();
     public Pose2d[] getRingPositions();
   }
@@ -228,6 +230,7 @@ public final class Constants {
   public static final class RedFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
     public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(16.559342, 5.547867999999999, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.5, new Rotation2d()); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -240,6 +243,7 @@ public final class Constants {
   public static final class BlueFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
     public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(0, 5.547867999999999, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(1.8415, 8.5, new Rotation2d()); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -359,18 +363,10 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-<<<<<<< HEAD
-          Map.entry(1.11 + 0.02, new ShotParameter(80, 0)),
-          Map.entry(1.41 + 0.02, new ShotParameter(80, 0.02 + 0.007)),
-          Map.entry(1.71 + 0.02, new ShotParameter(80, 0.035 + 0.007)),
-          Map.entry(2.01 + 0.02, new ShotParameter(80, 0.047 + 0.007)),
-          Map.entry(2.31 + 0.02, new ShotParameter(80, 0.05 + 0.007)),
-          Map.entry(2.61 + 0.02, new ShotParameter(80, 0.062 + 0.007)),
-          Map.entry(2.91 + 0.02, new ShotParameter(80, 0.065 + 0.007))
-=======
-          Map.entry(1.11, new ShotParameter(80, 1.45)),
-          Map.entry(2.91, new ShotParameter(80, 1.7))
->>>>>>> d6f995ea48472484237c98753c832eafbe300e57
+          Map.entry(1.11, new ShotParameter(80, 1.2)),
+          Map.entry(2.91, new ShotParameter(80, .95)),
+          Map.entry(3.5, new ShotParameter(80, .85)),
+          Map.entry(4.5, new ShotParameter(80, .8))
           ));
 
     public static final int kShooterLeftPort = 17;
@@ -446,9 +442,9 @@ public final class Constants {
 
     public static final ReplanningConfig kReplanningConfig = new ReplanningConfig();
     public static final HolonomicPathFollowerConfig kPathFollowingConfig = new HolonomicPathFollowerConfig(// HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(10, 0.0, 0), // Translation PID constants
-                        new PIDConstants(5, 0, 0), // Rotation PID constants
-                        kTeleopMaxAngularSpeedRadiansPerSecond, // Max module speed, in m/s
+                        new PIDConstants(2, 0.0, 0), // Translation PID constants
+                        new PIDConstants(2, 0, 0), // Rotation PID constants
+                        6, // Max module speed, in m/s
                         driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig());
 
@@ -518,7 +514,7 @@ public final class Constants {
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    public static final double maxSpeed = 3; // TODO: This must be tuned to specific robot
+    public static final double maxSpeed = 6; // TODO: This must be tuned to specific robot
     /** Radians per Second */
     public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
 

@@ -144,7 +144,7 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getAngleToSpeakerCalculated() {
-    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
+    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
     ShotCalculator.setVelocities(0, 0, 0);
     // v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = ShotCalculator.shoot();
@@ -164,7 +164,7 @@ public class PoseEstimation extends SubsystemBase {
     double y = velocities[2];
     double z = velocities[1];
     double phi = 90-Rotation2d.fromRadians(Math.acos(z/Math.sqrt((x*x)+(y*y)+(z*z)))).getDegrees();
-    double mappedPivotAngle = map(phi, 54, 0, 0, .25);
+    double mappedPivotAngle = map(phi, 54, 0, 0, .139);
     return mappedPivotAngle;
   }
 

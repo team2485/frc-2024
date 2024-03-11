@@ -48,6 +48,15 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
+    public static Command intakeAuto(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
+        Command command = new ParallelCommandGroup(
+                                new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
+                                new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
+                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
+                                );
+        return command;
+    }
+
 
     // public static Command outtake(Intake intake, GeneralRoller indexer) {
     //     Command command = new ParallelCommandGroup(

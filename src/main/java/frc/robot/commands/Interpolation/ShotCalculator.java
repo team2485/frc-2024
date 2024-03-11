@@ -28,6 +28,7 @@ public class ShotCalculator
     // ShotCalculator.m_verticalDistance = 1.56;
     ShotCalculator.m_horizontalDistance = targetPos.getY()-robotPos.getY();
     ShotCalculator.m_verticalDistance = InterpolatingTable.get(Math.hypot(Math.abs(m_forwardDistance), Math.abs(m_horizontalDistance))).pivotAngleRotations;
+    //ShotCalculator.m_verticalDistance = 1;
   }
   
   public static void setVelocities(double m_forwardVelocity, double m_verticalVelocity, double m_horizontalVelocity) 
