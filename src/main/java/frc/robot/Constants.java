@@ -365,7 +365,7 @@ public final class Constants {
         Map.ofEntries(
           Map.entry(1.11, new ShotParameter(80, 1.2)),
           Map.entry(2.91, new ShotParameter(80, .95)),
-          Map.entry(3.5, new ShotParameter(80, .85)),
+          Map.entry(3.5, new ShotParameter(80, .9)),
           Map.entry(4.5, new ShotParameter(80, .8))
           ));
 

@@ -48,8 +48,8 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds);
   private final Intake m_intake = new Intake();
-  private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true, false);
-  private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true, true);
+  private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
+  private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
   private final Shooter m_shooter = new Shooter();
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);

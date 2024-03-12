@@ -37,7 +37,7 @@ public class DriveWithController extends Command {
   private final DoubleSupplier m_ampAngle;
   private final Drivetrain m_drivetrain;
 
-  private final PIDController rotationOverrideController = new PIDController(.05, 0, .005);
+  private final PIDController rotationOverrideController = new PIDController(.1, 0, .0075);
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
 
@@ -109,6 +109,7 @@ public class DriveWithController extends Command {
       // double distance = mPoseEstimation.getDistanceToSpeaker();
       // targetAngle+= ySpeed*5*distance; 
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawMod().getDegrees(), speakerAngle);
+      SmartDashboard.putNumber("AngleError", -rotationOverrideController.getPositionError());
     }
 
     if (aimingAtAmp) {

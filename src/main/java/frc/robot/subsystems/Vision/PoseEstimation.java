@@ -144,7 +144,7 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getAngleToSpeakerCalculated() {
-    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
+    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
     ShotCalculator.setVelocities(0, 0, 0);
     // v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = ShotCalculator.shoot();
