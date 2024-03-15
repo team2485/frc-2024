@@ -25,7 +25,7 @@ public class AutoCommandBuilder {
   /** Example static factory for an autonomous command. */
   public static final Command Fire(Drivetrain drivetrain, PoseEstimation poseEstimation, Intake intake, Shooter shooter, Pivot pivot, GeneralRoller feeder, GeneralRoller indexer) {
     Command command = NoteHandlingCommandBuilder.autoShooterSpeaker(pivot, shooter, feeder, indexer)
-                      .alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, poseEstimation::getAngleToSpeaker, ()-> false, poseEstimation::getAngleToAmp, drivetrain, poseEstimation))
+                      .alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, poseEstimation::getAngleToSpeaker, ()-> false, poseEstimation::getAngleToAmp, ()->false, ()-> false, ()-> 0, drivetrain, poseEstimation))
                       .until(()->feeder.getCurrentState() == GeneralRollerStates.StateForwardFast)
                       .andThen(new WaitCommand(.5))
                       .andThen(NoteHandlingCommandBuilder.autoShooterOff(pivot, shooter, feeder, indexer, intake));

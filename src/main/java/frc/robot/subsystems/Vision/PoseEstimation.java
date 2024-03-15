@@ -143,6 +143,14 @@ public class PoseEstimation extends SubsystemBase {
     return Rotation2d.fromRadians(Math.atan2(deltaY, deltaX)).getDegrees();
   }
 
+  public boolean getNoteDetected() {
+    return photonEstimator.getNoteExists();
+  }
+
+  public double getNoteAngle() {
+    return photonEstimator.grabNoteRotationOffset();
+  }
+
   public double getAngleToSpeakerCalculated() {
     ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
     ShotCalculator.setVelocities(0, 0, 0);

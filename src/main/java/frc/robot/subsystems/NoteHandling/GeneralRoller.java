@@ -51,10 +51,10 @@ public class GeneralRoller extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateForward:
-        desiredVoltage = 3;
+        desiredVoltage = 2;
         break;
       case StateReverse:
-        desiredVoltage = -3;
+        desiredVoltage = -2;
         break;
       case StateForwardFast:
         desiredVoltage = 12;

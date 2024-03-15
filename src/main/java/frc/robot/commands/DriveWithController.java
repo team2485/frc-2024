@@ -34,6 +34,9 @@ public class DriveWithController extends Command {
   private final BooleanSupplier m_aimingAtSpeaker;
   private final DoubleSupplier m_speakerAngle;
   private final BooleanSupplier m_aimingAtAmp;
+  private final BooleanSupplier m_aimingAtNote;
+  private final BooleanSupplier m_noteExists;
+  private final DoubleSupplier m_angleToNote;
   private final DoubleSupplier m_ampAngle;
   private final Drivetrain m_drivetrain;
 
@@ -50,6 +53,9 @@ public class DriveWithController extends Command {
       DoubleSupplier speakerAngle,
       BooleanSupplier aimingAtAmp,
       DoubleSupplier ampAngle,
+      BooleanSupplier aimingAtNote,
+      BooleanSupplier noteExists,
+      DoubleSupplier angleToNote,
       Drivetrain drivetrain,
       PoseEstimation poseEstimation) {
 
@@ -61,6 +67,9 @@ public class DriveWithController extends Command {
     this.m_speakerAngle = speakerAngle;
     this.m_aimingAtAmp = aimingAtAmp;
     this.m_ampAngle = ampAngle;
+    this.m_aimingAtNote = aimingAtNote;
+    this.m_noteExists = noteExists;
+    this.m_angleToNote = angleToNote;
     
 
     this.mPoseEstimation = poseEstimation;
@@ -92,7 +101,7 @@ public class DriveWithController extends Command {
     double rot = Math.abs(map(-MathUtil.applyDeadband(m_rotSpeedSupplier.getAsDouble()*m_rotSpeedSupplier.getAsDouble(), kDriverRightXDeadband)
             * kTeleopMaxAngularSpeedRadiansPerSecond, 0, 1, 0, Swerve.maxAngularVelocity)) * rotSign;
 
-    final boolean fieldRelative = m_fieldRelative.getAsBoolean();
+    boolean fieldRelative = m_fieldRelative.getAsBoolean();
 
     final boolean aimingAtSpeaker = m_aimingAtSpeaker.getAsBoolean();
 
@@ -101,6 +110,12 @@ public class DriveWithController extends Command {
     final boolean aimingAtAmp = m_aimingAtAmp.getAsBoolean();
 
     final double ampAngle = m_ampAngle.getAsDouble();
+
+    final boolean aimingAtNote = m_aimingAtNote.getAsBoolean();
+
+    final boolean noteExists = m_noteExists.getAsBoolean();
+
+    final double angleToNote = m_angleToNote.getAsDouble();
 
     if (aimingAtSpeaker) {
       // xSpeed*=.2;
@@ -119,6 +134,13 @@ public class DriveWithController extends Command {
         xSpeed *= -1;
       ySpeed *= .4;
     
+    }
+
+    if (aimingAtNote) {
+      if (noteExists) {
+        rot = -rotationOverrideController.calculate(-13, angleToNote);
+      }
+      fieldRelative = false;
     }
 
 

@@ -106,11 +106,14 @@ public class RobotContainer {
           m_driver::getLeftY,
           m_driver::getLeftX,
           m_driver::getRightX,
-          () -> !m_driver.rightBumper().getAsBoolean(),
+          () -> true,
           () -> m_operator.rightTrigger().getAsBoolean(),
-          m_poseEstimation::getAngleToSpeakerCalculated,
+          m_poseEstimation::getAngleToSpeaker,
           () -> m_driver.y().getAsBoolean(),
           m_poseEstimation::getAngleToAmp,
+          () -> m_driver.rightBumper().getAsBoolean(),
+          m_poseEstimation::getNoteDetected,
+          m_poseEstimation::getNoteAngle,
           m_drivetrain, m_poseEstimation));
 
     //m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)

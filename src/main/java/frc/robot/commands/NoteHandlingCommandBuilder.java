@@ -43,7 +43,7 @@ public class NoteHandlingCommandBuilder {
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
                                 new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder),
-                                new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 30)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kBothRumble, 0.75), ()->driver.setRumble(RumbleType.kBothRumble, 0)))
+                                new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kRightRumble, 0.75), ()->driver.setRumble(RumbleType.kRightRumble, 0)))
                                 );
         return command;
     }

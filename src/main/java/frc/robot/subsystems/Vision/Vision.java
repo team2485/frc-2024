@@ -13,6 +13,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.proto.Photon;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -37,11 +38,15 @@ public class Vision implements Runnable {
     private final PhotonPoseEstimator m_photonPoseEstimator;
     // creates new PhotonCamera object for camera
     private final PhotonCamera m_camera; // initialize with a USEFUL name;
+    private final PhotonCamera m_noteCamera;
     // creates a thread-safe object reference since mutliple robot poses could be reported concurrently and conflict
     // lowkey an interesting read, the atomic library gaslights machine instruction algos like compare-and-swap
     // that are instrinsically atomic into working for concurrency
     GenericEntry cameraExists;
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
+
+    private double noteRotationOffset = 0;
+    private boolean noteExists = false;
 
     public Vision() {
         PhotonPoseEstimator photonPoseEstimator = null;
@@ -50,6 +55,7 @@ public class Vision implements Runnable {
     
 
         this.m_camera = new PhotonCamera(kCameraName);
+        this.m_noteCamera = new PhotonCamera("notecamera");
 
         try {
             //sets the origin to the blue side every time but flips the tag positions if we are red.
@@ -79,7 +85,7 @@ public class Vision implements Runnable {
 
                     SmartDashboard.putBoolean("Camera Positioned For Auto", true);
                     //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
-                    cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
+                    //cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
 
                     if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
                             && estimatedPose.getY() > 0.0
@@ -90,9 +96,26 @@ public class Vision implements Runnable {
             }
             else SmartDashboard.putBoolean("Camera Positioned For Auto", false);
         }
+        if (m_noteCamera != null) {
+            var photonResults = m_noteCamera.getLatestResult();
+            if (photonResults.hasTargets()) {
+                noteExists = true;
+                noteRotationOffset = photonResults.targets.get(0).getYaw();
+                cameraExists.setDouble(grabNoteRotationOffset());
+            }
+            else noteExists = false;
+        }
     }
 
     public EstimatedRobotPose grabLatestEstimatedPose() {
         return m_atomicEstimatedRobotPose.get();
+    }
+
+    public double grabNoteRotationOffset() {
+        return noteRotationOffset;
+    }
+
+    public boolean getNoteExists() {
+        return noteExists;
     }
 }

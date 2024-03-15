@@ -288,8 +288,8 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(0.508, -0.0127, 0.71),
-        new Rotation3d(0,0,0));
+    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(0.508, 0, 0.24),
+        new Rotation3d(0,-.402,0)); 
     //-0.698
 
     public static final double kFieldLengthMeters = 16.541;
@@ -363,10 +363,10 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.11, new ShotParameter(80, 1.2)),
-          Map.entry(2.91, new ShotParameter(80, .95)),
-          Map.entry(3.5, new ShotParameter(80, .9)),
-          Map.entry(4.5, new ShotParameter(80, .8))
+          Map.entry(1.11, new ShotParameter(80, 1.4)),
+          Map.entry(4.1, new ShotParameter(80, 1.33)),
+          Map.entry(4.5, new ShotParameter(80, 1.3))
+          // Map.entry(4.5, new ShotParameter(80, .8))
           ));
 
     public static final int kShooterLeftPort = 17;
