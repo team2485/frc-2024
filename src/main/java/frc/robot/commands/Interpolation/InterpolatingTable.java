@@ -22,4 +22,16 @@ public class InterpolatingTable {
             floorEntry.getValue(),
             (distance - floorEntry.getKey()) / (ceilEntry.getKey() - floorEntry.getKey()));
   }
+
+  public static ShotParameter getYaw(double pitch) {
+    Entry<Double, ShotParameter> ceilEntry = kShootingMap.ceilingEntry(pitch);
+    Entry<Double, ShotParameter> floorEntry = kShootingMap.floorEntry(pitch);
+    if (ceilEntry == null) return floorEntry.getValue();
+    if (floorEntry == null) return ceilEntry.getValue();
+    return ceilEntry
+        .getValue()
+        .interpolate(
+            floorEntry.getValue(),
+            (pitch - floorEntry.getKey()) / (ceilEntry.getKey() - floorEntry.getKey()));
+  }
 }

@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 15.203071775615735,
+        "y": 6.101345840352166
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 15.132806756341045,
+        "y": 5.550936522700434
+      },
+      "isLocked": false,
+      "linkedName": "SDRNote2Pos"
+    },
+    {
+      "anchor": {
+        "x": 13.481578803385853,
+        "y": 5.527514849608872
+      },
+      "prevControl": {
+        "x": 14.301337361590557,
+        "y": 5.398695647605276
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SDR",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
