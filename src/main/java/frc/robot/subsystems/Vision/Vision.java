@@ -45,7 +45,8 @@ public class Vision implements Runnable {
     GenericEntry cameraExists;
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
 
-    private double noteRotationOffset = 0;
+    private double notePitch = 0;
+    private double noteYaw = 0;
     private boolean noteExists = false;
 
     public Vision() {
@@ -100,8 +101,9 @@ public class Vision implements Runnable {
             var photonResults = m_noteCamera.getLatestResult();
             if (photonResults.hasTargets()) {
                 noteExists = true;
-                noteRotationOffset = photonResults.targets.get(0).getYaw();
-                cameraExists.setDouble(grabNoteRotationOffset());
+                notePitch = photonResults.targets.get(0).getPitch();
+                noteYaw = photonResults.targets.get(0).getYaw();
+                cameraExists.setDouble(grabNotePitch());
             }
             else noteExists = false;
         }
@@ -111,11 +113,15 @@ public class Vision implements Runnable {
         return m_atomicEstimatedRobotPose.get();
     }
 
-    public double grabNoteRotationOffset() {
-        return noteRotationOffset;
+    public double grabNotePitch() {
+        return notePitch;
+    }
+
+    public double grabNoteYaw() {
+        return noteYaw;
     }
 
     public boolean getNoteExists() {
-        return noteExists;
+        return noteExists && notePitch < 0;
     }
 }

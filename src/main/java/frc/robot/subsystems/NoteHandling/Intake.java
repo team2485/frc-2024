@@ -46,10 +46,10 @@ public class Intake extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateIntake:
-        desiredVoltage = 3;
+        desiredVoltage = 5;
         break;
       case StateOuttake:
-        desiredVoltage = -3;
+        desiredVoltage = -5;
         break;
     }
 	

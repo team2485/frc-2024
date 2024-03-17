@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SDR2NoteSpeakerAmpPath"
+            "pathName": "SDR2NoteSpeakerStartAmpPath"
           }
         },
         {

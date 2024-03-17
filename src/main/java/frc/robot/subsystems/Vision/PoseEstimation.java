@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
@@ -16,15 +17,18 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.Constants.BlueFieldConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.RedFieldConstants;
 import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.Interpolation.InterpolatingTable;
 import frc.robot.commands.Interpolation.ShotCalculator;
 
 public class PoseEstimation extends SubsystemBase {
@@ -37,6 +41,7 @@ public class PoseEstimation extends SubsystemBase {
   private final Field2d field2d = new Field2d();
   private final Vision photonEstimator = new Vision();
   private final Notifier photonNotifier = new Notifier(photonEstimator);
+  private final WL_CommandXboxController m_driver;
 
   private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
   private boolean sawTag = false;
@@ -45,11 +50,12 @@ public class PoseEstimation extends SubsystemBase {
 
   GenericEntry visionTest;
 
-  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds) {
+  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver) {
     visionTest = Shuffleboard.getTab("Swerve").add("RequestedAngle", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
     this.speeds = chassisSpeeds;
+    this.m_driver = m_driver;
 
     poseEstimator = new SwerveDrivePoseEstimator(
         Swerve.swerveKinematics,
@@ -84,6 +90,9 @@ public class PoseEstimation extends SubsystemBase {
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(getAngleToSpeakerCalculated());
+
+    if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
+    else m_driver.setRumble(RumbleType.kLeftRumble, 0);
   }
 
   private String getFormattedPose() {
@@ -148,7 +157,11 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getNoteAngle() {
-    return photonEstimator.grabNoteRotationOffset();
+    return photonEstimator.grabNoteYaw();
+  }
+
+  public double getNoteSetpoint() {
+    return InterpolatingTable.getYaw(photonEstimator.grabNotePitch()).pivotAngleRotations;
   }
 
   public double getAngleToSpeakerCalculated() {

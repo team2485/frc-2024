@@ -48,6 +48,11 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
+    public static Command noteHaptics(WL_CommandXboxController m_driver, PoseEstimation mEstimation) {
+        Command command = new StartEndCommand(()->m_driver.setRumble(RumbleType.kLeftRumble, .75), ()->m_driver.setRumble(RumbleType.kLeftRumble, 0));
+        return command;
+    }
+
     public static Command intakeAuto(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
@@ -132,6 +137,15 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
+    public static Command shooterPasser(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
+        Command command = new SequentialCommandGroup(
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->shooter.getCurrentState()==ShooterStates.StatePass),
+            runFeeder(feeder, indexer)
+            );
+
+        return command;
+    }
+
     public static Command shooterOff(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new ParallelCommandGroup(
             new InstantCommand(()->shooter.requestState(ShooterStates.StateOff), shooter),
@@ -183,7 +197,7 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shootTrap(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new SequentialCommandGroup(
-                        new RunCommand(()->shooter.requestState(ShooterStates.StateTrap), shooter).until(()->shooter.getCurrentState() == ShooterStates.StateSpeaker),
+                        new RunCommand(()->shooter.requestState(ShooterStates.StateTrap), shooter).until(()->shooter.getCurrentState() == ShooterStates.StateTrap),
                         runFeeder(feeder, indexer)
                         );
 

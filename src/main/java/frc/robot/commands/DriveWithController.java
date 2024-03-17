@@ -37,6 +37,7 @@ public class DriveWithController extends Command {
   private final BooleanSupplier m_aimingAtNote;
   private final BooleanSupplier m_noteExists;
   private final DoubleSupplier m_angleToNote;
+  private final DoubleSupplier m_angleToNoteSetpoint;
   private final DoubleSupplier m_ampAngle;
   private final Drivetrain m_drivetrain;
 
@@ -56,6 +57,7 @@ public class DriveWithController extends Command {
       BooleanSupplier aimingAtNote,
       BooleanSupplier noteExists,
       DoubleSupplier angleToNote,
+      DoubleSupplier angleToNoteSetpoint,
       Drivetrain drivetrain,
       PoseEstimation poseEstimation) {
 
@@ -70,7 +72,7 @@ public class DriveWithController extends Command {
     this.m_aimingAtNote = aimingAtNote;
     this.m_noteExists = noteExists;
     this.m_angleToNote = angleToNote;
-    
+    this.m_angleToNoteSetpoint = angleToNoteSetpoint;
 
     this.mPoseEstimation = poseEstimation;
     this.m_drivetrain = drivetrain;
@@ -117,6 +119,8 @@ public class DriveWithController extends Command {
 
     final double angleToNote = m_angleToNote.getAsDouble();
 
+    final double angleToNoteSetpoint = m_angleToNoteSetpoint.getAsDouble();
+
     if (aimingAtSpeaker) {
       // xSpeed*=.2;
       // ySpeed*=.2;
@@ -138,7 +142,7 @@ public class DriveWithController extends Command {
 
     if (aimingAtNote) {
       if (noteExists) {
-        rot = -rotationOverrideController.calculate(-13, angleToNote);
+        rot = rotationOverrideController.calculate(angleToNote, angleToNoteSetpoint);
       }
       fieldRelative = false;
     }

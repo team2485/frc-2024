@@ -45,8 +45,11 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
+  private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
+  private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
+
   private final Drivetrain m_drivetrain = new Drivetrain();
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds, m_driver);
   private final Intake m_intake = new Intake();
   private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
   private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
@@ -55,9 +58,6 @@ public class RobotContainer {
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
   private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
   private final Climber m_climber = new Climber();
-  
-  private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
-  private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
   public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
 
@@ -114,7 +114,10 @@ public class RobotContainer {
           () -> m_driver.rightBumper().getAsBoolean(),
           m_poseEstimation::getNoteDetected,
           m_poseEstimation::getNoteAngle,
+          m_poseEstimation::getNoteSetpoint,
           m_drivetrain, m_poseEstimation));
+
+    //m_poseEstimation.setDefaultCommand(NoteHandlingCommandBuilder.noteHaptics(m_driver, m_poseEstimation));
 
     //m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
     //            .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
@@ -142,8 +145,11 @@ public class RobotContainer {
     m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.x().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
-                  .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    m_operator.x().whileTrue(NoteHandlingCommandBuilder.shooterPasser(m_shooter, m_feeder, m_indexer))
+              .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+
+    m_operator.b().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
+                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
 
     m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));

@@ -24,8 +24,8 @@ public class InterpolatingTable {
   }
 
   public static ShotParameter getYaw(double pitch) {
-    Entry<Double, ShotParameter> ceilEntry = kShootingMap.ceilingEntry(pitch);
-    Entry<Double, ShotParameter> floorEntry = kShootingMap.floorEntry(pitch);
+    Entry<Double, ShotParameter> ceilEntry = kNoteDetectionMap.ceilingEntry(pitch);
+    Entry<Double, ShotParameter> floorEntry = kNoteDetectionMap.floorEntry(pitch);
     if (ceilEntry == null) return floorEntry.getValue();
     if (floorEntry == null) return ceilEntry.getValue();
     return ceilEntry

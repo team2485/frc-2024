@@ -363,10 +363,23 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.11, new ShotParameter(80, 1.4)),
-          Map.entry(4.1, new ShotParameter(80, 1.33)),
-          Map.entry(4.5, new ShotParameter(80, 1.3))
+          Map.entry(1.401, new ShotParameter(80, 1.5)),
+          Map.entry(4.1, new ShotParameter(80, 1.2)),
+          Map.entry(4.5, new ShotParameter(80, 1.15))
           // Map.entry(4.5, new ShotParameter(80, .8))
+          ));
+      
+    public static final TreeMap<Double, ShotParameter> kNoteDetectionMap = 
+      new TreeMap<>(
+        Map.ofEntries(
+          Map.entry(-20.0, new ShotParameter(80, -16.7)),
+          Map.entry(-19.75, new ShotParameter(80, -15.2)),
+          Map.entry(-17.6, new ShotParameter(80, -12.7)),
+          Map.entry(-15.3, new ShotParameter(80, -11.69)),
+          Map.entry(-16.48, new ShotParameter(80, -12.45)),
+          Map.entry(-14.61, new ShotParameter(80, -10.32)),
+          Map.entry(-13.2, new ShotParameter(80, -8.59)),
+          Map.entry(-12.42, new ShotParameter(80, -6.52))
           ));
 
     public static final int kShooterLeftPort = 17;
