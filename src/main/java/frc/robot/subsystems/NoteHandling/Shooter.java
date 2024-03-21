@@ -138,6 +138,8 @@ public class Shooter extends SubsystemBase {
         if(desiredVelocity!=0){
             m_talonRight.setControl(request.withVelocity(desiredVelocity).withLimitReverseMotion(true));
             m_talonLeft.setVoltage(m_talonRight.getMotorVoltage().getValueAsDouble());
+            //double voltagePercent = m_talonRight.getMotorVoltage().getValueAsDouble() / kNominalVoltage;
+            //m_talonLeft.setControl(new DutyCycleOut(voltagePercent).withEnableFOC(false));
             // m_talonLeft.setVoltage(.25);
             // m_talonRight.setVoltage(.25);
 

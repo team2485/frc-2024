@@ -365,8 +365,10 @@ public final class Constants {
         Map.ofEntries(
           Map.entry(1.401, new ShotParameter(80, 1.5)),
           Map.entry(4.1, new ShotParameter(80, 1.2)),
-          Map.entry(4.5, new ShotParameter(80, 1.15))
+          Map.entry(4.5, new ShotParameter(80, 1.15
+          ))
           // Map.entry(4.5, new ShotParameter(80, .8))
+          // home tuning 1.33, 1.3
           ));
       
     public static final TreeMap<Double, ShotParameter> kNoteDetectionMap = 
@@ -395,7 +397,7 @@ public final class Constants {
     public static final double kShooterCruiseVelocity = 80;
     public static final double kShooterAcceleration = 160;
     public static final double kShooterJerk = 1600; 
-    public static final double kShooterErrorTolerance = 2;
+    public static final double kShooterErrorTolerance = 4;
     public static final boolean kShooterClockwisePositive = false;
     public static final int kCurrentLimit = 80;
   }
@@ -411,7 +413,7 @@ public final class Constants {
     public static final double kPivotAcceleration = Math.PI;
     public static final double kPivotJerk = Math.PI*80; 
     public static final boolean kPivotClockwisePositive = true;
-    public static final double kPivotErrorTolerance = .02;
+    public static final double kPivotErrorTolerance = .03;
     public static final double kSensorToMechanismGearRatio = 75;
     public static final int kCurrentLimit = 40;
   }

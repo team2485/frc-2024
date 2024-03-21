@@ -126,6 +126,7 @@ public class SwerveModule {
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
             double percentOutput = desiredState.speedMetersPerSecond / maxSpeed;
+            //mDriveMotor.setControl(new DutyCycleOut(percentOutput).withEnableFOC(false));
             mDriveMotor.set(percentOutput);
         }
         else {
@@ -145,14 +146,14 @@ public class SwerveModule {
         m_setpoint = m_profile.calculate(angleContinuousCurrentLimit, m_setpoint, m_goal);
         
 
-        mAngleMotor.setControl(mAnglePositionVoltage.withPosition(m_setpoint.position));
+        mAngleMotor.setControl(mAnglePositionVoltage.withPosition(m_setpoint.position).withEnableFOC(true));
 
         lastAngle = angle;
     } 
 
     private void setAngle(Rotation2d angle)
     {
-        mAngleMotor.setControl(mAnglePositionVoltage.withPosition(angle.getRotations()));
+        mAngleMotor.setControl(mAnglePositionVoltage.withPosition(angle.getRotations()).withEnableFOC(true));
         lastAngle = Rotation2d.fromRotations(absAngle);
         lastAngle = angle;
     }

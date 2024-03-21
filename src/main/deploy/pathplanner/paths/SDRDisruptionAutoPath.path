@@ -1,0 +1,111 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 15.847167785633717,
+        "y": 4.520382906671662
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 16.702058853475762,
+        "y": 4.461828723942755
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.32881072323996,
+        "y": 0.7729152120183922
+      },
+      "prevControl": {
+        "x": 8.328810723236025,
+        "y": -0.4080226398899278
+      },
+      "nextControl": {
+        "x": 8.328810723241988,
+        "y": 1.3818787124022183
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.32881072323996,
+        "y": 7.42467037002229
+      },
+      "prevControl": {
+        "x": 8.383470440141261,
+        "y": 6.276816315094998
+      },
+      "nextControl": {
+        "x": 8.281967377056832,
+        "y": 8.408380639867937
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 11.9943025620716,
+        "y": 3.325877579001948
+      },
+      "prevControl": {
+        "x": 10.00953180264024,
+        "y": 3.070108151240175
+      },
+      "nextControl": {
+        "x": 14.26620485195321,
+        "y": 3.6186484926464852
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 15.261625958342611,
+        "y": 4.883418839587703
+      },
+      "prevControl": {
+        "x": 15.790903049707067,
+        "y": 4.444262469120897
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -20.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": -20.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 8.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 24.775140568831727,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SDR",
+  "previewStartingState": {
+    "rotation": 60.75117366345316,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

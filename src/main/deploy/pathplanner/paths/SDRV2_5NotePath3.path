@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.668952188118356,
-        "y": 5.550936522700434
+        "x": 14.664373294509787,
+        "y": 4.532093743217444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.39502405395681,
-        "y": 4.778021310678856
+        "x": 14.500421582868844,
+        "y": 4.19247948338978
       },
       "isLocked": false,
-      "linkedName": "SDRNote3Pos"
+      "linkedName": "SDR5NoteV2_2"
     },
     {
       "anchor": {
-        "x": 13.797771390121952,
-        "y": 4.087081954477746
+        "x": 13.78606055357617,
+        "y": 4.075371117931965
       },
       "prevControl": {
-        "x": 14.359891544319465,
-        "y": 3.946551915928368
+        "x": 14.4652890732315,
+        "y": 4.157346973752435
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,19 +29,7 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Slow",
-      "minWaypointRelativePos": 0.75,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,

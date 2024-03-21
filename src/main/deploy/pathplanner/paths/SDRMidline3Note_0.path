@@ -3,51 +3,51 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.364470437928038,
-        "y": 6.991369417831561
+        "x": 15.741770256721683,
+        "y": 3.9582627524741496
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.66639913879194,
-        "y": 7.131899456385714
-      },
-      "isLocked": false,
-      "linkedName": "SDRNote1Pos"
-    },
-    {
-      "anchor": {
-        "x": 8.082883155780575,
-        "y": 7.412959533479694
-      },
-      "prevControl": {
-        "x": 10.062014532019873,
-        "y": 7.167031966023059
-      },
-      "nextControl": {
-        "x": 7.475780101620827,
-        "y": 7.488398374527581
+        "x": 12.568133552814894,
+        "y": 1.5458304240431584
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.172518159586959,
-        "y": 6.206743369264199
+        "x": 8.305389050150424,
+        "y": 0.7260718658384518
       },
       "prevControl": {
-        "x": 12.54471187972555,
-        "y": 6.41753842709304
+        "x": 9.312520993087634,
+        "y": 0.7377827023842345
+      },
+      "nextControl": {
+        "x": 7.487359323208058,
+        "y": 0.7165598922693537
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 13.844614736305079,
+        "y": 3.290745069364603
+      },
+      "prevControl": {
+        "x": 12.896036976096775,
+        "y": 2.7637574248044356
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SDRNote2Pos"
+      "linkedName": "SDRMidline3Note_0"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0,
       "rotateFast": false
     }
   ],
@@ -61,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -8.130102354156044,
+    "rotation": 38.65980825409001,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "SDR",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 61.38954033403463,
     "velocity": 0
   },
   "useDefaultConstraints": false

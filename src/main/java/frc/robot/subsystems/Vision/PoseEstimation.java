@@ -42,6 +42,7 @@ public class PoseEstimation extends SubsystemBase {
   private final Vision photonEstimator = new Vision();
   private final Notifier photonNotifier = new Notifier(photonEstimator);
   private final WL_CommandXboxController m_driver;
+    private final WL_CommandXboxController m_operator;
 
   private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
   private boolean sawTag = false;
@@ -50,12 +51,13 @@ public class PoseEstimation extends SubsystemBase {
 
   GenericEntry visionTest;
 
-  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver) {
+  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator) {
     visionTest = Shuffleboard.getTab("Swerve").add("RequestedAngle", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
     this.speeds = chassisSpeeds;
     this.m_driver = m_driver;
+    this.m_operator = m_operator;
 
     poseEstimator = new SwerveDrivePoseEstimator(
         Swerve.swerveKinematics,
@@ -91,9 +93,15 @@ public class PoseEstimation extends SubsystemBase {
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(getAngleToSpeakerCalculated());
 
+      if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
+    else m_operator.setRumble(RumbleType.kLeftRumble, 0);
+
     if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
     else m_driver.setRumble(RumbleType.kLeftRumble, 0);
   }
+
+  
+
 
   private String getFormattedPose() {
     var pose = getCurrentPose();

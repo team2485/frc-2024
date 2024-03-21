@@ -3,54 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.364470437928038,
-        "y": 6.991369417831561
+        "x": 13.844614736305079,
+        "y": 3.290745069364603
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.66639913879194,
-        "y": 7.131899456385714
+        "x": 11.010592292225953,
+        "y": 1.7214929722298802
       },
       "isLocked": false,
-      "linkedName": "SDRNote1Pos"
+      "linkedName": "SDRMidline3Note_0"
     },
     {
       "anchor": {
-        "x": 8.082883155780575,
-        "y": 7.412959533479694
+        "x": 8.235124030875737,
+        "y": 2.435854001522554
       },
       "prevControl": {
-        "x": 10.062014532019873,
-        "y": 7.167031966023059
+        "x": 10.624134686215164,
+        "y": 1.3116136931275284
       },
       "nextControl": {
-        "x": 7.475780101620827,
-        "y": 7.488398374527581
+        "x": 7.565272617644682,
+        "y": 2.7510781959842268
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.172518159586959,
-        "y": 6.206743369264199
+        "x": 13.844614736305079,
+        "y": 3.290745069364603
       },
       "prevControl": {
-        "x": 12.54471187972555,
-        "y": 6.41753842709304
+        "x": 10.460182974574224,
+        "y": 0.10539752891203219
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SDRNote2Pos"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -61,7 +55,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -8.130102354156044,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,

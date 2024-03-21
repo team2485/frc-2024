@@ -133,10 +133,10 @@ public class DriveWithController extends Command {
 
     if (aimingAtAmp) {
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawMod().getDegrees(), 90);
-      xSpeed = xOverrideController.calculate(mPoseEstimation.getCurrentPose().getX(), mPoseEstimation.getFieldConstants().getAmpPos().getX());
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-        xSpeed *= -1;
-      ySpeed *= .4;
+      // xSpeed = xOverrideController.calculate(mPoseEstimation.getCurrentPose().getX(), mPoseEstimation.getFieldConstants().getAmpPos().getX());
+      // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+      //   xSpeed *= -1;
+      // ySpeed *= .4;
     
     }
 

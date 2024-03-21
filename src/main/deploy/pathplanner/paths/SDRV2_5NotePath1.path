@@ -3,54 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.680663024664138,
-        "y": 7.014791090923124
+        "x": 14.664373294509787,
+        "y": 6.148189186535292
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.98259172552804,
-        "y": 7.155321129477277
+        "x": 14.816614169604943,
+        "y": 6.8039960330990565
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SDR5NoteV2_0"
     },
     {
       "anchor": {
-        "x": 8.281967377058862,
-        "y": 7.565200408574855
+        "x": 13.505000476477415,
+        "y": 6.9679477447399965
       },
       "prevControl": {
-        "x": 10.261098753298159,
-        "y": 7.319272841118219
+        "x": 13.59049760400628,
+        "y": 7.224439127326592
       },
       "nextControl": {
-        "x": 7.674864322899114,
-        "y": 7.640639249622741
+        "x": 13.376181274473819,
+        "y": 6.581490138729208
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 15.203071775615735,
-        "y": 6.101345840352166
+        "x": 14.664373294509787,
+        "y": 5.550936522700434
       },
       "prevControl": {
-        "x": 13.575265495754326,
-        "y": 6.312140898181006
+        "x": 14.558975765597756,
+        "y": 6.686887667641241
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SDRNote2Pos"
+      "linkedName": "SDR5NoteV2_1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {

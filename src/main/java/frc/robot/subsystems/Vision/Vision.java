@@ -100,10 +100,14 @@ public class Vision implements Runnable {
         if (m_noteCamera != null) {
             var photonResults = m_noteCamera.getLatestResult();
             if (photonResults.hasTargets()) {
-                noteExists = true;
-                notePitch = photonResults.targets.get(0).getPitch();
-                noteYaw = photonResults.targets.get(0).getYaw();
-                cameraExists.setDouble(grabNotePitch());
+                photonResults.targets.removeIf(n -> (n.getPitch() > 0));
+                if (photonResults.targets.size() > 0) {
+                    noteExists = true;
+                    notePitch = photonResults.targets.get(0).getPitch();
+                    noteYaw = photonResults.targets.get(0).getYaw();
+                    cameraExists.setDouble(grabNoteYaw());
+                }
+                else noteExists = false;
             }
             else noteExists = false;
         }

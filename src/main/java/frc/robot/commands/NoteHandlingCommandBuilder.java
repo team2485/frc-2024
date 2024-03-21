@@ -38,12 +38,13 @@ import frc.robot.subsystems.drive.Drivetrain;
 
 public class NoteHandlingCommandBuilder {
 
-    public static Command intake(Intake intake, GeneralRoller indexer, GeneralRoller feeder, WL_CommandXboxController driver) {
+    public static Command intake(Intake intake, GeneralRoller indexer, GeneralRoller feeder, WL_CommandXboxController driver, WL_CommandXboxController operator
+    ) {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
                                 new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder),
-                                new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kRightRumble, 0.75), ()->driver.setRumble(RumbleType.kRightRumble, 0)))
+                                new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kRightRumble, 0.75), ()->driver.setRumble(RumbleType.kRightRumble, 0))).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0)))
                                 );
         return command;
     }
@@ -139,7 +140,7 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shooterPasser(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new SequentialCommandGroup(
-            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->shooter.getCurrentState()==ShooterStates.StatePass),
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).withTimeout(.5),
             runFeeder(feeder, indexer)
             );
 

@@ -154,8 +154,8 @@ public class Climber extends SubsystemBase {
         if (rightSet) m_talonRight.setVoltage(0);
     }
     else {
-      m_talonLeft.setControl(request.withPosition(desiredPosition));
-      m_talonRight.setControl(request.withPosition(desiredPosition));
+      m_talonLeft.setControl(request.withPosition(desiredPosition).withEnableFOC(true));
+      m_talonRight.setControl(request.withPosition(desiredPosition).withEnableFOC(true));
     }
   }
 
