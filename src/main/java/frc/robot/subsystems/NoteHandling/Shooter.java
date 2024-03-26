@@ -6,9 +6,14 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.Interpolation.InterpolatingTable;
+import frc.robot.commands.Interpolation.ShotParameter;
 import frc.robot.subsystems.NoteHandling.Pivot.PivotStates;
 
 import static frc.robot.Constants.ShooterConstants.*;
+
+import java.util.function.DoubleSupplier;
+
 import static frc.robot.Constants.*;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.*;
@@ -44,8 +49,11 @@ public class Shooter extends SubsystemBase {
 
     private double desiredVelocity = 0;
     private double desiredVoltage = 0;
+    DoubleSupplier distanceFromSpeaker;
 
-    public Shooter (){
+    public Shooter(DoubleSupplier distanceFromSpeaker) {
+
+      this.distanceFromSpeaker = distanceFromSpeaker;
 
         var talonFXConfigs = new TalonFXConfiguration();
 
@@ -113,7 +121,7 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 2;
             break;
           case StateSpeaker:
-            desiredVelocity = 70;
+            desiredVelocity = InterpolatingTable.get(distanceFromSpeaker.getAsDouble()).shooterSpeedRotationsPerSecond;
             desiredVoltage = 0;
             break;
           case StateAmp:
@@ -136,10 +144,10 @@ public class Shooter extends SubsystemBase {
     
       public void runControlLoop() {
         if(desiredVelocity!=0){
-            m_talonRight.setControl(request.withVelocity(desiredVelocity).withLimitReverseMotion(true));
-            m_talonLeft.setVoltage(m_talonRight.getMotorVoltage().getValueAsDouble());
-            //double voltagePercent = m_talonRight.getMotorVoltage().getValueAsDouble() / kNominalVoltage;
-            //m_talonLeft.setControl(new DutyCycleOut(voltagePercent).withEnableFOC(false));
+            m_talonRight.setControl(request.withVelocity(desiredVelocity).withLimitReverseMotion(true).withEnableFOC(true));
+            //m_talonLeft.setVoltage(m_talonRight.getMotorVoltage().getValueAsDouble());
+            double voltagePercent = m_talonRight.getMotorVoltage().getValueAsDouble() / kNominalVoltage;
+            m_talonLeft.setControl(new DutyCycleOut(voltagePercent).withEnableFOC(true));
             // m_talonLeft.setVoltage(.25);
             // m_talonRight.setVoltage(.25);
 

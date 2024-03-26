@@ -9,7 +9,7 @@ public class ShotCalculator
   private static double m_verticalDistance = 0, m_verticalVelocity = 0;
   private static double m_horizontalDistance = 0, m_horizontalVelocity = 0;
   
-  private static double m_ballSpeed = 14;
+  private static double m_ballSpeed = 18;
   private static double m_ballGravity = -9.8;
   private static double m_maxShotTime = 30;
   

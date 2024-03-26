@@ -363,9 +363,9 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.401, new ShotParameter(80, 1.5)),
+          Map.entry(1.401, new ShotParameter(70, 1.5)),
           Map.entry(4.1, new ShotParameter(80, 1.2)),
-          Map.entry(4.5, new ShotParameter(80, 1.15
+          Map.entry(4.5, new ShotParameter(80, 1.13
           ))
           // Map.entry(4.5, new ShotParameter(80, .8))
           // home tuning 1.33, 1.3
@@ -390,7 +390,7 @@ public final class Constants {
     public static final double kSShooter = .25;
     public static final double kVShooter = .12;
     public static final double kAShooter = .56;
-    public static final double kPShooter = .04;
+    public static final double kPShooter = .04*8;
     public static final double kIShooter = .01;
     public static final double kDShooter = 0.01;
     public static final double kSensorToMechanismGearRatio = 36/27;

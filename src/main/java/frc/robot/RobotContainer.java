@@ -54,7 +54,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
   private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
-  private final Shooter m_shooter = new Shooter();
+  private final Shooter m_shooter = new Shooter(m_poseEstimation::getDistanceToSpeaker);
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
   private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);

@@ -40,14 +40,14 @@ public class Pivot extends SubsystemBase {
 
   // You may need more than one motor
   private final TalonFX m_talon = new TalonFX(kPivotPort, "Mast");
-  DoubleSupplier distance; 
+  DoubleSupplier angle; 
   private final MotionMagicVoltage request = new MotionMagicVoltage(0).withSlot(0);
   // Unit default for TalonFX libraries is rotations
   private double desiredPosition = 0;
 
-  public Pivot(DoubleSupplier distance) {
+  public Pivot(DoubleSupplier angle) {
 
-    this.distance = distance;
+    this.angle = angle;
     // Misc setup goes here
 
     armPosition = Shuffleboard.getTab("Swerve").add("ArmPosition", 0).getEntry();
@@ -114,7 +114,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = .06;
         break;
       case StateShooter:
-        desiredPosition = MathUtil.clamp(distance.getAsDouble(), 0, .25);
+        desiredPosition = MathUtil.clamp(angle.getAsDouble(), 0, .25);
         break;
     }
  
