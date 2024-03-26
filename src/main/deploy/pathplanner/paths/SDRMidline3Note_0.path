@@ -39,6 +39,22 @@
         "x": 12.896036976096775,
         "y": 2.7637574248044356
       },
+      "nextControl": {
+        "x": 14.793192496513383,
+        "y": 3.8177327139247708
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 14.61752994832666,
+        "y": 3.7826002042874274
+      },
+      "prevControl": {
+        "x": 15.09181882843081,
+        "y": 4.022672353475948
+      },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "SDRMidline3Note_0"

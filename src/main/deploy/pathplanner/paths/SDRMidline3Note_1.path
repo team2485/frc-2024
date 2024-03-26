@@ -3,48 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.844614736305079,
-        "y": 3.290745069364603
+        "x": 14.61752994832666,
+        "y": 3.7826002042874274
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.010592292225953,
-        "y": 1.7214929722298802
+        "x": 11.959170052434255,
+        "y": 1.8737338473250418
       },
       "isLocked": false,
       "linkedName": "SDRMidline3Note_0"
     },
     {
       "anchor": {
-        "x": 8.235124030875737,
-        "y": 2.435854001522554
+        "x": 8.153148175055266,
+        "y": 2.4475648380683346
       },
       "prevControl": {
-        "x": 10.624134686215164,
-        "y": 1.3116136931275284
+        "x": 10.425050464936877,
+        "y": 1.276481183490184
       },
       "nextControl": {
-        "x": 7.565272617644682,
-        "y": 2.7510781959842268
+        "x": 7.495110141426022,
+        "y": 2.786759700763821
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 13.844614736305079,
-        "y": 3.290745069364603
+        "x": 14.430156563594155,
+        "y": 3.7591785311958636
       },
       "prevControl": {
-        "x": 10.460182974574224,
-        "y": 0.10539752891203219
+        "x": 10.706110542035635,
+        "y": 0.0702650192746889
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SDRMidline3Note_1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {

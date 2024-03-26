@@ -209,7 +209,7 @@ public class NoteHandlingCommandBuilder {
         Command command = new SequentialCommandGroup(
             new ParallelCommandGroup(
                 new RunCommand(()->pivot.requestState(PivotStates.StateAmp), pivot),
-                new RunCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter)
+                new RunCommand(()->shooter.requestState(ShooterStates.StateAmp), shooter)
             ).until(()->pivot.getCurrentState() == PivotStates.StateAmp),
             runFeederIsh(feeder, indexer)
         );

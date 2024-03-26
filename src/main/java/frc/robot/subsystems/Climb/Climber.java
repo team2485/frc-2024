@@ -125,7 +125,7 @@ public class Climber extends SubsystemBase {
 
     switch (m_ClimberRequestedState) {
       case StateUp:
-        desiredPosition = 2;
+        desiredPosition = 1.6;
         desiredVoltage = 0;
         break;
       case StateDownVoltage:
