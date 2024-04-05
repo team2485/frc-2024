@@ -54,9 +54,11 @@ public class PoseEstimation extends SubsystemBase {
   ShotCalculator yawCalculator, pitchCalculator;
 
   GenericEntry visionTest;
+  GenericEntry xLog;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator) {
-    visionTest = Shuffleboard.getTab("Swerve").add("RequestedAngle", 0).getEntry();
+    visionTest = Shuffleboard.getTab("Swerve").add("RequestedAngleDTest", 0).getEntry();
+    xLog = Shuffleboard.getTab("Swerve").add("YDist", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
     this.speeds = chassisSpeeds;
@@ -188,8 +190,9 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getAngleToSpeakerCalculated() {
-    yawCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
-    yawCalculator.setVelocities(speeds.get().vxMetersPerSecond, 0, speeds.get().vyMetersPerSecond);
+    Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
+    yawCalculator.setPositions(futurePos, getFieldConstants().getSpeakerAnglePos().getTranslation());
+    yawCalculator.setVelocities(0, 0, 0);
     // v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = yawCalculator.shoot();
     double x = velocities[0];
@@ -197,11 +200,20 @@ public class PoseEstimation extends SubsystemBase {
     double z = velocities[1];
     double theta = Rotation2d.fromRadians(Math.atan2(y,x)).getDegrees();
     return theta;
+
+    // x is towards the speaker
+    // double x = Math.abs(getCurrentPose().getTranslation().getX() - getFieldConstants().getSpeakerAnglePos().getX());
+    // double y = -(getCurrentPose().getTranslation().getY() - getFieldConstants().getSpeakerAnglePos().getY());
+    // double dtheta_dx = 1/(1+Math.pow(y/x, 2)) * (y*Math.log(Math.abs(x)));
+    // double dtheta_dy = 1/(1+Math.pow(y/x, 2)) * (1/x);
+    // xLog.setDouble(Math.sqrt(dtheta_dx*dtheta_dx + dtheta_dy+dtheta_dy));
+    // return Rotation2d.fromRadians(Math.sqrt(dtheta_dx*dtheta_dx + dtheta_dy+dtheta_dy)).getDegrees();
   }
 
   public double getPivotAngleCalculated() {
-    pitchCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
-    pitchCalculator.setVelocities(speeds.get().vxMetersPerSecond, 0, speeds.get().vyMetersPerSecond);
+    Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
+    pitchCalculator.setPositions(futurePos, getFieldConstants().getSpeakerPos().getTranslation());
+    pitchCalculator.setVelocities(0, 0, 0);
     // v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = pitchCalculator.shoot();
     double x = velocities[0];
