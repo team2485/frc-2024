@@ -5,50 +5,52 @@ import edu.wpi.first.math.geometry.Translation3d;
 
 public class ShotCalculator
 {
-  private static double m_forwardDistance = 0, m_forwardVelocity = 0;
-  private static double m_verticalDistance = 0, m_verticalVelocity = 0;
-  private static double m_horizontalDistance = 0, m_horizontalVelocity = 0;
+  private double m_forwardDistance = 0, m_forwardVelocity = 0;
+  private double m_verticalDistance = 0, m_verticalVelocity = 0;
+  private double m_horizontalDistance = 0, m_horizontalVelocity = 0;
   
-  private static double m_ballSpeed = 18;
-  private static double m_ballGravity = -9.8;
-  private static double m_maxShotTime = 30;
+  private double m_ballSpeed = 18;
+  private double m_ballGravity = -9.8;
+  private double m_maxShotTime = 30;
   
-  private static boolean straightShot = true;
-  private static boolean shotExists = true;
+  private boolean straightShot = true;
+  private boolean shotExists = true;
   
-  public static void setPositions(double m_forwardDistance, double m_verticalDistance, double m_horizontalDistance)
+  public void setPositions(double m_forwardDistance, double m_verticalDistance, double m_horizontalDistance)
   {
-    ShotCalculator.m_forwardDistance = m_forwardDistance;
-    ShotCalculator.m_verticalDistance = m_verticalDistance;
-    ShotCalculator.m_horizontalDistance = m_horizontalDistance; 
+    this.m_forwardDistance = m_forwardDistance;
+    this.m_verticalDistance = m_verticalDistance;
+    this.m_horizontalDistance = m_horizontalDistance; 
   }
 
-  public static void setPositions(Translation2d robotPos, Translation2d targetPos) {
-    ShotCalculator.m_forwardDistance = targetPos.getX()-robotPos.getX();
+  public void setPositions(Translation2d robotPos, Translation2d targetPos) {
+    this.m_forwardDistance = targetPos.getX()-robotPos.getX();
     // ShotCalculator.m_verticalDistance = 1.56;
-    ShotCalculator.m_horizontalDistance = targetPos.getY()-robotPos.getY();
-    ShotCalculator.m_verticalDistance = InterpolatingTable.get(Math.hypot(Math.abs(m_forwardDistance), Math.abs(m_horizontalDistance))).pivotAngleRotations;
+    this.m_horizontalDistance = targetPos.getY()-robotPos.getY();
+    //ShotCalculator.m_verticalDistance = InterpolatingTable.get(Math.hypot(Math.abs(m_forwardDistance), Math.abs(m_horizontalDistance))).pivotAngleRotations;
+    double x = Math.hypot(Math.abs(m_forwardDistance), Math.abs(m_horizontalDistance));
+    this.m_verticalDistance = (1 / (1.25*(x-.4))) + 1;
     //ShotCalculator.m_verticalDistance = 1;
   }
   
-  public static void setVelocities(double m_forwardVelocity, double m_verticalVelocity, double m_horizontalVelocity) 
+  public void setVelocities(double m_forwardVelocity, double m_verticalVelocity, double m_horizontalVelocity) 
   {
-    ShotCalculator.m_forwardVelocity = -m_forwardVelocity;
-    ShotCalculator.m_verticalVelocity = -m_verticalVelocity;
-    ShotCalculator.m_horizontalVelocity = -m_horizontalVelocity;
+    this.m_forwardVelocity = -m_forwardVelocity;
+    this.m_verticalVelocity = -m_verticalVelocity;
+    this.m_horizontalVelocity = -m_horizontalVelocity;
   }
   
-  public static void setSpeed(double m_ballSpeed) 
+  public void setSpeed(double m_ballSpeed) 
   {
-    ShotCalculator.m_ballSpeed = m_ballSpeed;
+    this.m_ballSpeed = m_ballSpeed;
   }
   
-  public static void isStraightShot(boolean straightShot) {
-    ShotCalculator.straightShot = straightShot;
+  public void isStraightShot(boolean straightShot) {
+    this.straightShot = straightShot;
   }
  
   
-  public static double[] shoot()
+  public double[] shoot()
   {
     shotExists = true;
     
@@ -103,7 +105,7 @@ public class ShotCalculator
     return straightShot ? new double[] {shortXComponent, shortYComponent, shortZComponent} : new double[]{longXComponent, longYComponent, longZComponent};
   }
   
-  private static double bisectionMethod(double time1, double time2)
+  private double bisectionMethod(double time1, double time2)
   {
     double negativeTimeInterval = time1;
     double positiveTimeInterval = time2;
@@ -122,7 +124,7 @@ public class ShotCalculator
     return midpoint;
   }
   
-  private static double test(double timeInput)
+  private double test(double timeInput)
   {
     double d = m_ballSpeed * timeInput;
     double gPos = getGPos(timeInput) - m_verticalDistance;
@@ -133,11 +135,11 @@ public class ShotCalculator
     return d - Math.sqrt((forward*forward) + (vertical*vertical) + (horizontal*horizontal));
   }
 
-  public static Translation3d getRelativePos() {
+  public Translation3d getRelativePos() {
     return new Translation3d(m_forwardDistance, m_horizontalDistance, m_verticalDistance);
   }
 
-  private static double getGPos(double time)
+  private double getGPos(double time)
   {
     return (m_ballGravity * (time * time) * .5);
   }

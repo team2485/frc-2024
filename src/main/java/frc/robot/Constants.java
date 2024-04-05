@@ -243,7 +243,7 @@ public final class Constants {
   public static final class BlueFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
     public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getSpeakerAnglePos() { return new Pose2d(0, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(-0.038099999999999995, 5.547867999999999+.15, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(1.8415, 8.5, new Rotation2d()); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {

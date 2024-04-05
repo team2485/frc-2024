@@ -21,6 +21,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import javax.sound.sampled.BooleanControl;
 import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -40,7 +41,8 @@ public class DriveWithController extends Command {
   private final DoubleSupplier m_angleToNoteSetpoint;
   private final DoubleSupplier m_ampAngle;
   private final Drivetrain m_drivetrain;
-
+  private final DoubleSupplier m_stageAngle;
+  private final BooleanSupplier m_aimingAtStage;
   private final PIDController rotationOverrideController = new PIDController(.1, 0, .0075);
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
@@ -54,6 +56,8 @@ public class DriveWithController extends Command {
       DoubleSupplier speakerAngle,
       BooleanSupplier aimingAtAmp,
       DoubleSupplier ampAngle,
+      BooleanSupplier aimingAtStage,
+      DoubleSupplier stageAngle,
       BooleanSupplier aimingAtNote,
       BooleanSupplier noteExists,
       DoubleSupplier angleToNote,
@@ -73,6 +77,8 @@ public class DriveWithController extends Command {
     this.m_noteExists = noteExists;
     this.m_angleToNote = angleToNote;
     this.m_angleToNoteSetpoint = angleToNoteSetpoint;
+    this.m_aimingAtStage = aimingAtStage;
+    this.m_stageAngle = stageAngle;
 
     this.mPoseEstimation = poseEstimation;
     this.m_drivetrain = drivetrain;
@@ -111,6 +117,10 @@ public class DriveWithController extends Command {
 
     final boolean aimingAtAmp = m_aimingAtAmp.getAsBoolean();
 
+    final boolean aimingAtStage = m_aimingAtStage.getAsBoolean();
+
+    final double stageAngle = m_stageAngle.getAsDouble();
+
     final double ampAngle = m_ampAngle.getAsDouble();
 
     final boolean aimingAtNote = m_aimingAtNote.getAsBoolean();
@@ -121,6 +131,12 @@ public class DriveWithController extends Command {
 
     final double angleToNoteSetpoint = m_angleToNoteSetpoint.getAsDouble();
 
+
+    if(aimingAtStage) {
+
+      rot = -rotationOverrideController.calculate(m_drivetrain.getYawMod().getDegrees(), stageAngle);
+
+    }
     if (aimingAtSpeaker) {
       // xSpeed*=.2;
       // ySpeed*=.2;

@@ -8,6 +8,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.WarlordsLib.WL_CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.Constants.BlueFieldConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.RedFieldConstants;
@@ -49,6 +51,8 @@ public class PoseEstimation extends SubsystemBase {
   private double angleToTags = 0;
   Supplier<ChassisSpeeds> speeds;
 
+  ShotCalculator yawCalculator, pitchCalculator;
+
   GenericEntry visionTest;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator) {
@@ -67,6 +71,9 @@ public class PoseEstimation extends SubsystemBase {
 
     photonNotifier.setName("PhotonRunnable");
     photonNotifier.startPeriodic(0.02);
+
+    yawCalculator = new ShotCalculator();
+    pitchCalculator = new ShotCalculator();
   }
 
   public void addDashboardWidgets(ShuffleboardTab tab) {
@@ -88,12 +95,12 @@ public class PoseEstimation extends SubsystemBase {
     // if (originPosition == OriginPosition.kRedAllianceWallRightSide) {
     //   dashboardPose = flipAlliance(dashboardPose);
     // }
-
+      
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(getAngleToSpeakerCalculated());
-
-      if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
+    
+    if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
     else m_operator.setRumble(RumbleType.kLeftRumble, 0);
 
     if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
@@ -110,6 +117,7 @@ public class PoseEstimation extends SubsystemBase {
 
   public Pose2d getCurrentPose() {
     var pos = poseEstimator.getEstimatedPosition();
+    
     if (pos.getX() < 0)
       pos = new Pose2d(new Translation2d(0, poseEstimator.getEstimatedPosition().getY()), poseEstimator.getEstimatedPosition().getRotation());
     if (pos.getX() > VisionConstants.kFieldLengthMeters)
@@ -153,6 +161,13 @@ public class PoseEstimation extends SubsystemBase {
   public double getAngleToAmp() {
     return getAngleToPos(getFieldConstants().getAmpPos());
   }
+  public double getAngleToStage() {
+    //if (photonEstimator.grabLatestEstimatedPose() != null) 
+    // int tagID = photonEstimator.grabLatestEstimatedPose().targetsUsed.get(0).getFiducialId();
+    // Rotation3d angle = Constants.VisionConstants.kBlueTagList.get(tagID-1).pose.getRotation();
+    // return angle.getAngle();
+    return 0;
+  }
 
   public double getAngleToPos(Pose2d pos) {
     double deltaY = pos.getY() - getCurrentPose().getY();
@@ -173,10 +188,10 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getAngleToSpeakerCalculated() {
-    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
-    ShotCalculator.setVelocities(0, 0, 0);
+    yawCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
+    yawCalculator.setVelocities(speeds.get().vxMetersPerSecond, 0, speeds.get().vyMetersPerSecond);
     // v[0] = forward v[1] = vertical v[2] = horizontal
-    double[] velocities = ShotCalculator.shoot();
+    double[] velocities = yawCalculator.shoot();
     double x = velocities[0];
     double y = velocities[2];
     double z = velocities[1];
@@ -185,10 +200,10 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getPivotAngleCalculated() {
-    ShotCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
-    ShotCalculator.setVelocities(0, 0, 0);
+    pitchCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
+    pitchCalculator.setVelocities(speeds.get().vxMetersPerSecond, 0, speeds.get().vyMetersPerSecond);
     // v[0] = forward v[1] = vertical v[2] = horizontal
-    double[] velocities = ShotCalculator.shoot();
+    double[] velocities = pitchCalculator.shoot();
     double x = velocities[0];
     double y = velocities[2];
     double z = velocities[1];
