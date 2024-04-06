@@ -40,6 +40,7 @@ public class PoseEstimation extends SubsystemBase {
   private final Supplier<Rotation2d> rotation;
   private final Supplier<SwerveModulePosition[]> modulePosition;
   private final SwerveDrivePoseEstimator poseEstimator;
+  private final SwerveDrivePoseEstimator noVisionPoseEstimator;
   private final Field2d field2d = new Field2d();
   private final Vision photonEstimator = new Vision();
   private final Notifier photonNotifier = new Notifier(photonEstimator);
@@ -71,6 +72,12 @@ public class PoseEstimation extends SubsystemBase {
         modulePosition.get(),
         new Pose2d(), stateStdDevs, visionMeasurementStdDevs);
 
+    noVisionPoseEstimator = new SwerveDrivePoseEstimator(
+        Swerve.swerveKinematics, 
+        rotation.get(),
+        modulePosition.get(), 
+        new Pose2d());
+
     photonNotifier.setName("PhotonRunnable");
     photonNotifier.startPeriodic(0.02);
 
@@ -86,6 +93,7 @@ public class PoseEstimation extends SubsystemBase {
   @Override
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
+    noVisionPoseEstimator.update(rotation.get(), modulePosition.get());
     var visionPose = photonEstimator.grabLatestEstimatedPose();
     if (visionPose != null) {
       var pose2d = visionPose.estimatedPose.toPose2d();
@@ -109,12 +117,14 @@ public class PoseEstimation extends SubsystemBase {
     else m_driver.setRumble(RumbleType.kLeftRumble, 0);
   }
 
-  
-
-
   private String getFormattedPose() {
     var pose = getCurrentPose();
     return String.format("(%.3f, %.3f) %.2f radians", pose.getX(), pose.getY(), pose.getRotation().getRadians());
+  }
+
+  public Pose2d getCurrentVisionlessPose() {
+    var pos = noVisionPoseEstimator.getEstimatedPosition();
+    return pos;
   }
 
   public Pose2d getCurrentPose() {
@@ -126,6 +136,10 @@ public class PoseEstimation extends SubsystemBase {
       pos = new Pose2d(new Translation2d(VisionConstants.kFieldLengthMeters, poseEstimator.getEstimatedPosition().getY()), poseEstimator.getEstimatedPosition().getRotation());
     
     return pos;
+  }
+
+  public Pose2d getCurrentPoseNoVision() {
+    return noVisionPoseEstimator.getEstimatedPosition();
   }
 
   public void setCurrentPose(Pose2d newPose) {
@@ -190,8 +204,8 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getAngleToSpeakerCalculated() {
-    Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
-    yawCalculator.setPositions(futurePos, getFieldConstants().getSpeakerAnglePos().getTranslation());
+    //Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
+    yawCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
     yawCalculator.setVelocities(0, 0, 0);
     // v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = yawCalculator.shoot();
@@ -211,8 +225,8 @@ public class PoseEstimation extends SubsystemBase {
   }
 
   public double getPivotAngleCalculated() {
-    Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
-    pitchCalculator.setPositions(futurePos, getFieldConstants().getSpeakerPos().getTranslation());
+    //Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
+    pitchCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
     pitchCalculator.setVelocities(0, 0, 0);
     // v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = pitchCalculator.shoot();

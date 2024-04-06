@@ -62,7 +62,7 @@ public class RobotContainer {
 
   public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
 
-  SendableChooser<Command> m_autoChooser;
+  SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
 
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
 
@@ -85,10 +85,13 @@ public class RobotContainer {
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
 
-    SmartDashboard.putData("Auto Chooser", m_autoChooser);
+    // m_autoChooser.setDefaultOption("TestAuto", 
+    // AutoCommandBuilder.choreoTestAuto(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
 
-    // m_autoChooser.addOption("TwoNoteAutoAt1", 
-    //             autoBuilder.twoNoteAt1(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));      
+    // m_autoChooser.addOption("TestAutoFire", 
+    // AutoCommandBuilder.runNoteScoringChoreoAuto("TestPath1", m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));   
+
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);   
   }
 
 
@@ -159,7 +162,7 @@ public class RobotContainer {
 
     m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
-    m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
+    m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
                             .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
     //m_operator.rightBumper().onTrue();

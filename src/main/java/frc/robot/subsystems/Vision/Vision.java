@@ -36,6 +36,7 @@ import static frc.robot.Constants.VisionConstants.*;
 public class Vision implements Runnable {
     // PhotonVision class that takes vision measurements from camera and triangulates position on field
     private final PhotonPoseEstimator m_photonPoseEstimator;
+    private final PhotonPoseEstimator m_estimatorWithError;
     // creates new PhotonCamera object for camera
     private final PhotonCamera m_camera; // initialize with a USEFUL name;
     private final PhotonCamera m_noteCamera;
@@ -44,14 +45,16 @@ public class Vision implements Runnable {
     // that are instrinsically atomic into working for concurrency
     GenericEntry cameraExists;
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
+    private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedBadRobotPose = new AtomicReference<EstimatedRobotPose>();
 
     private double notePitch = 0;
     private double noteYaw = 0;
+    private Pose3d m_badPose;
     private boolean noteExists = false;
 
     public Vision() {
         PhotonPoseEstimator photonPoseEstimator = null;
-
+        PhotonPoseEstimator estimatorWithError = null;
         cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
     
 
@@ -66,21 +69,49 @@ public class Vision implements Runnable {
             if (m_camera != null) {
                 photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_camera,
                         kRobotToCamera); // MULTI_TAG_PNP uses all cameras in view for positioning
-            }
+                estimatorWithError = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_camera,
+                        kRobotToCamera);
+                }
         } catch (Exception e) {
             DriverStation.reportError("Path: ", e.getStackTrace()); // can't estimate poses without known tag positions
             photonPoseEstimator = null;
         }
 
         this.m_photonPoseEstimator = photonPoseEstimator;
+        this.m_estimatorWithError = estimatorWithError;
+    }
+
+    public Pose3d getPoseWithAmbiguity(){
+
+        return m_badPose;
+
     }
 
     @Override
     public void run() {
+        
         if (m_photonPoseEstimator != null && m_camera != null) { // environment and camera must be initialized properly
             var photonResults = m_camera.getLatestResult(); // continuously get latest camera reading
+            if(photonResults.hasTargets()){
+
+                
+                m_estimatorWithError.update(photonResults).ifPresent(m_badPose -> {
+                    var estimatedPose = m_badPose.estimatedPose;
+
+                    //SmartDashboard.putBoolean("Camera Positioned For Auto", true);
+                    //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
+                    //cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
+
+                    if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
+                            && estimatedPose.getY() > 0.0
+                            && estimatedPose.getY() <= kFieldWidthMeters) { // idiot check
+                        m_atomicEstimatedBadRobotPose.set(m_badPose);
+                    }}
+                        );
+            }
+        
             if (photonResults.hasTargets()
-                    && (photonResults.targets.size() > 1 || (photonResults.targets.get(0).getPoseAmbiguity()<.15 && photonResults.targets.get(0).getPoseAmbiguity() > 0))) { // need accurate readings       
+                    && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) { // need accurate readings       
                 m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
                     var estimatedPose = estimatedRobotPose.estimatedPose;
 
