@@ -18,15 +18,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "SDRDisruptionAutoPath"
+            "name": "KickOutAuto"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Fire"
+            "pathName": "SDRDisruptionAutoPath"
           }
         }
       ]

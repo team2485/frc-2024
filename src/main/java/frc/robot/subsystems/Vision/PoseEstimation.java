@@ -110,8 +110,10 @@ public class PoseEstimation extends SubsystemBase {
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(getAngleToSpeakerCalculated());
     
-    if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
-    else m_operator.setRumble(RumbleType.kLeftRumble, 0);
+    //if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
+    //else m_operator.setRumble(RumbleType.kLeftRumble, 0);
+    
+    
 
     if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
     else m_driver.setRumble(RumbleType.kLeftRumble, 0);

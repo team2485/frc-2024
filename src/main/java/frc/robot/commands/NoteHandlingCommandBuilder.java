@@ -45,6 +45,8 @@ public class NoteHandlingCommandBuilder {
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
                                 new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder),
                                 new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kRightRumble, 0.75), ()->driver.setRumble(RumbleType.kRightRumble, 0))).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0)))
+                               // new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0))).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0)))
+
                                 );
         return command;
     }
@@ -59,6 +61,13 @@ public class NoteHandlingCommandBuilder {
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
                                 new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
+                                );
+        return command;
+    }
+
+    public static Command kickOutAuto(Intake intake, GeneralRoller indexer, GeneralRoller feeder) {
+        Command command = new ParallelCommandGroup(
+                                new InstantCommand(()->intake.requestState(IntakeStates.StateOuttake), intake)
                                 );
         return command;
     }
@@ -154,6 +163,13 @@ public class NoteHandlingCommandBuilder {
         return command;
     }
 
+    public static Command shooterCoast(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
+        Command command = new ParallelCommandGroup(
+            new InstantCommand(()->shooter.requestState(ShooterStates.StateCoast), shooter));
+            //feederOff(feeder, indexer));
+        return command;
+    }
+
     public static Command autoShooterSpeaker(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
                         new RunCommand(()->pivot.requestState(PivotStates.StateShooter), pivot), 
@@ -181,6 +197,15 @@ public class NoteHandlingCommandBuilder {
                         new InstantCommand(()->pivot.requestState(PivotStates.StateDown), pivot),
                         new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
                         shooterOff(shooter, feeder, indexer)
+                        );
+        return command;
+    }
+
+    public static Command autoShooterOffish(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, Intake intake) {
+        Command command = new ParallelCommandGroup(
+                        new InstantCommand(()->pivot.requestState(PivotStates.StateAutoIntake), pivot),
+                        new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
+                        shooterCoast(shooter, feeder, indexer)
                         );
         return command;
     }

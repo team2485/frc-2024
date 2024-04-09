@@ -30,7 +30,8 @@ public class Pivot extends SubsystemBase {
     StateAmp,
     StateMovingToRequestedState,
     StateShooter,
-    StateOuttake
+    StateOuttake,
+    StateAutoIntake
   }
 
   public static PivotStates m_PivotCurrentState;
@@ -112,6 +113,9 @@ public class Pivot extends SubsystemBase {
         break;
       case StateOuttake:
         desiredPosition = .06;
+        break;
+      case StateAutoIntake:
+        desiredPosition = .038;
         break;
       case StateShooter:
         desiredPosition = MathUtil.clamp(angle.getAsDouble(), 0, .25);
