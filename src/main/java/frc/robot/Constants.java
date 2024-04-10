@@ -288,7 +288,7 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(0.5842/2, 0, 0.24),
+    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(.2921, 0, 0.24),
         new Rotation3d(0,-.402,0)); 
     //-0.698
 
@@ -363,13 +363,13 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.401, new ShotParameter(65, 1.5)),
-          Map.entry(4.1, new ShotParameter(65, 1.08)),
-          Map.entry(4.5, new ShotParameter(63, 1.18))
-
+          Map.entry(1.223, new ShotParameter(70, 1.375)),
+          Map.entry(1.907, new ShotParameter(70, 1.2)),
+          Map.entry(2.923, new ShotParameter(70, 1.1)),
+          Map.entry(4.494, new ShotParameter(70, .97)),
+          Map.entry(5.484, new ShotParameter(70, .96))
           // Map.entry(4.5, new ShotParameter(80, .8))
-          // Last field tuning 1.5, 1.15, 1.13
-          // home tuning 1.33, 1.3
+          // Last field tuning 1.401, 4.1, 4.5
           ));
       
     public static final TreeMap<Double, ShotParameter> kNoteDetectionMap = 

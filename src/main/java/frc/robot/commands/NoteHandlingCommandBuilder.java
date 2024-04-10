@@ -83,9 +83,9 @@ public class NoteHandlingCommandBuilder {
 
     public static Command outtake(Intake intake, GeneralRoller indexer, GeneralRoller feeder, Pivot pivot) {
         Command command = new SequentialCommandGroup(
+                                new InstantCommand(()->intake.requestState(IntakeStates.StateOuttake), intake),
                                 new RunCommand(()->pivot.requestState(PivotStates.StateOuttake)).until(()->pivot.getCurrentState() == PivotStates.StateOuttake),
                                 new ParallelCommandGroup(
-                                    new InstantCommand(()->intake.requestState(IntakeStates.StateOuttake), intake),
                                     new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateReverse), indexer),
                                     new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
                                 )

@@ -59,7 +59,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
 
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, Translation2d rotationOffset) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -71,7 +71,8 @@ public class Drivetrain extends SubsystemBase {
                                 : new ChassisSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
-                                    rotation)
+                                    rotation),
+                                new Translation2d()
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
         absoluteGyroPos.setDouble(getYawAbsolute().getDegrees() % 180);
