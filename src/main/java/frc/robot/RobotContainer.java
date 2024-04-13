@@ -50,7 +50,7 @@ public class RobotContainer {
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
   private final Drivetrain m_drivetrain = new Drivetrain();
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds, m_driver, m_operator);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
   private final Intake m_intake = new Intake();
   private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
   private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);

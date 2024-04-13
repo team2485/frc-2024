@@ -19,11 +19,11 @@ public class NonLinearSolver {
             // double vx = 0;
             // double vy = 10;
             // note velocity
-            double vn = 1500;
+            double vn = 36;
             double g = 9.8;
             double hs = 2.045;
             double hr = 0.3;
-            double l = 0.6;   
+            double l = .74;   
             LeastSquaresProblem problem = new LeastSquaresBuilder().
                     start(new double[]{0, Math.PI/4}). // initial guess
                             model(jacobian(x,y,vx,vy,vn,g,hs,hr,l)). // derivative of the function
@@ -31,7 +31,8 @@ public class NonLinearSolver {
                             lazyEvaluation(false).
                     maxEvaluations(1000).
                     maxIterations(1000).
-                    build();        LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer();
+                    build();        
+            LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer();
             long start = System.currentTimeMillis();
             RealVector solution = optimizer.optimize(problem).getPoint();
             long end = System.currentTimeMillis();

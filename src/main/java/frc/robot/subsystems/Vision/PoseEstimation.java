@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Vision;
 
+import static frc.robot.Constants.PivotConstants.kPivotToRobot;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -32,6 +34,7 @@ import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.Interpolation.InterpolatingTable;
 import frc.robot.commands.Interpolation.ShotCalculator;
+import frc.robot.subsystems.drive.Drivetrain;
 
 public class PoseEstimation extends SubsystemBase {
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
@@ -54,11 +57,13 @@ public class PoseEstimation extends SubsystemBase {
 
   ShotCalculator yawCalculator, pitchCalculator;
 
+  Drivetrain m_drivetrain;
+
   GenericEntry visionTest;
   GenericEntry xLog;
 
-  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator) {
-    visionTest = Shuffleboard.getTab("Swerve").add("PivotAngle", 0).getEntry();
+  public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator, Drivetrain m_drivetrain) {
+    visionTest = Shuffleboard.getTab("Swerve").add("YSped", 10).getEntry();
     xLog = Shuffleboard.getTab("Swerve").add("YDist", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
@@ -77,6 +82,8 @@ public class PoseEstimation extends SubsystemBase {
         rotation.get(),
         modulePosition.get(), 
         new Pose2d());
+
+    this.m_drivetrain = m_drivetrain;
 
     photonNotifier.setName("PhotonRunnable");
     photonNotifier.startPeriodic(0.02);
@@ -108,7 +115,7 @@ public class PoseEstimation extends SubsystemBase {
       
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
-    visionTest.setDouble(getPivotAngleCalculated());
+    visionTest.setDouble(speeds.get().vyMetersPerSecond);
     
     //if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
     //else m_operator.setRumble(RumbleType.kLeftRumble, 0);
@@ -207,37 +214,44 @@ public class PoseEstimation extends SubsystemBase {
 
   public double getAngleToSpeakerCalculated() {
     //Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
+    //Translation2d pivotOffset = new Translation2d(kPivotToRobot*Math.cos(rotation.get().getRadians()), kPivotToRobot*Math.sin(rotation.get().getRadians()));
     yawCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
-    yawCalculator.setVelocities(0, 0, 0);
+    yawCalculator.setVelocities(-1*speeds.get().vxMetersPerSecond, 0, -1*speeds.get().vyMetersPerSecond);
 
-    // v[0] = forward v[1] = vertical v[2] = horizontal
-    // double[] velocities = yawCalculator.shoot();
-    // double x = velocities[0];
-    // double y = velocities[2];
-    // double z = velocities[1];
-    // double theta = Rotation2d.fromRadians(Math.atan2(y,x)).getDegrees();
-    // return theta;
+    //v[0] = forward v[1] = vertical v[2] = horizontal
+    double[] velocities = yawCalculator.shoot();
+    double x = velocities[0];
+    double y = velocities[2];
+    double z = velocities[1];
+    double theta = Rotation2d.fromRadians(Math.atan2(y,x)).getDegrees();
+    return theta;
 
-    return -(180-Rotation2d.fromRadians(yawCalculator.shootWhileMove()[0]).getDegrees());
+    // double angle = Rotation2d.fromRadians(yawCalculator.shootWhileMove()[0]).getRadians();
+    // double angleX = -Math.cos(angle);
+    // double angleY = -Math.sin(angle);
+    // Translation2d reflectedVector = new Translation2d(angleX, angleY);
+
+    // return Math.atan(reflectedVector.getY()/reflectedVector.getX());
   }
 
   public double getPivotAngleCalculated() {
     //Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
+    //Translation2d pivotOffset = new Translation2d(kPivotToRobot*Math.cos(rotation.get().getRadians()), kPivotToRobot*Math.sin(rotation.get().getRadians()));
+    //visionTest.setDouble(pivotOffset.getX());
     pitchCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
-    pitchCalculator.setVelocities(0, 0, 0);
+    pitchCalculator.setVelocities(speeds.get().vxMetersPerSecond*1.5, 0, 1.5*speeds.get().vyMetersPerSecond);
 
-    // //v[0] = forward v[1] = vertical v[2] = horizontal
-    // double[] velocities = pitchCalculator.shoot();
-    // double x = velocities[0];
-    // double y = velocities[2];
-    // double z = velocities[1];
-    // double phi = 90-Rotation2d.fromRadians(Math.acos(z/Math.sqrt((x*x)+(y*y)+(z*z)))).getDegrees();
-    // double mappedPivotAngle = map(phi, 54, 0, 0, .139);
-    // return mappedPivotAngle;
+    //v[0] = forward v[1] = vertical v[2] = horizontal
+    double[] velocities = pitchCalculator.shoot();
+    double x = velocities[0];
+    double y = velocities[2];
+    double z = velocities[1];
+    double phi = 90-Rotation2d.fromRadians(Math.acos(z/Math.sqrt((x*x)+(y*y)+(z*z)))).getDegrees();
+    double mappedPivotAngle = map(phi, 54, 0, 0, .139);
+    return mappedPivotAngle;
 
-    double phi = Rotation2d.fromRadians(pitchCalculator.shootWhileMove()[1]).getRotations();
-    double mappedPivotAngle = map(phi, 53, 0, 0, .139);
-    return phi;
+    // double phi = Rotation2d.fromRadians(pitchCalculator.shootWhileMove()[1]).getRotations();
+    // return phi;
   }
 
   private double map(double x, double in_min, double in_max, double out_min, double out_max) {

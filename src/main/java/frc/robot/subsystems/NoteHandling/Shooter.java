@@ -129,7 +129,7 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 0;
             break;
           case StatePass:
-            desiredVelocity = 45; //50
+            desiredVelocity = 55;
             desiredVoltage = 0;
             break;
         }

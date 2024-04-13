@@ -112,7 +112,7 @@ public class AutoCommandBuilder {
       Rotation2d rotation = Rotation2d.fromDegrees(degrees);
       Command command = new SequentialCommandGroup(
       DriveCommandBuilder.driveToPosition(drivetrain, poseEstimation, ()->new Pose2d(pos.getTranslation(), rotation)).until(()->poseEstimation.dist(poseEstimation.getCurrentPose(), pos)<.25),
-      new InstantCommand(()->drivetrain.drive(new Translation2d(0, 0), 0, false, false)));
+      new InstantCommand(()->drivetrain.drive(new Translation2d(0, 0), 0, false, false, new Translation2d())));
     return command;
   } 
 }

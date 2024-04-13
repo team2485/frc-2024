@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import static frc.robot.Constants.DriveConstants.*;
 import static frc.robot.Constants.OIConstants.*;
+import static frc.robot.Constants.PivotConstants.*;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,7 +44,7 @@ public class DriveWithController extends Command {
   private final Drivetrain m_drivetrain;
   private final DoubleSupplier m_passAngle;
   private final BooleanSupplier m_passing;
-  private final PIDController rotationOverrideController = new PIDController(.1, 0, .0075);
+  private final PIDController rotationOverrideController = new PIDController(.175, 0, .01);
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
 
@@ -132,8 +133,8 @@ public class DriveWithController extends Command {
     final double angleToNoteSetpoint = m_angleToNoteSetpoint.getAsDouble();
 
     if (aimingAtSpeaker) {
-      // xSpeed*=.2;
-      // ySpeed*=.2;
+      xSpeed*=.1;
+      ySpeed*=.1;
       // double targetAngle = speakerAngle;
       // double distance = mPoseEstimation.getDistanceToSpeaker();
       // targetAngle+= ySpeed*5*distance; 
@@ -161,8 +162,9 @@ public class DriveWithController extends Command {
       fieldRelative = false;
     }
 
+    Translation2d centerOfRotation = aimingAtSpeaker ? new Translation2d(-kPivotToRobot, 0) : new Translation2d();
 
-    m_drivetrain.drive(new Translation2d(xSpeed, ySpeed), rot, fieldRelative, true);
+    m_drivetrain.drive(new Translation2d(xSpeed, ySpeed), rot, fieldRelative, true, new Translation2d());
 
     // System.out.println(m_driver.getRightTriggerAxis());
   }
@@ -174,7 +176,7 @@ public class DriveWithController extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.drive(new Translation2d(0, 0), 0, false, false);
+    m_drivetrain.drive(new Translation2d(0, 0), 0, false, false, new Translation2d());
   }
 
   // Returns true when the command should end.

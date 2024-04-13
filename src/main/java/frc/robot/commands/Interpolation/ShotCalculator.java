@@ -9,7 +9,7 @@ public class ShotCalculator
   private double m_verticalDistance = 0, m_verticalVelocity = 0;
   private double m_horizontalDistance = 0, m_horizontalVelocity = 0;
   
-  private double m_ballSpeed = 20;
+  private double m_ballSpeed = 18;
   private double m_ballGravity = -9.8;
   private double m_maxShotTime = 30;
   
@@ -51,7 +51,7 @@ public class ShotCalculator
   }
  
   public double[] shootWhileMove() {
-    double[] angles = NonLinearSolver.shoot(m_forwardDistance+.2921, m_horizontalDistance, m_horizontalVelocity, m_verticalVelocity);
+    double[] angles = NonLinearSolver.shoot(m_forwardDistance, m_horizontalDistance, m_horizontalVelocity, m_verticalVelocity);
 
     return new double[]{angles[0], angles[1]};
   }

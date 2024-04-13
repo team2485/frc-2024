@@ -199,7 +199,7 @@ public class SwerveModule {
 
     public SwerveModuleState getState(){
         return new SwerveModuleState(
-            Conversions.falconToMPS(mDriveMotor.getPosition().getValue(), wheelCircumference, driveGearRatio), 
+            mDriveMotor.getVelocity().getValue() * wheelCircumference, 
             getAngle()
         ); 
     }

@@ -116,7 +116,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = .06;
         break;
       case StateAutoIntake:
-        desiredPosition = .038;
+        desiredPosition = 0;
         break;
       case StateShooter:
         desiredPosition = MathUtil.clamp(angle.getAsDouble(), 0, .25);

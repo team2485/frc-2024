@@ -149,7 +149,8 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shooterPasser(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new SequentialCommandGroup(
-            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).withTimeout(.5),
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter),
+            new WaitCommand(.5),
             runFeeder(feeder, indexer)
             );
 

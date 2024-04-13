@@ -243,7 +243,7 @@ public final class Constants {
   public static final class BlueFieldConstants implements FieldConstants {
     public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
     public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getSpeakerAnglePos() { return new Pose2d(-0.038099999999999995, 5.547867999999999+.15, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
     public Pose2d getAmpPos() { return new Pose2d(1.8415, 8.5, new Rotation2d()); }
     public Pose2d[] getRingPositions() {
         return new Pose2d[] {
@@ -363,11 +363,11 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries(
-          Map.entry(1.223, new ShotParameter(70, 1.375)),
-          Map.entry(1.907, new ShotParameter(70, 1.2)),
-          Map.entry(2.923, new ShotParameter(70, 1.1)),
-          Map.entry(4.494, new ShotParameter(70, .97)),
-          Map.entry(5.484, new ShotParameter(70, .96))
+          Map.entry(1.223, new ShotParameter(70, 1.375-.05)),
+          Map.entry(1.907, new ShotParameter(70, 1.2-.05)),
+          Map.entry(2.923, new ShotParameter(70, 1.1-.07)),
+          Map.entry(4.494, new ShotParameter(70, .97-.07)),
+          Map.entry(5.484, new ShotParameter(70, .96-.05))
           // Map.entry(4.5, new ShotParameter(80, .8))
           // Last field tuning 1.401, 4.1, 4.5
           ));
@@ -416,6 +416,7 @@ public final class Constants {
     public static final boolean kPivotClockwisePositive = true;
     public static final double kPivotErrorTolerance = .03;
     public static final double kSensorToMechanismGearRatio = 75;
+    public static final double kPivotToRobot = .2921;
     public static final int kCurrentLimit = 40;
   }
 
