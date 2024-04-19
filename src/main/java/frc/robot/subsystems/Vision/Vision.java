@@ -109,22 +109,25 @@ public class Vision implements Runnable {
                     }}
                         );
             }
-        
+              photonResults = m_camera.getLatestResult();
             if (photonResults.hasTargets()
-                    && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) { // need accurate readings       
-                m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
-                    var estimatedPose = estimatedRobotPose.estimatedPose;
+                    && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) { // need accurate readings   
+                photonResults.targets.removeIf(n->(n.getFiducialId() != 4 && n.getFiducialId() != 3 && n.getFiducialId() != 7 && n.getFiducialId() != 8)); 
+                if (photonResults.targets.size() > 0 && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) {
+                    m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
+                            var estimatedPose = estimatedRobotPose.estimatedPose;
 
-                    SmartDashboard.putBoolean("Camera Positioned For Auto", true);
-                    //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
-                    //cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
+                            SmartDashboard.putBoolean("Camera Positioned For Auto", true);
+                            //cameraExists.setDouble(photonResults.targets.get(0).getBestCameraToTarget().getX()); 
+                            //cameraExists.setDouble(photonResults.getMultiTagResult().estimatedPose.best.getX());
 
-                    if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
-                            && estimatedPose.getY() > 0.0
-                            && estimatedPose.getY() <= kFieldWidthMeters) { // idiot check
-                        m_atomicEstimatedRobotPose.set(estimatedRobotPose);
-                    }
-                });
+                            if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
+                                    && estimatedPose.getY() > 0.0
+                                    && estimatedPose.getY() <= kFieldWidthMeters) { // idiot check
+                                m_atomicEstimatedRobotPose.set(estimatedRobotPose);
+                            }
+                        });
+                }
             }
             else SmartDashboard.putBoolean("Camera Positioned For Auto", false);
         }

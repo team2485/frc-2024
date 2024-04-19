@@ -17,6 +17,7 @@ import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
 import frc.robot.subsystems.NoteHandling.Pivot;
 import frc.robot.subsystems.NoteHandling.Shooter;
+import frc.robot.subsystems.NoteHandling.Pivot.PivotStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.networktables.GenericEntry;
@@ -155,7 +156,6 @@ public class RobotContainer {
 
     m_operator.x().whileTrue(NoteHandlingCommandBuilder.shooterPasser(m_shooter, m_feeder, m_indexer))
               .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
-
     m_operator.b().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
                    .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
@@ -167,6 +167,11 @@ public class RobotContainer {
     m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
                             .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
+    m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeakerSetpoint(m_pivot, m_shooter, m_feeder, m_indexer, PivotStates.StatePodiumSetpoint))
+                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    
+    m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeakerSetpoint(m_pivot, m_shooter, m_feeder, m_indexer, PivotStates.StateSideSetpoint))
+                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
     //m_operator.rightBumper().onTrue();
   }
 

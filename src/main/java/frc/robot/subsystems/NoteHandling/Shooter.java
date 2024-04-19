@@ -125,7 +125,7 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 0;
             break;
           case StateAmp:
-            desiredVelocity = 47.5;
+            desiredVelocity = 47.5; 
             desiredVoltage = 0;
             break;
           case StatePass:
@@ -158,7 +158,7 @@ public class Shooter extends SubsystemBase {
         }
       }
     
-      private double getVelocity() {
+      public double getVelocity() {
         return m_talonLeft.getVelocity().getValue();
       }
     

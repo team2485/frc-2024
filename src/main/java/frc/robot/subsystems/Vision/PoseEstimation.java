@@ -60,10 +60,14 @@ public class PoseEstimation extends SubsystemBase {
   Drivetrain m_drivetrain;
 
   GenericEntry visionTest;
+  GenericEntry xSped;
   GenericEntry xLog;
+
+  boolean isOnRed;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator, Drivetrain m_drivetrain) {
     visionTest = Shuffleboard.getTab("Swerve").add("YSped", 10).getEntry();
+    xSped = Shuffleboard.getTab("Swerve").add("XSped", 10).getEntry();
     xLog = Shuffleboard.getTab("Swerve").add("YDist", 0).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
@@ -90,6 +94,8 @@ public class PoseEstimation extends SubsystemBase {
 
     yawCalculator = new ShotCalculator();
     pitchCalculator = new ShotCalculator();
+
+    isOnRed = getFieldConstants().isOnRed();
   }
 
   public void addDashboardWidgets(ShuffleboardTab tab) {
@@ -116,6 +122,7 @@ public class PoseEstimation extends SubsystemBase {
     field2d.setRobotPose(dashboardPose);
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(speeds.get().vyMetersPerSecond);
+    xSped.setDouble((isOnRed?-1:1));
     
     //if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
     //else m_operator.setRumble(RumbleType.kLeftRumble, 0);
@@ -216,7 +223,7 @@ public class PoseEstimation extends SubsystemBase {
     //Translation2d futurePos = getCurrentPose().getTranslation().plus(new Translation2d(speeds.get().vxMetersPerSecond, speeds.get().vyMetersPerSecond));
     //Translation2d pivotOffset = new Translation2d(kPivotToRobot*Math.cos(rotation.get().getRadians()), kPivotToRobot*Math.sin(rotation.get().getRadians()));
     yawCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerAnglePos().getTranslation());
-    yawCalculator.setVelocities(-1*speeds.get().vxMetersPerSecond, 0, -1*speeds.get().vyMetersPerSecond);
+    yawCalculator.setVelocities(-1*speeds.get().vxMetersPerSecond*(isOnRed?-1:1), 0, -1*speeds.get().vyMetersPerSecond*(isOnRed?-1:1));
 
     //v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = yawCalculator.shoot();
@@ -239,7 +246,7 @@ public class PoseEstimation extends SubsystemBase {
     //Translation2d pivotOffset = new Translation2d(kPivotToRobot*Math.cos(rotation.get().getRadians()), kPivotToRobot*Math.sin(rotation.get().getRadians()));
     //visionTest.setDouble(pivotOffset.getX());
     pitchCalculator.setPositions(getCurrentPose().getTranslation(), getFieldConstants().getSpeakerPos().getTranslation());
-    pitchCalculator.setVelocities(speeds.get().vxMetersPerSecond*1.5, 0, 1.5*speeds.get().vyMetersPerSecond);
+    pitchCalculator.setVelocities(speeds.get().vxMetersPerSecond*1.5*(isOnRed?-1:1), 0, 1.5*speeds.get().vyMetersPerSecond*(isOnRed?-1:1));
 
     //v[0] = forward v[1] = vertical v[2] = horizontal
     double[] velocities = pitchCalculator.shoot();

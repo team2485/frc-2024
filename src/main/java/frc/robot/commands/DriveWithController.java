@@ -144,6 +144,7 @@ public class DriveWithController extends Command {
 
     if (aimingAtAmp) {
       rot = -rotationOverrideController.calculate(m_drivetrain.getYawMod().getDegrees(), 90);
+
       // xSpeed = xOverrideController.calculate(mPoseEstimation.getCurrentPose().getX(), mPoseEstimation.getFieldConstants().getAmpPos().getX());
       // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
       //   xSpeed *= -1;
@@ -152,7 +153,7 @@ public class DriveWithController extends Command {
     }
 
     if (passing) {
-      rot = -rotationOverrideController.calculate(m_drivetrain.getYawMod().getDegrees(), passAngle);
+      //rot = -rotationOverrideController.calculate(m_drivetrain.getYawMod().getDegrees(), passAngle);
     }
 
     if (aimingAtNote) {

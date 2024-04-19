@@ -3,9 +3,11 @@
   "robotLength": 0.635,
   "holonomicMode": true,
   "pathFolders": [
+    "Champs",
     "SDR"
   ],
   "autoFolders": [
+    "Champs3Piece",
     "Sdr"
   ],
   "defaultMaxVel": 3.0,

@@ -225,6 +225,7 @@ public final class Constants {
     public Pose2d getSpeakerAnglePos();
     public Pose2d getAmpPos();
     public Pose2d[] getRingPositions();
+    public boolean isOnRed();
   }
 
   public static final class RedFieldConstants implements FieldConstants {
@@ -238,6 +239,7 @@ public final class Constants {
             new Pose2d(13.5, 5, new Rotation2d()),
         };
     }
+    public boolean isOnRed() {return true;}
   }
 
   public static final class BlueFieldConstants implements FieldConstants {
@@ -251,6 +253,7 @@ public final class Constants {
             new Pose2d(),
         };
     }
+    public boolean isOnRed() {return false;}
   }
 
   public static final class VisionConstants {
@@ -295,38 +298,39 @@ public final class Constants {
     public static final double kFieldLengthMeters = 16.541;
     public static final double kFieldWidthMeters = 8.211;
     public static final List<AprilTag> kBlueTagList = 
-                                        List.of(new AprilTag(1, new Pose3d(15.079471999999997, 0.24587199999999998, 1.355852, 
-                                                                    new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))),
-                                                new AprilTag(2, new Pose3d(16.185134, 0.883666, 1.355852, 
-                                                                    new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))),
+                                        List.of(
+                                                // new AprilTag(1, new Pose3d(15.079471999999997, 0.24587199999999998, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))),
+                                                // new AprilTag(2, new Pose3d(16.185134, 0.883666, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))),
                                                 new AprilTag(3, new Pose3d(16.579342, 4.982717999999999, 1.4511020000000001, 
-                                                                    new Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),
+                                                                    new  Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),
                                                 new AprilTag(4, new Pose3d(16.579342, 5.547867999999999, 1.4511020000000001, 
                                                                     new Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),                  
-                                                new AprilTag(5, new Pose3d(14.700757999999999, 8.2042, 1.355852, 
-                                                                    new Rotation3d(new Quaternion(-0.7071067811865475, -0.0, 0.0, 0.7071067811865476)))),
-                                                new AprilTag(6, new Pose3d(1.8415, 8.2042, 1.355852, 
-                                                                    new Rotation3d(new Quaternion(-0.7071067811865475, -0.0, 0.0, 0.7071067811865476)))),
+                                                // new AprilTag(5, new Pose3d(14.700757999999999, 8.2042, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(-0.7071067811865475, -0.0, 0.0, 0.7071067811865476)))),
+                                                // new AprilTag(6, new Pose3d(1.8415, 8.2042, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(-0.7071067811865475, -0.0, 0.0, 0.7071067811865476)))),
                                                 new AprilTag(7, new Pose3d(-0.038099999999999995, 5.547867999999999, 1.4511020000000001, 
                                                                     new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0)))),   
                                                 new AprilTag(8, new Pose3d(-0.038099999999999995, 4.982717999999999, 1.4511020000000001, 
-                                                                    new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0)))),   
-                                                new AprilTag(9, new Pose3d(0.356108, 0.883666, 1.355852, 
-                                                                    new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),
-                                                new AprilTag(10, new Pose3d(1.4615159999999998, 0.2458719999999999, 1.355852, 
-                                                                    new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),  
-                                                new AprilTag(11, new Pose3d(11.904726, 3.7132259999999997, 1.3208, 
-                                                                    new Rotation3d(new Quaternion(-0.8660254037844387, -0.0, 0.0, 0.49999999999999994)))),
-                                                new AprilTag(12, new Pose3d(11.904726, 4.49834, 1.3208, 
-                                                                    new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),       
-                                                new AprilTag(13, new Pose3d(11.220196, 4.105148, 1.3208, 
-                                                                    new Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),  
-                                                new AprilTag(14, new Pose3d(5.320792, 4.105148, 1.3208, 
-                                                                    new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0)))),
-                                                new AprilTag(15, new Pose3d(4.641342, 4.49834, 1.3208, 
-                                                                    new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))), 
-                                                new AprilTag(16, new Pose3d(4.641342, 3.71322599999999974, 1.3208, 
-                                                                    new Rotation3d(new Quaternion(-0.4999999999999998, -0.0, 0.0, 0.8660254037844386))))                                                                                                                                              
+                                                                    new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0))))   
+                                                // new AprilTag(9, new Pose3d(0.356108, 0.883666, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),
+                                                // new AprilTag(10, new Pose3d(1.4615159999999998, 0.2458719999999999, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),  
+                                                // new AprilTag(11, new Pose3d(11.904726, 3.7132259999999997, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(-0.8660254037844387, -0.0, 0.0, 0.49999999999999994)))),
+                                                // new AprilTag(12, new Pose3d(11.904726, 4.49834, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),       
+                                                // new AprilTag(13, new Pose3d(11.220196, 4.105148, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),  
+                                                // new AprilTag(14, new Pose3d(5.320792, 4.105148, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0)))),
+                                                // new AprilTag(15, new Pose3d(4.641342, 4.49834, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))), 
+                                                // new AprilTag(16, new Pose3d(4.641342, 3.71322599999999974, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(-0.4999999999999998, -0.0, 0.0, 0.8660254037844386))))                                                                                                                                              
                                                                     );                                    
 
   }
@@ -362,12 +366,12 @@ public final class Constants {
     //       ));
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
-        Map.ofEntries(
-          Map.entry(1.223, new ShotParameter(70, 1.375-.05)),
-          Map.entry(1.907, new ShotParameter(70, 1.2-.05)),
-          Map.entry(2.923, new ShotParameter(70, 1.1-.07)),
-          Map.entry(4.494, new ShotParameter(70, .97-.07)),
-          Map.entry(5.484, new ShotParameter(70, .96-.05))
+        Map.ofEntries( 
+          Map.entry(1.223 + 0.097, new ShotParameter(70, 1.375-.05)),
+          Map.entry(1.907 + 0.097, new ShotParameter(70, 1.2-.05)),
+          Map.entry(2.923 + 0.097, new ShotParameter(70, 1.1-.07)),
+          Map.entry(4.494 + 0.097, new ShotParameter(70, .97-.07)),
+          Map.entry(5.484 + 0.097, new ShotParameter(70, .96-.05))
           // Map.entry(4.5, new ShotParameter(80, .8))
           // Last field tuning 1.401, 4.1, 4.5
           ));
@@ -545,7 +549,7 @@ public final class Constants {
       public static final int driveMotorID = 1;
       public static final int angleMotorID = 2;
       public static final int canCoderID = 10;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.374755859375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.36279296875);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }
@@ -555,7 +559,7 @@ public final class Constants {
       public static final int driveMotorID = 3;
       public static final int angleMotorID = 4;
       public static final int canCoderID = 11;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.33837890625);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.42529296875);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -565,7 +569,7 @@ public final class Constants {
       public static final int driveMotorID = 5;
       public static final int angleMotorID = 6;
       public static final int canCoderID = 12;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations( -0.156005859375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.1552734375);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -575,7 +579,7 @@ public final class Constants {
       public static final int driveMotorID = 7;
       public static final int angleMotorID = 8;
       public static final int canCoderID = 13;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations( -0.18896484375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.191162109375);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }

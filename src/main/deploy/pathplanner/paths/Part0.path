@@ -3,52 +3,58 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 14.582397438689314,
-        "y": 5.04737055123183
+        "x": 15.71834858362671,
+        "y": 4.520382906667599
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.851746679242288,
-        "y": 4.66091294522104
-      },
-      "isLocked": false,
-      "linkedName": "3NoteUnderStageMidlineEnd0"
-    },
-    {
-      "anchor": {
-        "x": 13.78606055357617,
-        "y": 4.087081954477746
-      },
-      "prevControl": {
-        "x": 14.578499743290418,
-        "y": 4.245569792420597
-      },
-      "nextControl": {
-        "x": 13.610398005389449,
-        "y": 4.051949444840401
+        "x": 15.566107708531549,
+        "y": 2.1196614147823896
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.359891544319463,
-        "y": 4.20419031993556
+        "x": 8.094593992326358,
+        "y": 0.7260718658384518
       },
       "prevControl": {
-        "x": 14.254494015407433,
-        "y": 4.04023860829462
+        "x": 8.000178209646075,
+        "y": 0.442824517797598
+      },
+      "nextControl": {
+        "x": 8.164859011601044,
+        "y": 0.9368669236625198
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 14.640951621414809,
+        "y": 4.227611993023062
+      },
+      "prevControl": {
+        "x": 15.074252573608726,
+        "y": 1.674649626042692
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3NoteUnderStageMidlineEnd1"
+      "linkedName": "Champs0"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -59,10 +65,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Champs",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 55.222168633635846,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

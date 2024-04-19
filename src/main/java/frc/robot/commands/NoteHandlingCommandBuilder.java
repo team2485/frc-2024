@@ -149,8 +149,7 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shooterPasser(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new SequentialCommandGroup(
-            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter),
-            new WaitCommand(.5),
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->Math.abs(shooter.getVelocity()-55)<6),
             runFeeder(feeder, indexer)
             );
 
@@ -174,6 +173,22 @@ public class NoteHandlingCommandBuilder {
     public static Command autoShooterSpeaker(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
                         new RunCommand(()->pivot.requestState(PivotStates.StateShooter), pivot), 
+                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
+                        new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
+                        new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
+                        ).until(()->pivot.getCurrentState() == PivotStates.StateShooter && shooter.getCurrentState() == ShooterStates.StateSpeaker)
+                        .andThen(
+                            new ParallelCommandGroup(
+                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
+                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)
+                            )
+                        );
+        return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    public static Command autoShooterSpeakerSetpoint(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PivotStates setpoint) {
+        Command command = new ParallelCommandGroup(
+                        new RunCommand(()->pivot.requestState(setpoint), pivot), 
                         new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
                         new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
                         new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
