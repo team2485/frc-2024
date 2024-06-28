@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 13.558937887106545,
+        "y": 6.9956624528633675
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 13.529337058674118,
+        "y": 6.4924483695121245
+      },
+      "isLocked": false,
+      "linkedName": "SDR2NoteAmp"
+    },
+    {
+      "anchor": {
+        "x": 12.049295637052813,
+        "y": 4.9828061194583935
+      },
+      "prevControl": {
+        "x": 12.265628651981167,
+        "y": 6.0564588602139136
+      },
+      "nextControl": {
+        "x": 11.782888181160974,
+        "y": 3.6606357828100275
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 10.223911217053203,
+        "y": 4.282253179890976
+      },
+      "prevControl": {
+        "x": 11.496746839647525,
+        "y": 4.3217209511342105
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SDR",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

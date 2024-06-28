@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 15.800324439450591,
+      "y": 4.567226252854788
+    },
+    "rotation": 57.7243556854223
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SetupGyro"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2NoteRightPath0"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

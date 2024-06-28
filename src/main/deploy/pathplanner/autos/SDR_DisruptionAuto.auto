@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 15.847167785633717,
+      "y": 4.520382906671662
+    },
+    "rotation": 58.24051991518752
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SetupGyro"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "KickOutAuto"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SDRDisruptionAutoPath"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Sdr",
+  "choreoAuto": false
+}

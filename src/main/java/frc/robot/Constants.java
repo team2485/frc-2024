@@ -4,11 +4,18 @@
 
 package frc.robot;
 
-import static java.util.Map.entry;
+import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
+import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.*;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -20,11 +27,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import java.util.Map;
-import java.util.TreeMap;
 
+import org.opencv.core.Mat;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
+import frc.robot.commands.Interpolation.ShotParameter;
 import frc.util.COTSFalconSwerveConstants;
 import frc.util.SwerveModuleConstants;
 
@@ -180,54 +192,23 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    // Ports and zeros
-    /** Zeros found with bevel gears facing right. Applied offset is the negative of the zero. */
-    public static final int kPigeonPort = 9;
-
-    public static final boolean kDriveInverted = true;
-    public static final int kFLDriveTalonPort = 5;
-    public static final int kFLTurningTalonPort = 6;
-    public static final int kFLCANCoderPort = 12;
-    // public static final Rotation2d kFLCANCoderZero = Rotation2d.fromDegrees(56.0 - 1.66);
-    public static final Rotation2d kFLCANCoderZero = Rotation2d.fromDegrees(47.96);
-
-    public static final int kFRDriveTalonPort = 7;
-    public static final int kFRTurningTalonPort = 8;
-    public static final int kFRCANCoderPort = 13;
-    // public static final Rotation2d kFRCANCoderZero = Rotation2d.fromDegrees(-85.48 - 135);
-    public static final Rotation2d kFRCANCoderZero = Rotation2d.fromDegrees(136.48 - 180);
-
-    public static final int kBRDriveTalonPort = 1;
-    public static final int kBRTurningTalonPort = 2;
-    public static final int kBRCANCoderPort = 10;
-    // public static final Rotation2d kBRCANCoderZero = Rotation2d.fromDegrees(-3.6 - 5.18);
-    public static final Rotation2d kBRCANCoderZero = Rotation2d.fromDegrees(170.89);
-
-    public static final int kBLDriveTalonPort = 3;
-    public static final int kBLTurningTalonPort = 4;
-    public static final int kBLCANCoderPort = 11;
-    // public static final Rotation2d kBLCANCoderZero = Rotation2d.fromDegrees(-167.7 + 4.33 -
-    // 3.06);
-    public static final Rotation2d kBLCANCoderZero = Rotation2d.fromDegrees(-168.98);
-
-    // Drivebase dimensions
-    public static final double kWheelbaseLengthMeters = 0.635; // meters
-    public static final double kWheelbaseWidthMeters = 0.508; // meters
 
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(kWheelbaseLengthMeters / 2, kWheelbaseWidthMeters / 2),
-            new Translation2d(kWheelbaseLengthMeters / 2, -kWheelbaseWidthMeters / 2),
-            new Translation2d(-kWheelbaseLengthMeters / 2, kWheelbaseWidthMeters / 2),
-            new Translation2d(-kWheelbaseLengthMeters / 2, -kWheelbaseWidthMeters / 2));
+            new Translation2d(Swerve.widthBetweenModules/ 2, Swerve.lengthBetweenModules / 2),
+            new Translation2d(Swerve.lengthBetweenModules / 2, -Swerve.widthBetweenModules / 2),
+            new Translation2d(-Swerve.lengthBetweenModules / 2, Swerve.widthBetweenModules / 2),
+            new Translation2d(-Swerve.lengthBetweenModules / 2, -Swerve.widthBetweenModules / 2));
 
     public static final double kTurningRadiusMeters =
-        Math.sqrt(Math.pow(kWheelbaseLengthMeters / 2, 2) + Math.pow(kWheelbaseWidthMeters / 2, 2));
+        Math.sqrt(Math.pow(Swerve.lengthBetweenModules / 2, 2) + Math.pow(Swerve.widthBetweenModules / 2, 2));
 
     // Max speed teleoperated
     public static final double kTeleopMaxSpeedMetersPerSecond = 3; // meters per second
     public static final double kTeleopMaxAngularSpeedRadiansPerSecond =
-        1.5 / kTurningRadiusMeters; // radians per second
+        4; // radians per second
+
+    public static final double kDriveTolerance = .1;
 
     public static final double kTeleopMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kTeleopMaxAngularAccelerationRadiansPerSecondSquared = 1.5 * Math.PI;
@@ -235,28 +216,44 @@ public final class Constants {
     public static final int kPoseHistoryCapacity = 500;
 
     public static final double kPRotation = 2;
-    public static final double kRotationTolerance = 0.05;
+    public static final double kRotationTolerance = 3;
   }
 
-  public static final class FieldConstants {
-    // ALL CONSTANTS IN METERS
+  public interface FieldConstants {
+    public Pose2d getPickupPos();
+    public Pose2d getSpeakerPos();
+    public Pose2d getSpeakerAnglePos();
+    public Pose2d getAmpPos();
+    public Pose2d[] getRingPositions();
+    public boolean isOnRed();
+  }
 
-    public static final double kVisionTargetHeightLower =
-        Units.inchesToMeters(8 * 12 + 5.625); // Bottom of tape
+  public static final class RedFieldConstants implements FieldConstants {
+    public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
+    public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(16.559342, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.5, new Rotation2d()); }
+    public Pose2d[] getRingPositions() {
+        return new Pose2d[] {
+            new Pose2d(13.5, 7, new Rotation2d()),
+            new Pose2d(13.5, 5, new Rotation2d()),
+        };
+    }
+    public boolean isOnRed() {return true;}
+  }
 
-    public static final double kVisionTargetHeightUpper =
-        kVisionTargetHeightLower + Units.inchesToMeters(2);
-
-    public static final double kVisionTargetRadius = Units.inchesToMeters(4.0 * 12.0 + 5.375) / 2;
-    // All coordinates start at blue terminal corner (0,0)
-    // Driver station to driver station is x
-
-    public static final Translation2d kHubCenterTranslation = new Translation2d(8.2296, 4.1148);
-    public static final Pose2d kHubCenterPosition =
-        new Pose2d(kHubCenterTranslation, new Rotation2d(0));
-
-    public static final double kRobotBumperLengthMeters = 0.97;
-    public static final double kRobotBumperWidthMeters = 0.84;
+  public static final class BlueFieldConstants implements FieldConstants {
+    public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
+    public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getAmpPos() { return new Pose2d(1.8415, 8.5, new Rotation2d()); }
+    public Pose2d[] getRingPositions() {
+        return new Pose2d[] {
+            new Pose2d(),
+            new Pose2d(),
+        };
+    }
+    public boolean isOnRed() {return false;}
   }
 
   public static final class VisionConstants {
@@ -294,476 +291,161 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(-.33, 0, .2667),
-        new Rotation3d());
+    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(.2921, 0, 0.24),
+        new Rotation3d(0,-.402,0)); 
+    //-0.698
 
-    public static final double kFieldLengthMeters = 16.54175;
-    public static final double kFieldWidthMeters = 8.0137;
-
-    public static final Pose2d kFlippingPose = new Pose2d(
-        new Translation2d(kFieldLengthMeters, kFieldWidthMeters),
-        new Rotation2d(Math.PI));
-
-    // public static final int kTagOfInterest = 1;
-    // public static final Transform2d kTagToGoal = new Transform2d(new
-    // Translation2d(1, 0),
-    // Rotation2d.fromDegrees(180.0));
-
-
-    public static final double kOffsetToNextScoringStation = 0.61;
-
-    public static final double kTopTagYPos = kFieldWidthMeters - 4.42;
-    public static final double kMiddleTagYPos = kFieldWidthMeters - 2.75;
-    public static final double kBottomTagYPos = kFieldWidthMeters - 1.07;
+    public static final double kFieldLengthMeters = 16.541;
+    public static final double kFieldWidthMeters = 8.211;
+    public static final List<AprilTag> kBlueTagList = 
+                                        List.of(
+                                                // new AprilTag(1, new Pose3d(15.079471999999997, 0.24587199999999998, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))),
+                                                // new AprilTag(2, new Pose3d(16.185134, 0.883666, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))),
+                                                new AprilTag(3, new Pose3d(16.579342, 4.982717999999999, 1.4511020000000001, 
+                                                                    new  Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),
+                                                new AprilTag(4, new Pose3d(16.579342, 5.547867999999999, 1.4511020000000001, 
+                                                                    new Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),                  
+                                                // new AprilTag(5, new Pose3d(14.700757999999999, 8.2042, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(-0.7071067811865475, -0.0, 0.0, 0.7071067811865476)))),
+                                                // new AprilTag(6, new Pose3d(1.8415, 8.2042, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(-0.7071067811865475, -0.0, 0.0, 0.7071067811865476)))),
+                                                new AprilTag(7, new Pose3d(-0.038099999999999995, 5.547867999999999, 1.4511020000000001, 
+                                                                    new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0)))),   
+                                                new AprilTag(8, new Pose3d(-0.038099999999999995, 4.982717999999999, 1.4511020000000001, 
+                                                                    new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0))))   
+                                                // new AprilTag(9, new Pose3d(0.356108, 0.883666, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),
+                                                // new AprilTag(10, new Pose3d(1.4615159999999998, 0.2458719999999999, 1.355852, 
+                                                //                     new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),  
+                                                // new AprilTag(11, new Pose3d(11.904726, 3.7132259999999997, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(-0.8660254037844387, -0.0, 0.0, 0.49999999999999994)))),
+                                                // new AprilTag(12, new Pose3d(11.904726, 4.49834, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(0.8660254037844387, 0.0, 0.0, 0.49999999999999994)))),       
+                                                // new AprilTag(13, new Pose3d(11.220196, 4.105148, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(6.123233995736766e-17, 0.0, 0.0, 1.0)))),  
+                                                // new AprilTag(14, new Pose3d(5.320792, 4.105148, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(1.0, 0.0, 0.0, 0.0)))),
+                                                // new AprilTag(15, new Pose3d(4.641342, 4.49834, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(0.5000000000000001, 0.0, 0.0, 0.8660254037844386)))), 
+                                                // new AprilTag(16, new Pose3d(4.641342, 3.71322599999999974, 1.3208, 
+                                                //                     new Rotation3d(new Quaternion(-0.4999999999999998, -0.0, 0.0, 0.8660254037844386))))                                                                                                                                              
+                                                                    );                                    
 
   }
 
   public static final class IntakeConstants {
-    public static final int kIntakeTalonPort = 20;
-    public static final double kIntakeLoopTimeSeconds = 0.02;
-    public static final int kIntakeSmartCurrentLimitAmps = 20;
-    public static final int kIntakeImmediateCurrentLimitAmps = 25;
-
-    public static final double kIntakeSupplyCurrentLimitAmps = 25;
-    public static final double kIntakeSupplyCurrentThresholdAmps = 30;
-    public static final double kIntakeSupplyCurrentThresholdTimeSecs = 0.1;
-    public static final double kIntakeStatorCurrentLimitAmps = 40;
-    public static final double kIntakeStatorCurrentThresholdAmps = 45;
-    public static final double kIntakeStatorCurrentThresholdTimeSecs = 0.05;
-
-    public static final double kIntakeGearRatio = 2; // motor turns : output/full hood turns
-
-    public static final double kIntakeFreeSpeedRotationsPerSecond =
-        kNeoFreeSpeedRotationsPerSecond / kIntakeGearRatio;
-
-    public static final double kIntakeTopWheelDiameterMeters = 0.1016; // 4 in
-    public static final double kIntakeBottomWheelDiameterMeters = 0.1524; // 6 in
-    public static final double kIntakeBottomWheelCircumferenceMeters = 0.1524 * Math.PI;
-    public static final double kIntakeDefaultSpeedRotationsPerSecond = 2;
-
-    public static final double kSIntakeVolts = 0.75191;
-    public static final double kVIntakeVoltSecondsPerMeter = 0.45447;
-    public static final double kAIntakeVoltSecondsSquaredPerMeter = 0.026443;
-
-    public static final double kIntakeVelocityToleranceRotationsPerSecond = 1;
-
-    public static final int kPhotoSensorPort = 5; // dio port
-
-    public static final I2C.Port kI2CPort = I2C.Port.kOnboard;
-
-    public static final Color kBlueBallColor = new Color(0.26, 0.42, 0.32);
-    public static final Color kRedBallColor = new Color(0.35, 0.40, 0.25);
-
-    public static final double kColorConfidenceLevel = 0.97;
+    public static final int kIntakePort = 14;
+    public static final int kIntakeCurrentLimit = 80;
+    public static final boolean kIntakeInverted = false;
+    public static final double kIntakeKp = .012;
+    public static final double kIntakeKi = 0;
+    public static final double kIntakeKd = 0;
   }
 
-  public static final class IntakeArmConstants {
-    public static final int kIntakeArmSparkPort = 20;
-    public static final double kIntakeArmLoopTimeSeconds = 0.020;
-    public static final int kIntakeArmSmartCurrentLimitAmps = 30;
-    public static final int kIntakeArmImmediateCurrentLimitAmps = 35;
+  public static final class GeneralRollerConstants {
+    public static final int kGeneralRollerCurrentLimit = 80;
+    public static final int kIndexerPort = 16;
+    public static final int kFeederPort = 15;
 
-    public static final double kIntakeArmGearRatio = 125.0;
-    public static final double kIntakeArmFreeSpeedRadiansPerSecond =
-        kNeoFreeSpeedRotationsPerSecond / kIntakeArmGearRatio * (2 * Math.PI);
-    public static final double kIntakeArmRadiansPerMotorRev =
-        1.0 / kIntakeArmGearRatio * 2 * Math.PI;
-
-    public static final double kIntakeArmBottomPositionRadians = -0.2618; // from horizontal
-    public static final double kIntakeArmTopPositionRadians = 2.0071; // change later
-    public static final double kIntakeArmTipPositionRadians = 1.6;
-
-    public static final double kIntakeArmEncoderOffset = 5.44 - 0.2618;
-
-    // Intake Arm characterization constants
-    public static final double kSIntakeArmVolts = 0.5;
-    public static final double kGIntakeArmVolts = 1.34;
-    public static final double kVIntakeArmVoltsSecondsPerRadian = 0.73;
-    public static final double kAIntakeArmVoltsSecondsSquaredPerRadian = 0.06;
-
-    public static final double kIntakeArmMaxSpeedRadiansPerSecond = 1;
-    public static final double kIntakeArmMaxAccelerationRadiansPerSecondSquared = 0.5;
-    // new ArmFeedforward(
-    //         kSIntakeArmVolts,
-    //         kGIntakeArmVolts,
-    //         kVIntakeArmVoltsSecondsPerRadian,
-    //         kAIntakeArmVoltsSecondsSquaredPerRadian)
-    //     .maxAchievableAcceleration(
-    //         kNominalVoltage,
-    //         kIntakeArmBottomPositionRadians,
-    //         kIntakeArmMaxSpeedRadiansPerSecond);
-
-    public static final TrapezoidProfile.Constraints kIntakeArmMotionProfileConstraints =
-        new TrapezoidProfile.Constraints(
-            kIntakeArmMaxSpeedRadiansPerSecond, kIntakeArmMaxAccelerationRadiansPerSecondSquared);
-
-    // Intake Arm PID constants
-    public static final double kPIntakeArmVoltsPerRadian = 10;
-    public static final double kDIntakeArmVoltSecondsPerRadian = 0;
-    public static final double kIntakeArmPositionToleranceRadians = 0.02;
-  }
-
-  public static final class IndexerConstants {
-    public static final int kIndexerTalonPort = 18;
-    public static final double kIndexerLoopTimeSeconds = 0.02;
-    public static final int kIndexerSmartCurrentLimitAmps = 25;
-    public static final int kIndexerImmediateCurrentLimitAmps = 30;
-
-    public static final double kIndexerSupplyCurrentLimitAmps = 25;
-    public static final double kIndexerSupplyCurrentThresholdAmps = 30;
-    public static final double kIndexerSupplyCurrentThresholdTimeSecs = 0.1;
-    public static final double kIndexerStatorCurrentLimitAmps = 40;
-    public static final double kIndexerStatorCurrentThresholdAmps = 45;
-    public static final double kIndexerStatorCurrentThresholdTimeSecs = 0.05;
-
-    public static final double kIndexerGearRatio = 4; // motor turns : output/full hood turns
-
-    public static final double kIndexerFreeSpeedRotationsPerSecond =
-        kNeoFreeSpeedRotationsPerSecond / kIndexerGearRatio;
-
-    public static final double kIndexerEntryWheelDiameterMeters = 0.0508; // 2 inches
-
-    public static final double kIndexerIntakeSpeedRatio =
-        IntakeConstants.kIntakeTopWheelDiameterMeters / kIndexerEntryWheelDiameterMeters;
-
-    public static final double kIndexerDefaultSpeedRotationsPerSecond =
-        kIndexerFreeSpeedRotationsPerSecond * 0.9;
-
-    public static final double kSIndexerVolts = 0.69534;
-    public static final double kVIndexerVoltSecondsPerMeter = 0.5;
-    public static final double kAIndexerVoltSecondsSquaredPerMeter = 0.0015969;
-
-    public static final double kIndexerVelocityToleranceRotationsPerSecond = 1;
-  }
-
-  public static final class FeederConstants {
-    public static final int kFeederTalonPort = 16;
-    public static final double kFeederLoopTimeSeconds = 0.02;
-    public static final int kFeederSmartCurrentLimitAmps = 15;
-    public static final int kFeederImmediateCurrentLimitAmps = 20;
-
-    public static final double kFeederSupplyCurrentLimitAmps = 25;
-    public static final double kFeederSupplyCurrentThresholdAmps = 30;
-    public static final double kFeederSupplyCurrentThresholdTimeSecs = 0.1;
-    public static final double kFeederStatorCurrentLimitAmps = 40;
-    public static final double kFeederStatorCurrentThresholdAmps = 45;
-    public static final double kFeederStatorCurrentThresholdTimeSecs = 0.05;
-
-    public static final double kFeederGearRatio = 1; // motor turns : output/full hood turns
-
-    public static final double kFeederFreeSpeedRotationsPerSecond =
-        kNeo550FreeSpeedRotationsPerSecond / kFeederGearRatio;
-
-    public static final double kFeederDefaultSpeedRotationsPerSecond =
-        kFeederFreeSpeedRotationsPerSecond * 0.75;
-
-    public static final double kFeederPulleyCircumferenceMeters = 0.0191008 * Math.PI;
-
-    public static final double kFeederSurfaceFreeSpeedMetersPerSecond =
-        kFeederFreeSpeedRotationsPerSecond * kFeederPulleyCircumferenceMeters;
-
-    public static final double kFeederShooterSurfaceSpeedRatio =
-        kFeederSurfaceFreeSpeedMetersPerSecond
-            / ShooterConstants.kShooterSurfaceFreeSpeedMetersPerSecond;
-
-    public static final double kSFeederVolts = 0.56782;
-    public static final double kVFeederVoltSecondsPerMeter = 0.6591;
-    public static final double kAFeederVoltSecondsSquaredPerMeter = 0.032787;
-
-    public static final double kFeederVelocityToleranceRotationsPerSecond = 1;
-
-    public static final int kFeederServoPort = 1;
-    public static final double kServoDisengagedPosition = 0.43;
-    public static final double kServoEngagedPosition = 0.19;
-  }
-
-  public static final class HoodConstants {
-    public static final int kHoodSparkPort = 23;
-    public static final double kHoodGearRatio = 225; // motor turns : output/full hood turns
-    public static final double kHoodRadiansPerMotorRev = 2 * Math.PI / kHoodGearRatio;
-
-    public static final double kHoodBottomPositionRadians = 0; // from horizontal
-    public static final double kHoodTopPositionRadians = 0.2872;
-
-    public static final int kHoodSmartCurrentLimitAmps = 10;
-    public static final int kHoodImmediateCurrentLimitAmps = 10;
-
-    // Hood characterization constants
-    public static final double kSHoodVolts = 0.1;
-    public static final double kGHoodVolts = 0.25;
-    public static final double kVHoodVoltSecondsPerRadian = 1;
-    public static final double kAHoodVoltSecondsSquaredPerRadian = 0.12369;
-
-    public static final double kHoodMaxSpeedRadiansPerSecond = 2 * Math.PI;
-    public static final double kHoodMaxAccelerationRadiansPerSecondSquared =
-        new ArmFeedforward(
-                kSHoodVolts,
-                kGHoodVolts,
-                kVHoodVoltSecondsPerRadian,
-                kAHoodVoltSecondsSquaredPerRadian)
-            .maxAchievableAcceleration(
-                kNominalVoltage, kHoodBottomPositionRadians, kHoodBottomPositionRadians);
-
-    public static final TrapezoidProfile.Constraints kHoodMotionProfileConstraints =
-        new TrapezoidProfile.Constraints(
-            kHoodMaxSpeedRadiansPerSecond, kHoodMaxAccelerationRadiansPerSecondSquared);
-    // Hood PID constants
-    public static final double kPHood =  10;
-    public static final double kIHood = .1;
-    public static final double kDHood = 0;
-    public static final double kHoodControllerPositionTolerance = 0.005;
   }
 
   public static final class ShooterConstants {
-    public static final int kShooterTalonPort1 = 17;
-    public static final int kShooterTalonPort2 = 19;
 
-    public static final double kShooterSupplyCurrentLimitAmps = 25;
-    public static final double kShooterSupplyCurrentThresholdAmps = 30;
-    public static final double kShooterSupplyCurrentThresholdTimeSecs = 0.1;
-    public static final double kShooterStatorCurrentLimitAmps = 40;
-    public static final double kShooterStatorCurrentThresholdAmps = 45;
-    public static final double kShooterStatorCurrentThresholdTimeSecs = 0.05;
+    // public static final TreeMap<Double, ShotParameter> kShootingMap = 
+    //   new TreeMap<>(
+    //     Map.ofEntries(
+    //       Map.entry(1.11 + 0.06, new ShotParameter(80, 0)),
+    //       Map.entry(1.41 + 0.06, new ShotParameter(80, 0.02)),
+    //       Map.entry(1.71 + 0.06, new ShotParameter(80, 0.035)),
+    //       Map.entry(2.01 + 0.06, new ShotParameter(80, 0.047)),
+    //       Map.entry(2.31 + 0.06, new ShotParameter(80, 0.05)),
+    //       Map.entry(2.61 + 0.06, new ShotParameter(80, 0.062)),
+    //       Map.entry(2.91 + 0.06, new ShotParameter(80, 0.065))
+    //       ));
+    public static final TreeMap<Double, ShotParameter> kShootingMap = 
+      new TreeMap<>(
+        Map.ofEntries( 
+          Map.entry(1.223 + 0.097, new ShotParameter(70, 1.375-.05)),
+          Map.entry(1.907 + 0.097, new ShotParameter(70, 1.2-.05)),
+          Map.entry(2.923 + 0.097, new ShotParameter(70, 1.1-.07)),
+          Map.entry(4.494 + 0.097, new ShotParameter(70, .97-.07)),
+          Map.entry(5.484 + 0.097, new ShotParameter(70, .96-.05))
+          // Map.entry(4.5, new ShotParameter(80, .8))
+          // Last field tuning 1.401, 4.1, 4.5
+          ));
+      
+    public static final TreeMap<Double, ShotParameter> kNoteDetectionMap = 
+      new TreeMap<>(
+        Map.ofEntries(
+          Map.entry(-20.0, new ShotParameter(80, -16.7)),
+          Map.entry(-19.75, new ShotParameter(80, -15.2)),
+          Map.entry(-17.6, new ShotParameter(80, -12.7)),
+          Map.entry(-15.3, new ShotParameter(80, -11.69)),
+          Map.entry(-16.48, new ShotParameter(80, -12.45)),
+          Map.entry(-14.61, new ShotParameter(80, -10.32)),
+          Map.entry(-13.2, new ShotParameter(80, -8.59)),
+          Map.entry(-12.42, new ShotParameter(80, -6.52))
+          ));
 
-    public static final double kKickerSupplyCurrentLimitAmps = 40;
-    public static final double kKickerSupplyCurrentThresholdAmps = 45;
-    public static final double kKickerSupplyCurrentThresholdTimeSecs =
-        kShooterSupplyCurrentLimitAmps;
-    public static final double kKickerStatorCurrentLimitAmps = 60;
-    public static final double kKickerStatorCurrentThresholdAmps = 65;
-    public static final double kKickerStatorCurrentThresholdTimeSecs =
-        kShooterStatorCurrentThresholdTimeSecs;
+    public static final int kShooterLeftPort = 17;
+    public static final int kShooterRightPort = 18;
 
-    public static final double kShooterLoopTimeSeconds = 0.001;
-    public static final double kKickerLoopTimeSeconds = kShooterLoopTimeSeconds;
-
-    public static final double kShooterGearRatio = 1;
-    public static final double kKickerGearRatio = 0.5;
-
-    public static final double kShooterCircumferenceMeters =
-        0.1524 * Math.PI; // 6 in diameter wheel
-    public static final double kKickerCircumferenceMeters = 0.0508 * Math.PI; // 2 in diameter wheel
-
-    public static final double kShooterFreeSpeedRotationsPerSecond =
-        kFalconFreeSpeedRotationsPerSecond / kShooterGearRatio;
-    public static final double kKickerFreeSpeedRotationsPerSecond =
-        kFalconFreeSpeedRotationsPerSecond / kKickerGearRatio;
-
-    public static final double kShooterMaxSpeedRotationsPerSecond = 68; // empirical estimate
-    public static final double kKickerMaxSpeedRotationsPerSecond = 180; // empirical estimate
-
-    public static final double kShooterSurfaceFreeSpeedMetersPerSecond =
-        kShooterFreeSpeedRotationsPerSecond * kShooterCircumferenceMeters;
-    public static final double kKickerSurfaceFreeSpeedMetersPerSecond =
-        kKickerFreeSpeedRotationsPerSecond * kKickerCircumferenceMeters;
-
-    public static final double kSShooterVolts = 0.25;
-    public static final double kVShooterVoltSecondsPerRotation = 0.133;
-    public static final double kAShooterVoltSecondsSquaredPerRotation = 0.005;
-
-    public static final double kSKickerVolts = 0.5;
-    public static final double kVKickerVoltSecondsPerRotation = 0.1;
-    public static final double kAKickerVoltSecondsSquaredPerRotation = 0.0019767;
-
-    public static final double kFShooterOutputUnit100MsPerSensorUnit =
-        kVShooterVoltSecondsPerRotation
-            * kFalconOutputUnitsPerVolt
-            / kShooterGearRatio
-            / kSecondsPer100Ms
-            / kFalconSensorUnitsPerRotation;
-    public static final double kFKickerOutputUnit100MsPerSensorUnit =
-        kVKickerVoltSecondsPerRotation
-            / kKickerGearRatio
-            * kFalconOutputUnitsPerVolt
-            / kSecondsPer100Ms
-            / kFalconSensorUnitsPerRotation;
-
-    public static final double kPShooterVoltSecondsPerRotation = 0.01; // 0.5
-    public static final double kPShooterOutputUnit100MsPerSensorUnit =
-        kPShooterVoltSecondsPerRotation
-            * kFalconOutputUnitsPerVolt
-            / kShooterGearRatio
-            / kSecondsPer100Ms
-            / kFalconSensorUnitsPerRotation;
-
-    public static final double kPKickerVoltSecondsPerRotation = 0.1; // 0.5
-    public static final double kPKickerOutputUnit100MsPerSensorUnit =
-        kPKickerVoltSecondsPerRotation
-            / kKickerGearRatio
-            * kFalconOutputUnitsPerVolt
-            / kSecondsPer100Ms
-            / kFalconSensorUnitsPerRotation;
-
-    public static final double kShooterControlVelocityToleranceRotationsPerSecond = 1;
-    public static final double kShooterControlVelocityToleranceSensorUnitsPer100Ms =
-        kShooterControlVelocityToleranceRotationsPerSecond
-            * kSecondsPer100Ms
-            * kFalconSensorUnitsPerRotation;
-
-    public static final double kKickerControlVelocityToleranceRotationsPerSecond =
-        kShooterControlVelocityToleranceRotationsPerSecond
-            * (kKickerFreeSpeedRotationsPerSecond / kShooterFreeSpeedRotationsPerSecond);
-    public static final double kKickerControlVelocityToleranceSensorUnitsPer100Ms =
-        kKickerControlVelocityToleranceRotationsPerSecond
-            * kSecondsPer100Ms
-            * kFalconSensorUnitsPerRotation;
-
-    public static final double kShooterFeedforwardScale = 0.86;
-    public static final double kKickerFeedforwardScale = 0.88;
-
-    public static final double kShooterFeedVelocityTolerance = 3;
-
-    public static final double kDefaultTangentialVelocityRatio =
-        1.0 / 3.0; // kicker tangential velocity / shooter tangential velocity
+    public static final double kSShooter = .25;
+    public static final double kVShooter = .12;
+    public static final double kAShooter = .56;
+    public static final double kPShooter = .04*12;
+    public static final double kIShooter = .01;
+    public static final double kDShooter = 0.01;
+    public static final double kSensorToMechanismGearRatio = 36/27;
+    public static final double kShooterCruiseVelocity = 80;
+    public static final double kShooterAcceleration = 160;
+    public static final double kShooterJerk = 1600; 
+    public static final double kShooterErrorTolerance = 6;
+    public static final boolean kShooterClockwisePositive = false;
+    public static final int kCurrentLimit = 80;
   }
 
-  public static final class ClimbElevatorConstants {
-
-    public static final double kElevatorControlLoopTimeSeconds = 0.01;
-    // SLIDE CONSTANTS
-    public static final int kElevatorTalonPort = 40;
-    public static final double kElevatorSupplyCurrentLimitAmps = 25;
-    public static final double kElevatorSupplyCurrentThresholdAmps = 30;
-    public static final double kElevatorSupplyCurrentThresholdTimeSecs = 0.1;
-    public static final double kElevatorStatorCurrentLimitAmps = 40;
-    public static final double kElevatorStatorCurrentThresholdAmps = 45;
-    public static final double kElevatorStatorCurrentThresholdTimeSecs = 0.05;
-
-    public static final int kElevatorSlotSensorTopPort = 0; // dio
-    public static final int kElevatorSlotSensorBottomPort = 1; // dio
-
-    public static final double kElevatorTopStopPosition = Units.inchesToMeters(0);
-    public static final double kElevatorBottomStopPosition = Units.inchesToMeters(-21.25);
-
-    public static final double kElevatorSlotSensorTopPosition = Units.inchesToMeters(20.75);
-    public static final double kElevatorSlotSensorBottomPosition = Units.inchesToMeters(0.25);
-    public static final double kSlotSensorDebounceTime = 0.1;
-
-    public static final int kElevatorServoPort = 0; // pwm
-    public static final double kElevatorServoRange = 270;
-    public static final double kElevatorServoEngageValue = 0;
-    public static final double kElevatorServoDisengageValue = 0.5;
-
-    public static final double kSprocketCircumferenceMeters = 0.0323342 * Math.PI;
-
-    public static final double kElevatorGearRatio = 32.67; // motor turns/pulley turns
-    public static final double kElevatorDistancePerMotorRevMeters =
-        kSprocketCircumferenceMeters / kElevatorGearRatio;
-
-    public static final double kElevatorFreeSpeedMetersPerSecond =
-        kFalconFreeSpeedRotationsPerSecond / kElevatorGearRatio * kSprocketCircumferenceMeters;
-
-    public static final double kSlideDistancePerPulseMeters =
-        kElevatorDistancePerMotorRevMeters / kFalconSensorUnitsPerRotation;
-
-    // Slide characterization constants: UNLOADED (not carrying robot)
-    public static final double ksElevatorUnloadedVolts = 0.70015;
-    public static final double kgElevatorUnloadedVolts = 0.010378;
-    public static final double kvElevatorUnloadedVoltSecondsPerMeter = 30.0;
-    public static final double kaElevatorUnloadedVoltSecondsSquaredPerMeter = 0.01;
-
-    // Slide characterization constants: LOADED ( carrying robot)
-    public static final double ksElevatorLoadedVolts = 0.44256;
-    public static final double kgElevatorLoadedVolts = -0.50; // this is negative because gravity fights the downward motion when loaded
-    // --
-    // retracting the elevator moves the robot up.
-    public static final double kvElevatorLoadedVoltSecondsPerMeter = 30.0;
-    public static final double kaElevatorLoadedVoltSecondsSquaredPerMeter = 0.18; // these are recalc gains -- the ka from sysid was lost in the noise
-
-    public static final double kPElevatorUnloadedVoltsPerMeter = 100;
-    public static final double kDElevatorUnloadedVoltSecondsPerMeter = 0.05;
-
-    public static final double kPElevatorLoadedVoltsPerMeter = 280;
-    public static final double kDElevatorLoadedVoltSecondsPerMeter = 10;
-
-    public static final double kElevatorPositionToleranceMeters = 0.008;
-    public static final double kElevatorVelocityToleranceMetersPerSecond = 0.01;
-
-    public static final double kElevatorMaxSpeedMetersPerSecond =
-        kElevatorFreeSpeedMetersPerSecond * 0.95;
-    // Find maximum simultaneously achievable acceleration
-    public static final double kElevatorMaxAccelerationMetersPerSecondSquaredUnloaded = 0.8;
-
-    public static final double kSlideMaxAccelerationMetersPerSecondSquaredLoaded = 0.5;
-
-    // Constraint for the motion profilied elevator controller (unloaded mode)
-    public static final TrapezoidProfile.Constraints kElevatorControllerConstraintsUnloaded =
-        new TrapezoidProfile.Constraints(
-            kElevatorMaxSpeedMetersPerSecond,
-            kElevatorMaxAccelerationMetersPerSecondSquaredUnloaded);
-
-    // Constraint for the motion profilied elevator controller (loaded mode)
-    public static final TrapezoidProfile.Constraints kElevatorControllerConstraintsLoaded =
-        new TrapezoidProfile.Constraints(
-            kElevatorMaxSpeedMetersPerSecond, kSlideMaxAccelerationMetersPerSecondSquaredLoaded);
+  public static final class PivotConstants {
+    public static final int kPivotPort = 19;
+    public static final double kSPivot = .91;
+    public static final double kVPivot = 1.35;
+    public static final double kPPivot = 40;
+    public static final double kIPivot = 0;
+    public static final double kDPivot = .01;
+    public static final double kPivotCruiseVelocity = Math.PI*4;
+    public static final double kPivotAcceleration = Math.PI;
+    public static final double kPivotJerk = Math.PI*80; 
+    public static final boolean kPivotClockwisePositive = true;
+    public static final double kPivotErrorTolerance = .03;
+    public static final double kSensorToMechanismGearRatio = 75;
+    public static final double kPivotToRobot = .2921;
+    public static final int kCurrentLimit = 40;
   }
 
-  public static final class ClimbArmConstants {
-    public static final double kArmControlLoopTimeSeconds = 0.01;
+  public static final class ClimberConstants {
+    public static final int kClimberLeftPort = 21;
+    public static final int kClimberRightPort = 20;
+    public static final double kSClimberLeft = .91;
+    public static final double kSClimberRight = .91;
+    public static final double kVClimber = 4;
+    public static final double kPClimberLeft = 12;
+    public static final double kPClimberRight = 12;
+    public static final double kIClimber = 0;
+    public static final double kDClimber = 0;
+    public static final double kClimberCruiseVelocity = Math.PI*4;
+    public static final double kClimberAcceleration = Math.PI*16;
+    public static final double kClimberJerk = Math.PI*160; 
+    public static final boolean kClimberClockwisePositive = true;
+    public static final double kClimberErrorTolerance = .25;
+    public static final double kSensorToMechanismGearRatio = 100;
+    public static final int kCurrentLimit = 60;
+    public static final int kCurrentLimitThreshold = 6;
+  }
 
-    public static final double kArmGearingChange = 8.0 / 11.0;
-    // ARM CONSTANTS
-    public static final int kArmTalonPort = 41;
-    public static final double kArmSupplyCurrentLimitAmps = 25;
-    public static final double kArmSupplyCurrentThresholdAmps = 30;
-    public static final double kArmSupplyCurrentThresholdTimeSecs = 0.1;
-    public static final double kArmStatorCurrentLimitAmps = 25;
-    public static final double kArmStatorCurrentThresholdAmps = 30;
-    public static final double kArmStatorCurrentThresholdTimeSecs = 0.05;
-
-    public static final double kArmStatorCurrentSpikeThresholdAmps = 30;
-    public static final double kArmStatorCurrentSpikeDebounceTimeSeconds = 0.2;
-
-    public static final double kArmGearRatio = 57.6 * (16.0 / 22.0); // motor turns/pinion turns
-    public static final double kArmRotationsPerMotorRev = 1 / kArmGearRatio;
-    public static final double kArmRotationsPerPulse =
-        kArmRotationsPerMotorRev / kFalconSensorUnitsPerRotation;
-
-    public static final double kSprocketCircumferenceMeters = 0.0323342 * Math.PI;
-
-    // arm characteristics used in angular mode
-    public static final double kArmMomentOfIntertia = 5;
-    public static final double kArmLengthMeters = 2; // length to center of mass
-    public static final double kGravityMetersPerSecondSquared = 9.81;
-
-    // arm characteristics used in translation mode
-    public static final double kArmDistancePerMotorRevMeters =
-        kSprocketCircumferenceMeters / kArmGearRatio;
-    // public static final double kArmRotationToleranceRadians = 0.05;
-
-    public static final double kArmFreeSpeedMetersPerSecond =
-        kFalconFreeSpeedRotationsPerSecond / kArmGearRatio * kSprocketCircumferenceMeters;
-
-    public static final double kArmRotationTolerance = 0.01;
-    // ARM TRANSLATION CONSTANTS
-    public static final double ksArmTranslationVolts = 0.55953;
-    public static final double kgArmTranslationVolts = 0.18092;
-    public static final double kvArmTranslationVoltSecondsPerMeter = 62.80;
-    public static final double kaArmTranslationVoltSecondsSquaredPerMeter = 0.04;
-
-    public static final double kArmMaxSpeedTranslationMetersPerSecond =
-        kArmFreeSpeedMetersPerSecond * 0.9 / kArmGearingChange;
-    public static final double kArmMaxAccelerationTranslationMetersPerSecondSquared =
-        10 * kArmGearingChange;
-
-    // Constraint for the motion profilied arm rotation controller
-    public static final TrapezoidProfile.Constraints kArmControllerConstraintsTranslation =
-        new TrapezoidProfile.Constraints(
-            kArmMaxSpeedTranslationMetersPerSecond,
-            kArmMaxAccelerationTranslationMetersPerSecondSquared);
-
-    public static final double kPArmTranslationVoltsPerMeter = 400 * kArmGearingChange;
-    public static final double kDArmTranslationVoltSecondsPerMeter = 0.275 * kArmGearingChange;
-    public static final double kIArmTranslationVoltsPerMeter = 30;
-    public static final double kArmIntegratorMaxVolts = 0.5;
-    public static final double ksArmUnloadedVolts = 0.47;
-    public static final double kgArmUnloadedVolts = 0.02;
-    public static final double kvArmUnloadedVoltSecondsPerMeter = 63.445 * kArmGearingChange;
-    public static final double kaArmUnloadedVoltSecondsSquaredPerMeter = 0.01 * kArmGearingChange;
-
-    public static final double kArmTranslationToleranceMeters = 0.02;
-    public static final double kArmTranslationVelocityToleranceMetersPerSecond =
-        0.05 / kArmGearingChange;
+  public static final class IndexerConstants {
+    
   }
 
   public static final class Swerve {
@@ -774,9 +456,18 @@ public final class Constants {
         COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
     /* Drivetrain Constants */
-    public static final double trackWidth = 0.5842;
-    public static final double wheelBase = 0.6858;
+    public static final double lengthBetweenModules = 0.5842;
+    public static final double widthBetweenModules = 0.5842;
+    public static final double driveRadius = 0.413091;
     public static final double wheelCircumference = chosenModule.wheelCircumference;
+
+    public static final ReplanningConfig kReplanningConfig = new ReplanningConfig();
+    public static final HolonomicPathFollowerConfig kPathFollowingConfig = new HolonomicPathFollowerConfig(// HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(2, 0.0, 0), // Translation PID constants
+                        new PIDConstants(2, 0, 0), // Rotation PID constants
+                        6, // Max module speed, in m/s
+                        driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig());
 
     /*
      * Swerve Kinematics
@@ -784,10 +475,10 @@ public final class Constants {
      * rectangular/square 4 module swerve
      */
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+        new Translation2d(Swerve.lengthBetweenModules / 2.0, -Swerve.widthBetweenModules / 2.0),
+        new Translation2d(Swerve.lengthBetweenModules / 2.0, Swerve.widthBetweenModules / 2.0),
+        new Translation2d(-Swerve.lengthBetweenModules / 2.0, Swerve.widthBetweenModules / 2.0),
+        new Translation2d(-Swerve.lengthBetweenModules / 2.0, -Swerve.widthBetweenModules / 2.0));
 
     
     /* Module Gear Ratios */
@@ -802,8 +493,8 @@ public final class Constants {
     public static final boolean canCoderInvert = chosenModule.canCoderInvert;
 
     /* Swerve Current Limiting */
-    public static final int angleContinuousCurrentLimit = 25;
-    public static final int anglePeakCurrentLimit = 40;
+    public static final int angleContinuousCurrentLimit = 40;
+    public static final int anglePeakCurrentLimit = 80;
     public static final double anglePeakCurrentDuration = 0.1;
     public static final boolean angleEnableCurrentLimit = true;
 
@@ -826,7 +517,7 @@ public final class Constants {
     // public static final double angleKD = chosenModule.angleKD;
     // public static final double angleKF = chosenModule.angleKF;
 
-    public static final double angleKP = 60;
+    public static final double angleKP = 30;
     public static final double angleKI = 0;
     public static final double angleKD = .05;
     public static final double angleKF = 0;
@@ -844,7 +535,7 @@ public final class Constants {
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    public static final double maxSpeed = 3; // TODO: This must be tuned to specific robot
+    public static final double maxSpeed = 6; // TODO: This must be tuned to specific robot
     /** Radians per Second */
     public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
 
@@ -857,8 +548,8 @@ public final class Constants {
     public static final class Mod0 { // TODO: This must be tuned to specific robot
       public static final int driveMotorID = 1;
       public static final int angleMotorID = 2;
-      public static final int canCoderID = 11;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.1591796875);
+      public static final int canCoderID = 10;
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.36279296875);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }
@@ -867,8 +558,18 @@ public final class Constants {
     public static final class Mod1 { // TODO: This must be tuned to specific robot
       public static final int driveMotorID = 3;
       public static final int angleMotorID = 4;
+      public static final int canCoderID = 11;
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.42529296875);
+      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+          canCoderID, angleOffset, true);
+    }
+
+    /* Back Right Module - Module 2 */
+    public static final class Mod2 { // TODO: This must be tuned to specific robot
+      public static final int driveMotorID = 5;
+      public static final int angleMotorID = 6;
       public static final int canCoderID = 12;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.1865234375);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.1552734375);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -877,20 +578,10 @@ public final class Constants {
     public static final class Mod3 { // TODO: This must be tuned to specific robot
       public static final int driveMotorID = 7;
       public static final int angleMotorID = 8;
-      public static final int canCoderID = 14;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.371337890625);
+      public static final int canCoderID = 13;
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.191162109375);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
-    }
-
-    /* Back Right Module - Module 2 */
-    public static final class Mod2 { // TODO: This must be tuned to specific robot
-      public static final int driveMotorID = 5;
-      public static final int angleMotorID = 6;
-      public static final int canCoderID = 13;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.171630859375);
-      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset, true);
     }
   }
 }
