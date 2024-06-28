@@ -118,7 +118,7 @@ public class Shooter extends SubsystemBase {
             break;
           case StateCoast:
             desiredVelocity = 0;
-            desiredVoltage = 2;
+            desiredVoltage = 0;
             break;
           case StateSpeaker:
             desiredVelocity = InterpolatingTable.get(distanceFromSpeaker.getAsDouble()).shooterSpeedRotationsPerSecond;
@@ -129,7 +129,7 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 0;
             break;
           case StatePass:
-            desiredVelocity = 55;
+            desiredVelocity = 50;
             desiredVoltage = 0;
             break;
         }

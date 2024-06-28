@@ -44,7 +44,8 @@ public class DriveWithController extends Command {
   private final Drivetrain m_drivetrain;
   private final DoubleSupplier m_passAngle;
   private final BooleanSupplier m_passing;
-  private final PIDController rotationOverrideController = new PIDController(.175, 0, .01);
+  private final PIDController rotationOverrideController = new PIDController(.1*.8, 0, .015*.75);
+  //.175, 0, .01
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
 

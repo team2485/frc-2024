@@ -3,48 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 14.86345751578807,
-        "y": 5.246454772510115
+        "x": 13.727506370847264,
+        "y": 5.562647359246215
       },
       "prevControl": null,
       "nextControl": {
-        "x": 15.132200066781511,
-        "y": 4.860867634128221
+        "x": 13.78606055357617,
+        "y": 4.953683858865578
       },
       "isLocked": false,
-      "linkedName": "3NoteUnderStageMidlineEnd0"
+      "linkedName": "NEW2NoteUnderStageMidlinePathEnd"
     },
     {
       "anchor": {
-        "x": 13.78606055357617,
-        "y": 4.087081954477746
+        "x": 10.530447993848911,
+        "y": 3.7826002042874274
       },
       "prevControl": {
-        "x": 14.578499743290418,
-        "y": 4.245569792420597
+        "x": 11.13941149422955,
+        "y": 4.414985377759629
       },
       "nextControl": {
-        "x": 13.610398005389449,
-        "y": 4.051949444840401
+        "x": 9.967075494487249,
+        "y": 3.1975595318733943
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.359891544319463,
-        "y": 4.20419031993556
+        "x": 8.118015665417921,
+        "y": 2.459275674614116
       },
       "prevControl": {
-        "x": 14.254494015407433,
-        "y": 4.04023860829462
+        "x": 10.143990387838123,
+        "y": 2.295323962973175
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3NoteUnderStageMidlineEnd1"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {

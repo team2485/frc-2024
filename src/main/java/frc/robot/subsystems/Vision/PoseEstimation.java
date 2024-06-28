@@ -129,8 +129,8 @@ public class PoseEstimation extends SubsystemBase {
     
     
 
-    if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
-    else m_driver.setRumble(RumbleType.kLeftRumble, 0);
+   // if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
+    //else m_driver.setRumble(RumbleType.kLeftRumble, 0);
   }
 
   private String getFormattedPose() {

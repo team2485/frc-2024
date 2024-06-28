@@ -34,7 +34,7 @@ public class Pivot extends SubsystemBase {
     StateAutoIntake,
     StatePass,
     StatePodiumSetpoint,
-    StateSideSetpoint,
+    StateStageSetpoint,
   }
 
   public static PivotStates m_PivotCurrentState;
@@ -125,12 +125,12 @@ public class Pivot extends SubsystemBase {
         break;
       case StatePass:
         desiredPosition = 0.05;
-        break;
+        break; 
       case StatePodiumSetpoint:
-        desiredPosition = 0.07;
+        desiredPosition = 0.075;
         break;
-      case StateSideSetpoint:
-        desiredPosition = 0.09;
+      case StateStageSetpoint:
+        desiredPosition = 0.099;
         break;
     }
  

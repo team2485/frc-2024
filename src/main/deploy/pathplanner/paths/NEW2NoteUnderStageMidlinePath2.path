@@ -8,40 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 15.132200066781511,
-        "y": 4.860867634128221
+        "x": 14.62924078487244,
+        "y": 5.3635631379679305
       },
       "isLocked": false,
       "linkedName": "3NoteUnderStageMidlineEnd0"
     },
     {
       "anchor": {
-        "x": 13.78606055357617,
-        "y": 4.087081954477746
+        "x": 13.727506370847264,
+        "y": 5.562647359246215
       },
       "prevControl": {
-        "x": 14.578499743290418,
-        "y": 4.245569792420597
-      },
-      "nextControl": {
-        "x": 13.610398005389449,
-        "y": 4.051949444840401
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 14.359891544319463,
-        "y": 4.20419031993556
-      },
-      "prevControl": {
-        "x": 14.254494015407433,
-        "y": 4.04023860829462
+        "x": 14.933722535062758,
+        "y": 5.691466561249813
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3NoteUnderStageMidlineEnd1"
+      "linkedName": "NEW2NoteUnderStageMidlinePathEnd"
     }
   ],
   "rotationTargets": [],

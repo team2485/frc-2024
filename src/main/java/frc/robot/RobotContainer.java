@@ -114,7 +114,7 @@ public class RobotContainer {
           m_driver::getLeftX,
           m_driver::getRightX,
           () -> true,
-          () -> m_operator.rightTrigger().getAsBoolean(),
+          () -> false,
           m_poseEstimation::getAngleToSpeakerCalculated,
           () -> m_driver.y().getAsBoolean(),
           m_poseEstimation::getAngleToAmp,
@@ -128,15 +128,21 @@ public class RobotContainer {
 
     //m_poseEstimation.setDefaultCommand(NoteHandlingCommandBuilder.noteHaptics(m_driver, m_poseEstimation));
 
-    //m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
-    //            .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
+    m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
+               .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
     m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver, m_operator))
                            .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
 
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer, m_feeder, m_pivot))
                          .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
+
+    m_driver.leftTrigger().onTrue(NoteHandlingCommandBuilder.paradeIntake(m_intake, m_indexer, m_feeder, m_pivot))
+                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));    
     // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
+
+    m_operator.leftPOV().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
+                       .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
     m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
@@ -167,11 +173,11 @@ public class RobotContainer {
     m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
                             .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeakerSetpoint(m_pivot, m_shooter, m_feeder, m_indexer, PivotStates.StatePodiumSetpoint))
+    m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterPodiumSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
     
-    m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeakerSetpoint(m_pivot, m_shooter, m_feeder, m_indexer, PivotStates.StateSideSetpoint))
-                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterStageSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
+                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
     //m_operator.rightBumper().onTrue();
   }
 

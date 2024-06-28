@@ -402,7 +402,7 @@ public final class Constants {
     public static final double kShooterCruiseVelocity = 80;
     public static final double kShooterAcceleration = 160;
     public static final double kShooterJerk = 1600; 
-    public static final double kShooterErrorTolerance = 4;
+    public static final double kShooterErrorTolerance = 6;
     public static final boolean kShooterClockwisePositive = false;
     public static final int kCurrentLimit = 80;
   }

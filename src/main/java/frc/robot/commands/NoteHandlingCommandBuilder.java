@@ -44,7 +44,7 @@ public class NoteHandlingCommandBuilder {
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateIntake), intake),
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
                                 new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder),
-                                new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kRightRumble, 0.75), ()->driver.setRumble(RumbleType.kRightRumble, 0))).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0)))
+                                new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->driver.setRumble(RumbleType.kRightRumble, 0.0), ()->driver.setRumble(RumbleType.kRightRumble, 0))).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0)))
                                // new WaitCommand(.1).andThen(new WaitUntilCommand(()->feeder.getCurrent() > 23)).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0))).andThen(new StartEndCommand(()->operator.setRumble(RumbleType.kRightRumble, 0.75), ()->operator.setRumble(RumbleType.kRightRumble, 0)))
 
                                 );
@@ -52,7 +52,7 @@ public class NoteHandlingCommandBuilder {
     }
 
     public static Command noteHaptics(WL_CommandXboxController m_driver, PoseEstimation mEstimation) {
-        Command command = new StartEndCommand(()->m_driver.setRumble(RumbleType.kLeftRumble, .75), ()->m_driver.setRumble(RumbleType.kLeftRumble, 0));
+        Command command = new StartEndCommand(()->m_driver.setRumble(RumbleType.kLeftRumble, .0), ()->m_driver.setRumble(RumbleType.kLeftRumble, 0));
         return command;
     }
 
@@ -87,6 +87,17 @@ public class NoteHandlingCommandBuilder {
                                 new RunCommand(()->pivot.requestState(PivotStates.StateOuttake)).until(()->pivot.getCurrentState() == PivotStates.StateOuttake),
                                 new ParallelCommandGroup(
                                     new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateReverse), indexer),
+                                    new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
+                                )
+                                );
+        return command;
+    }
+
+    public static Command paradeIntake(Intake intake, GeneralRoller indexer, GeneralRoller feeder, Pivot pivot) {
+        Command command = new SequentialCommandGroup(
+                                new RunCommand(()->pivot.requestState(PivotStates.StateOuttake)).until(()->pivot.getCurrentState() == PivotStates.StateOuttake),
+                                new ParallelCommandGroup(
+                                    new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateForward), indexer),
                                     new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateReverse), feeder)
                                 )
                                 );
@@ -149,10 +160,18 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shooterPasser(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new SequentialCommandGroup(
-            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->Math.abs(shooter.getVelocity()-55)<6),
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->Math.abs(shooter.getVelocity()-50)<6),
             runFeeder(feeder, indexer)
             );
 
+        return command;
+    }
+
+
+    public static Command DIAShoot(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
+        Command command = new ParallelCommandGroup(
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter), runFeeder(feeder, indexer)
+        );
         return command;
     }
 
@@ -182,17 +201,18 @@ public class NoteHandlingCommandBuilder {
                                 new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
                                 new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)
                             )
+                
                         );
         return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
-    public static Command autoShooterSpeakerSetpoint(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PivotStates setpoint) {
+    public static Command autoShooterStageSetpoint(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
-                        new RunCommand(()->pivot.requestState(setpoint), pivot), 
+                        new RunCommand(()->pivot.requestState(PivotStates.StateStageSetpoint), pivot), 
                         new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
                         new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
                         new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
-                        ).until(()->pivot.getCurrentState() == PivotStates.StateShooter && shooter.getCurrentState() == ShooterStates.StateSpeaker)
+                        ).until(()->pivot.getCurrentState() == PivotStates.StateStageSetpoint && shooter.getCurrentState() == ShooterStates.StateSpeaker)
                         .andThen(
                             new ParallelCommandGroup(
                                 new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
@@ -201,6 +221,38 @@ public class NoteHandlingCommandBuilder {
                         );
         return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
+ 
+    public static Command autoShooterPodiumSetpoint(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
+        Command command = new ParallelCommandGroup(
+                        new RunCommand(()->pivot.requestState(PivotStates.StatePodiumSetpoint), pivot), 
+                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
+                        new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
+                        new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
+                        ).until(()->pivot.getCurrentState() == PivotStates.StatePodiumSetpoint && shooter.getCurrentState() == ShooterStates.StateSpeaker)
+                        .andThen(
+                            new ParallelCommandGroup(
+                                new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
+                                new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)
+                            )
+                        );
+        return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    // public static Command autoShooterSpeakerSetpoint(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer, PivotStates setpoint) {
+    //     Command command = new ParallelCommandGroup(
+    //                     new RunCommand(()->pivot.requestState(PivotStates.StatePass), pivot), 
+    //                     new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
+    //                     new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
+    //                     new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
+    //                     ).until(()->pivot.getCurrentState() == PivotStates.StateShooter && shooter.getCurrentState() == ShooterStates.StateSpeaker)
+    //                     .andThen(
+    //                         new ParallelCommandGroup(
+    //                             new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
+    //                             new RunCommand(()->indexer.requestState(GeneralRollerStates.StateForwardFast), indexer)
+    //                         )
+    //                     );
+    //     return command.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    // }
 
     public static Command autoSetGyro(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation) {
         // if (angle > 90) angle = 180 - angle;
