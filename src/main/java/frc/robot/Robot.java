@@ -8,9 +8,12 @@ import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.drive.CTREConfigs;
 
 /**
@@ -23,7 +26,9 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  public static CTREConfigs ctreConfigs; 
+  public static CTREConfigs ctreConfigs;
+  public SPI spiPort;
+  GenericEntry spiValue;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -36,7 +41,16 @@ public class Robot extends TimedRobot {
     ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    m_robotContainer = new RobotContainer();  
+
+    spiPort = new SPI(SPI.Port.kOnboardCS0);
+    spiPort.setClockRate(3200000);
+
+    byte[] bytes = {(byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0xEE, (byte)0xEE, (byte)0xEE, (byte)0xEE};
+    spiPort.write(bytes, 12);
+
+    spiValue = Shuffleboard.getTab("Swerve").add("SPI", null).getEntry();
+    spiValue.setValue(spiPort.getPort());
   }
 
   /**
@@ -53,6 +67,10 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // LEDs
+    byte[] bytes = {(byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0x88, (byte)0xEE, (byte)0xEE, (byte)0xEE, (byte)0xEE};
+    spiPort.write(bytes, 12);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
