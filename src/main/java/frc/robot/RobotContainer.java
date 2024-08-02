@@ -12,6 +12,7 @@ import frc.robot.commands.DriveWithController;
 import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.Climb.Climber;
 import frc.robot.subsystems.NoteHandling.GeneralRoller;
 import frc.robot.subsystems.NoteHandling.Intake;
@@ -60,8 +61,10 @@ public class RobotContainer {
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
   private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
   private final Climber m_climber = new Climber();
+  private final LEDStrip m_leds = new LEDStrip();
 
   public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
+
 
   SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
 
