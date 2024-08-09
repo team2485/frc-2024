@@ -55,9 +55,10 @@ public class SwerveModule {
     private MotorOutputConfigs mAngleOutputConfigs = new MotorOutputConfigs();
     private CANcoderConfiguration mCanCoderConfigs = new CANcoderConfiguration();
     private GenericEntry current;
+    private GenericEntry currentAbsRot;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
-    PIDController angleContoller = new PIDController(1, 0, 0);
+    //PIDController angleContoller = new PIDController(1, 0, 0); DEP
     
     
     private double absAngle = 0;
@@ -66,20 +67,21 @@ public class SwerveModule {
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
         current = Shuffleboard.getTab("Swerve").add("Current: " + moduleNumber, 0).getEntry();
+        currentAbsRot = Shuffleboard.getTab("Swerve").add("Current Rotation: " + moduleNumber, 0).getEntry();
         
         /* Angle Encoder Config */
-        angleEncoder = new CANcoder(moduleConstants.cancoderID, "Drive");
+        angleEncoder = new CANcoder(moduleConstants.cancoderID);
         angleEncoderConfigurator = angleEncoder.getConfigurator();
         angleEncoderConfigurator.apply(Robot.ctreConfigs.swerveCanCoderConfig);
         mCanCoderConfigs.MagnetSensor.MagnetOffset = angleOffset.getRotations();
         angleEncoderConfigurator.apply(mCanCoderConfigs);
-
+        currentAbsRot.setValue(angleEncoder.getAbsolutePosition().getValue());
         
         // configAngleEncoder();
 
         /* Angle Motor Config */
         //CANivores = "Drive", "Mast"
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, "Drive");
+        mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
         mAngleConfigurator = mAngleMotor.getConfigurator();
         mAngleConfigurator.apply(Robot.ctreConfigs.swerveAngleFXConfig);
         mAngleOutputConfigs.Inverted = angleMotorInvert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
@@ -89,7 +91,7 @@ public class SwerveModule {
         //configAngleMotor();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, "Drive");
+        mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
         mDriveConfigurator = mDriveMotor.getConfigurator();
         mDriveConfigurator.apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveOutputConfigs.Inverted = moduleConstants.isInverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;

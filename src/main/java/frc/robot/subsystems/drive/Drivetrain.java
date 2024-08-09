@@ -23,7 +23,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.MedianFilter;
 
 public class Drivetrain extends SubsystemBase {
-    public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID, "Drive");
+    public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID);
     GenericEntry absoluteGyroPos;
     GenericEntry currentGyroPos;
 
