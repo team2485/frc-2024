@@ -42,8 +42,8 @@ public class Climber extends SubsystemBase {
   GenericEntry climberPosition;
 
   // You may need more than one motor
-  private final TalonFX m_talonLeft = new TalonFX(kClimberLeftPort, "Mast");
-  private final TalonFX m_talonRight = new TalonFX(kClimberRightPort, "Mast");
+  private final TalonFX m_talonLeft = new TalonFX(kClimberLeftPort, "rio");
+  private final TalonFX m_talonRight = new TalonFX(kClimberRightPort, "rio");
   private final MotionMagicVoltage request = new MotionMagicVoltage(0).withSlot(0);
   // Unit default for TalonFX libraries is rotations
   private double desiredPosition = 0;
@@ -99,8 +99,8 @@ public class Climber extends SubsystemBase {
 
     m_talonLeft.getConfigurator().apply(talonFXConfigs);
 
-    slot0Configs.kS = kSClimberRight;
-    slot0Configs.kP = kPClimberRight;
+    //slot0Configs.kS = kSClimberRight;
+   // slot0Configs.kP = kPClimberRight;
 
     if (kClimberClockwisePositive) {
       motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -149,9 +149,9 @@ public class Climber extends SubsystemBase {
   public void runControlLoop() {    
     if (desiredVoltage != 0) {
         m_talonLeft.setVoltage(desiredVoltage);
-        if (leftSet) m_talonLeft.setVoltage(0);
+        //if (leftSet) m_talonLeft.setVoltage(0);
         m_talonRight.setVoltage(desiredVoltage);
-        if (rightSet) m_talonRight.setVoltage(0);
+      //  if (rightSet) m_talonRight.setVoltage(0);
     }
     else {
       m_talonLeft.setControl(request.withPosition(desiredPosition).withEnableFOC(true));

@@ -12,12 +12,17 @@ import frc.robot.commands.DriveWithController;
 import frc.robot.commands.NoteHandlingCommandBuilder;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.Climb.Climber;
+// import frc.robot.subsystems.Climb.Climber;
+// import frc.robot.subsystems.Climb.Climber.ClimberStates;
+import frc.robot.subsystems.Climb.ClimberNew.ClimberStates;
+import frc.robot.subsystems.Climb.ClimberNew;
+
 import frc.robot.subsystems.NoteHandling.GeneralRoller;
-import frc.robot.subsystems.NoteHandling.Intake;
-import frc.robot.subsystems.NoteHandling.Pivot;
-import frc.robot.subsystems.NoteHandling.Shooter;
-import frc.robot.subsystems.NoteHandling.Pivot.PivotStates;
+//import frc.robot.subsystems.NoteHandling.Intake;
+import frc.robot.subsystems.NoteHandling.LeafBlower;
+// import frc.robot.subsystems.NoteHandling.Pivot;
+// import frc.robot.subsystems.NoteHandling.Shooter;
+// import frc.robot.subsystems.NoteHandling.Pivot.PivotStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.networktables.GenericEntry;
@@ -36,6 +41,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static frc.robot.Constants.GeneralRollerConstants.*;
+import static frc.robot.Constants.LeafBlowerConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,14 +58,15 @@ public class RobotContainer {
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
-  private final Intake m_intake = new Intake();
-  private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
-  private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
-  private final Shooter m_shooter = new Shooter(m_poseEstimation::getDistanceToSpeaker);
+  //private final Intake m_intake = new Intake();
+  //private final GeneralRoller m_indexer = new GeneralRoller(kIndexerPort, true);
+  //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, true);
+  //private final Shooter m_shooter = new Shooter(m_poseEstimation::getDistanceToSpeaker);
+  private final LeafBlower m_blower = new LeafBlower(frc.robot.Constants.LeafBlowerConstants.kLeafBlowerPort, true);
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
-  private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
-  private final Climber m_climber = new Climber();
+  //private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
+  private final ClimberNew m_climber = new ClimberNew();
 
   public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
 
@@ -79,12 +86,12 @@ public class RobotContainer {
     configureBindings();
     m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Swerve"));
 
-    NamedCommands.registerCommand("Fire", AutoCommandBuilder.Fire(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
-    NamedCommands.registerCommand("FireShooterOff", AutoCommandBuilder.FireShooterOff(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
-    NamedCommands.registerCommand("KickOutAuto", NoteHandlingCommandBuilder.kickOutAuto(m_intake, m_indexer, m_feeder));
-    NamedCommands.registerCommand("Intake", NoteHandlingCommandBuilder.intakeAuto(m_intake, m_indexer, m_feeder));
-    NamedCommands.registerCommand("ScoreInAmp", NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation));
-    NamedCommands.registerCommand("SetupGyro", NoteHandlingCommandBuilder.autoSetGyro(m_drivetrain, m_poseEstimation));
+    // NamedCommands.registerCommand("Fire", AutoCommandBuilder.Fire(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
+    // NamedCommands.registerCommand("FireShooterOff", AutoCommandBuilder.FireShooterOff(m_drivetrain, m_poseEstimation, m_intake, m_shooter, m_pivot, m_feeder, m_indexer));
+    // NamedCommands.registerCommand("KickOutAuto", NoteHandlingCommandBuilder.kickOutAuto(m_intake, m_indexer, m_feeder));
+    // NamedCommands.registerCommand("Intake", NoteHandlingCommandBuilder.intakeAuto(m_intake, m_indexer, m_feeder));
+    // NamedCommands.registerCommand("ScoreInAmp", NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation));
+    // NamedCommands.registerCommand("SetupGyro", NoteHandlingCommandBuilder.autoSetGyro(m_drivetrain, m_poseEstimation));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -131,21 +138,28 @@ public class RobotContainer {
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
                .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
-    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver, m_operator))
-                           .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
+    // m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver, m_operator))
+    //                        .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
 
-    m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer, m_feeder, m_pivot))
-                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
+    // m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer, m_feeder, m_pivot))
+    //                      .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
 
-    m_driver.leftTrigger().onTrue(NoteHandlingCommandBuilder.paradeIntake(m_intake, m_indexer, m_feeder, m_pivot))
-                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));    
-    // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
+    // m_driver.leftTrigger().onTrue(NoteHandlingCommandBuilder.paradeIntake(m_intake, m_indexer, m_feeder, m_pivot))
+    //                      .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));    
+    // // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
 
-    m_operator.leftPOV().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
-                       .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.leftPOV().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
+    //                    .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
-    m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
+    m_operator.leftBumper().onTrue( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateGoUp)));
+      m_operator.leftBumper().onFalse( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateStopped)));
+
+       m_operator.leftTrigger().onTrue( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateGoDown)));
+      m_operator.leftTrigger().onFalse( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateStopped)));
+
+
+    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.blow(m_blower));
+
 
     // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder))
     //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder));
@@ -154,31 +168,31 @@ public class RobotContainer {
     // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
     //                         .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
-                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    //m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
+    //                         .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
-                  .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
+    //               .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.x().whileTrue(NoteHandlingCommandBuilder.shooterPasser(m_shooter, m_feeder, m_indexer))
-              .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
-    m_operator.b().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
-                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.x().whileTrue(NoteHandlingCommandBuilder.shooterPasser(m_shooter, m_feeder, m_indexer))
+    //           .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.b().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
+    //                .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
 
-    m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
+    //m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
 
-    m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
+    //m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
-    m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
-                            .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    // m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
+    //                         .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterPodiumSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
-                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    // m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterPodiumSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
+    //                          .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
     
-    m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterStageSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
-                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
-    //m_operator.rightBumper().onTrue();
+    // m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterStageSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
+    //                           .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    // //m_operator.rightBumper().onTrue();
   }
 
   /**

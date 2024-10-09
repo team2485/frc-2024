@@ -345,8 +345,14 @@ public final class Constants {
 
   public static final class GeneralRollerConstants {
     public static final int kGeneralRollerCurrentLimit = 80;
-    public static final int kIndexerPort = 16;
+    //public static final int kIndexerPort = 16;
     public static final int kFeederPort = 15;
+
+  }
+
+  public static final class LeafBlowerConstants {
+
+    public static final int kLeafBlowerPort = 2;
 
   }
 

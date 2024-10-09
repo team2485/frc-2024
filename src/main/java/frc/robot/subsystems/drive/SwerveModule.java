@@ -80,7 +80,7 @@ public class SwerveModule {
         // configAngleEncoder();
 
         /* Angle Motor Config */
-        //CANivores = "Drive", "Mast"
+        //CANivores = "Drive", "rio"
         mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
         mAngleConfigurator = mAngleMotor.getConfigurator();
         mAngleConfigurator.apply(Robot.ctreConfigs.swerveAngleFXConfig);
