@@ -15,6 +15,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 // import frc.robot.subsystems.Climb.Climber;
 // import frc.robot.subsystems.Climb.Climber.ClimberStates;
 import frc.robot.subsystems.Climb.ClimberNew.ClimberStates;
+import frc.robot.subsystems.Climb.Climber;
 import frc.robot.subsystems.Climb.ClimberNew;
 
 import frc.robot.subsystems.NoteHandling.GeneralRoller;
@@ -66,7 +67,7 @@ public class RobotContainer {
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
   //private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
-  private final ClimberNew m_climber = new ClimberNew();
+  private final Climber m_climber = new Climber();
 
   public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
 
@@ -151,14 +152,15 @@ public class RobotContainer {
     // m_operator.leftPOV().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
     //                    .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.leftBumper().onTrue( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateGoUp)));
-      m_operator.leftBumper().onFalse( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateStopped)));
+    m_operator.leftBumper().onTrue( ClimbCommandBuilder.climb(m_climber));
+      //m_operator.leftBumper().onFalse( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateStopped)));
 
-       m_operator.leftTrigger().onTrue( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateGoDown)));
-      m_operator.leftTrigger().onFalse( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateStopped)));
+       m_operator.leftTrigger().onTrue( ClimbCommandBuilder.upPosition(m_climber));
+      //m_operator.leftTrigger().onFalse( new InstantCommand(() -> m_climber.requestState(ClimberStates.StateStopped)));
 
 
-    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.blow(m_blower));
+    m_operator.rightTrigger().onTrue(NoteHandlingCommandBuilder.blow(m_blower));
+  m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.StopBlow(m_blower));
 
 
     // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder))

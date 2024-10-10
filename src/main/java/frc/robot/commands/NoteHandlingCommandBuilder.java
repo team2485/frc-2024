@@ -120,7 +120,10 @@ public class NoteHandlingCommandBuilder {
         Command command = new InstantCommand(()->leafBlower.requestState(LeafBlowerStates.StateOn), leafBlower);
         return command;
     }
-
+    public static Command StopBlow(LeafBlower leafBlower){
+        Command command = new InstantCommand(()->leafBlower.requestState(LeafBlowerStates.StateOff), leafBlower);
+        return command;
+    }
     // public static Command pivotToAmp(Pivot pivot) {
     //     Command command = new InstantCommand(()->pivot.requestState(PivotStates.StateAmp), pivot); 
     //     return command;

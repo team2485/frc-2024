@@ -15,6 +15,8 @@ import static frc.robot.Constants.ClimberConstants.*;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.networktables.GenericEntry;
+
 import frc.robot.commands.Interpolation.InterpolatingTable;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -24,6 +26,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class Climber extends SubsystemBase {
+
+
+  GenericEntry climberPosition;
+
   // Misc variables for specific subsystem go here
 
   // Enum representing all of the states the subsystem can be in
@@ -36,10 +42,11 @@ public class Climber extends SubsystemBase {
     StateMovingToRequestedState
   }
 
+  
+
   public static ClimberStates m_ClimberCurrentState;
   public static ClimberStates m_ClimberRequestedState;
 
-  GenericEntry climberPosition;
 
   // You may need more than one motor
   private final TalonFX m_talonLeft = new TalonFX(kClimberLeftPort, "rio");
@@ -56,7 +63,7 @@ public class Climber extends SubsystemBase {
   Debouncer m_climberRightDebouncer;
 
   public Climber() {
-    climberPosition = Shuffleboard.getTab("Swerve").add("Current", 0).getEntry();
+    climberPosition = Shuffleboard.getTab("ClimberPosition").add("Current", 0).getEntry();
 
     m_climberLeftDebouncer = new Debouncer(1, DebounceType.kBoth);
     m_climberRightDebouncer = new Debouncer(1, DebounceType.kBoth);
@@ -125,7 +132,7 @@ public class Climber extends SubsystemBase {
 
     switch (m_ClimberRequestedState) {
       case StateUp:
-        desiredPosition = 1.6;
+        desiredPosition = 0.25;
         desiredVoltage = 0;
         break;
       case StateDownVoltage:
@@ -160,7 +167,8 @@ public class Climber extends SubsystemBase {
   }
 
   private double getPositionLeft() {
-    return m_talonLeft.getPosition().getValue();
+   // climberPosition = Shuffleboard.getTab("Swerve").add("ClimberPosition", 0).getEntry();
+    return m_talonLeft.getPosition().getValue().doubleValue();
   }
 
 

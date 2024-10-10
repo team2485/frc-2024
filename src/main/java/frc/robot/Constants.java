@@ -352,7 +352,7 @@ public final class Constants {
 
   public static final class LeafBlowerConstants {
 
-    public static final int kLeafBlowerPort = 2;
+    public static final int kLeafBlowerPort = 25;
 
   }
 

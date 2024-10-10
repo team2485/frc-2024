@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class LeafBlower extends SubsystemBase {
+    
     public enum LeafBlowerStates {
         StateOn,
         StateOff,
@@ -22,12 +23,12 @@ public class LeafBlower extends SubsystemBase {
     private double desiredVoltage = 0;
 
     public LeafBlower(int port, boolean setInverted) {
-        m_spark = new CANSparkMax(port, MotorType.kBrushless);
+        m_spark = new CANSparkMax(port, MotorType.kBrushed);
         m_spark.setSmartCurrentLimit(kGeneralRollerCurrentLimit);
         m_spark.setInverted(setInverted);
         m_spark.enableVoltageCompensation(kNominalVoltage);
         m_spark.setIdleMode(IdleMode.kCoast);
-
+        
         m_subsystemNameCurrentState = LeafBlowerStates.StateOff;
         m_subsystemNameRequestedState = LeafBlowerStates.StateOff;
     }
@@ -39,7 +40,7 @@ public class LeafBlower extends SubsystemBase {
             desiredVoltage = 0;
             break;
         case StateOn:
-            desiredVoltage = 12;
+            desiredVoltage = 15;
             break;
         }
         runControlLoop();
@@ -60,7 +61,7 @@ public class LeafBlower extends SubsystemBase {
 
     public LeafBlowerStates getCurrentState() { 
         return m_subsystemNameCurrentState; 
-      }
+    }
  
 
 }
