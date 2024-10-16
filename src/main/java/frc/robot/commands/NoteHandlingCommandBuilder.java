@@ -160,9 +160,10 @@ public class NoteHandlingCommandBuilder {
 
     public static Command shooterPasser(Shooter shooter, GeneralRoller feeder, GeneralRoller indexer){
         Command command = new SequentialCommandGroup(
-            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->Math.abs(shooter.getVelocity()-50)<6),
+            new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter).until(()->Math.abs(shooter.getVelocity()-50)<8),
             runFeeder(feeder, indexer)
             );
+            
 
         return command;
     }
@@ -191,6 +192,7 @@ public class NoteHandlingCommandBuilder {
 
     public static Command autoShooterSpeaker(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
+                        
                         new RunCommand(()->pivot.requestState(PivotStates.StateShooter), pivot), 
                         new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
                         new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),

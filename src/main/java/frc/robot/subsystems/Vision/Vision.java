@@ -89,8 +89,10 @@ public class Vision implements Runnable {
 
     @Override
     public void run() {
+        //DriveerStation.print("what");
         
         if (m_photonPoseEstimator != null && m_camera != null) { // environment and camera must be initialized properly
+           //System.out.println("reached run check 1!!");
             var photonResults = m_camera.getLatestResult(); // continuously get latest camera reading
             if(photonResults.hasTargets()){
 
@@ -113,7 +115,10 @@ public class Vision implements Runnable {
             if (photonResults.hasTargets()
                     && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) { // need accurate readings   
                 photonResults.targets.removeIf(n->(n.getFiducialId() != 3 && n.getFiducialId() != 4 && n.getFiducialId() != 7 && n.getFiducialId() != 8)); 
+                // not reaching True? -Ares
                 if (photonResults.targets.size() > 0 && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) {
+                     SmartDashboard.putBoolean("is reacghing run statement????", true);
+                    
                     m_photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
                             var estimatedPose = estimatedRobotPose.estimatedPose;
 
@@ -130,7 +135,8 @@ public class Vision implements Runnable {
                 }
             }
             else SmartDashboard.putBoolean("Camera Positioned For Auto", false);
-        }
+        }  else SmartDashboard.putBoolean("Camera Positioned For Auto", false);
+
         if (m_noteCamera != null) {
             var photonResults = m_noteCamera.getLatestResult();
             if (photonResults.hasTargets()) {

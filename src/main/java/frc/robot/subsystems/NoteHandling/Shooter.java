@@ -121,7 +121,7 @@ public class Shooter extends SubsystemBase {
             desiredVoltage = 0;
             break;
           case StateSpeaker:
-            desiredVelocity = InterpolatingTable.get(distanceFromSpeaker.getAsDouble()).shooterSpeedRotationsPerSecond;
+            desiredVelocity = InterpolatingTable.get(distanceFromSpeaker.getAsDouble()).shooterSpeedRotationsPerSecond; // -1
             desiredVoltage = 0;
             break;
           case StateAmp:

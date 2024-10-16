@@ -367,8 +367,8 @@ public final class Constants {
     public static final TreeMap<Double, ShotParameter> kShootingMap = 
       new TreeMap<>(
         Map.ofEntries( 
-          Map.entry(1.223 + 0.097, new ShotParameter(70, 1.375-.05)),
-          Map.entry(1.907 + 0.097, new ShotParameter(70, 1.2-.05)),
+          Map.entry(1.223 + 0.097, new ShotParameter(70, 1.375-.0425)), //0.05 _> 0.0425
+          Map.entry(1.907 + 0.097, new ShotParameter(70, 1.2-.0425)),
           Map.entry(2.923 + 0.097, new ShotParameter(70, 1.1-.07)),
           Map.entry(4.494 + 0.097, new ShotParameter(70, .97-.07)),
           Map.entry(5.484 + 0.097, new ShotParameter(70, .96-.05))
