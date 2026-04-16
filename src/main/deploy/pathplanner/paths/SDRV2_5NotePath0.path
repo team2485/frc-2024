@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 15.238204285253078,
+        "y": 5.6212015419751244
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.992276717791666,
+        "y": 6.476092609817173
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.153148175055266,
+        "y": 7.4598028796628215
+      },
+      "prevControl": {
+        "x": 9.27738848345029,
+        "y": 7.0733452736520315
+      },
+      "nextControl": {
+        "x": 7.034853585101748,
+        "y": 7.844216644959344
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 14.664373294509787,
+        "y": 6.148189186535292
+      },
+      "prevControl": {
+        "x": 12.591555225906458,
+        "y": 6.604911811820771
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "SDR5NoteV2_0"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 8.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -8.39909464785248,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SDR",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
