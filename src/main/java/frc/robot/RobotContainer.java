@@ -107,8 +107,8 @@ public class RobotContainer {
   private void configureBindings() {
     m_drivetrain.setDefaultCommand(
       new DriveWithController(
-          m_driver::getLeftY,
-          m_driver::getLeftX,
+          ()->-1*m_driver.getLeftY(),
+          ()->-1*m_driver.getLeftX(),
           m_driver::getRightX,
           () -> true,
           () -> false,
@@ -141,8 +141,8 @@ public class RobotContainer {
     m_operator.leftPOV().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
                        .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
-    m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
+    // m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
+    // m_operator.leftTrigger().onTrue(ClimbCommandBuilder.climb(m_climber));
 
     // m_operator.rightBumper().onTrue(NoteHandlingCommandBuilder.runFeeder(m_feeder))
     //                         .onFalse(NoteHandlingCommandBuilder.feederOff(m_feeder));
@@ -150,8 +150,8 @@ public class RobotContainer {
     //                          .whileFalse(NoteHandlingCommandBuilder.shooterCoast(m_shooter));
     // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
     //                         .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
-
-    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer).alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, m_poseEstimation::getAngleToSpeaker, ()-> false, m_poseEstimation::getAngleToAmp, ()->false, m_poseEstimation::getAngleToStage, ()->false, ()-> false, ()-> 0, ()->0, m_drivetrain, m_poseEstimation)))
+    // .alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, m_poseEstimation::getAngleToSpeaker, ()-> false, m_poseEstimation::getAngleToAmp, ()->false, m_poseEstimation::getAngleToStage, ()->false, ()-> false, ()-> 0, ()->0, m_drivetrain, m_poseEstimation))
+    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
     m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
