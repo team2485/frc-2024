@@ -124,7 +124,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = MathUtil.clamp(angle.getAsDouble(), 0, .25);
         break;
       case StatePass:
-        desiredPosition = 0.05;
+        desiredPosition = 0.04;
         break; 
       case StatePodiumSetpoint:
         desiredPosition = 0.075;

@@ -193,11 +193,11 @@ public class NoteHandlingCommandBuilder {
     public static Command autoShooterSpeaker(Pivot pivot, Shooter shooter, GeneralRoller feeder, GeneralRoller indexer) {
         Command command = new ParallelCommandGroup(
                         
-                        new RunCommand(()->pivot.requestState(PivotStates.StateShooter), pivot), 
+                        new RunCommand(()->pivot.requestState(PivotStates.StatePass), pivot), 
                         new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
                         new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
                         new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
-                        ).until(()->pivot.getCurrentState() == PivotStates.StateShooter && shooter.getCurrentState() == ShooterStates.StateSpeaker)
+                        ).until(()->pivot.getCurrentState() == PivotStates.StatePass && shooter.getCurrentState() == ShooterStates.StateSpeaker)
                         .andThen(
                             new ParallelCommandGroup(
                                 new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),
