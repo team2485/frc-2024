@@ -194,10 +194,10 @@ public class NoteHandlingCommandBuilder {
         Command command = new ParallelCommandGroup(
                         
                         new RunCommand(()->pivot.requestState(PivotStates.StatePass), pivot), 
-                        new RunCommand(()->shooter.requestState(ShooterStates.StateSpeaker), shooter),
+                        new RunCommand(()->shooter.requestState(ShooterStates.StatePass), shooter),
                         new RunCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
                         new RunCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer)
-                        ).until(()->pivot.getCurrentState() == PivotStates.StatePass && shooter.getCurrentState() == ShooterStates.StateSpeaker)
+                        ).until(()->pivot.getCurrentState() == PivotStates.StatePass && shooter.getCurrentState() == ShooterStates.StatePass)
                         .andThen(
                             new ParallelCommandGroup(
                                 new RunCommand(()->feeder.requestState(GeneralRollerStates.StateForwardFast), feeder),

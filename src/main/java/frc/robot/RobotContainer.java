@@ -56,7 +56,7 @@ public class RobotContainer {
 
   //private final GeneralRoller m_feeder = new GeneralRoller(kFeederPort, false);
   private final Pivot m_pivot = new Pivot(m_poseEstimation::getPivotAngleCalculated);
-  private final Climber m_climber = new Climber();
+  // private final Climber m_climber = new Climber();
 
   // public final AutoCommandBuilder autoBuilder = new AutoCommandBuilder();
 
@@ -138,7 +138,7 @@ public class RobotContainer {
                          .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));    
     // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
 
-    m_operator.leftPOV().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
+    m_operator.leftTrigger().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
                        .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     // m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
@@ -167,14 +167,14 @@ public class RobotContainer {
 
     m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
-    m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
-                            .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    // m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
+    //                         .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterPodiumSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
-                             .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    // m_operator.a().whileTrue(NoteHandlingCommandBuilder.autoShooterPodiumSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
+    //                          .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
     
-    m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterStageSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
-                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
+    // m_operator.rightPOV().whileTrue(NoteHandlingCommandBuilder.autoShooterStageSetpoint(m_pivot, m_shooter, m_feeder, m_indexer))
+    //                           .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
     //m_operator.rightBumper().onTrue();
   }
 

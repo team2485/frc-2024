@@ -538,7 +538,7 @@ public final class Constants {
 
     /* Neutral Modes */
     public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Brake;
-    public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
