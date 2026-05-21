@@ -108,8 +108,8 @@ public class NoteHandlingCommandBuilder {
         Command command = new ParallelCommandGroup(
                                 new InstantCommand(()->intake.requestState(IntakeStates.StateOff), intake),
                                 new InstantCommand(()->indexer.requestState(GeneralRollerStates.StateOff), indexer),
-                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder),
-                                new InstantCommand(()->pivot.requestState(PivotStates.StateDown), pivot)
+                                new InstantCommand(()->feeder.requestState(GeneralRollerStates.StateOff), feeder)
+                                // new InstantCommand(()->pivot.requestState(PivotStates.StateDown), pivot)
                                 );
         return command;
     }

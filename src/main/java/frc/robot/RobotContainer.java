@@ -128,17 +128,17 @@ public class RobotContainer {
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro)
                .alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
 
-    m_driver.rightTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver, m_operator))
+    m_driver.leftTrigger().onTrue(NoteHandlingCommandBuilder.intake(m_intake, m_indexer, m_feeder, m_driver, m_operator))
                            .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
 
     m_driver.leftBumper().onTrue(NoteHandlingCommandBuilder.outtake(m_intake, m_indexer, m_feeder, m_pivot))
                          .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));
 
-    m_driver.leftTrigger().onTrue(NoteHandlingCommandBuilder.paradeIntake(m_intake, m_indexer, m_feeder, m_pivot))
-                         .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));    
+    // m_driver.leftTrigger().onTrue(NoteHandlingCommandBuilder.paradeIntake(m_intake, m_indexer, m_feeder, m_pivot))
+    //                      .onFalse(NoteHandlingCommandBuilder.intakeOff(m_intake, m_indexer, m_feeder, m_pivot, m_driver));    
     // m_driver.upperPOV().onTrue(ClimbCommandBuilder.enableClimb(m_climber));
 
-    m_operator.leftTrigger().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
+    m_driver.rightBumper().onTrue(NoteHandlingCommandBuilder.DIAShoot(m_shooter, m_feeder, m_indexer))
                        .onFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
     // m_operator.leftBumper().onTrue(ClimbCommandBuilder.upPosition(m_climber));
@@ -151,21 +151,21 @@ public class RobotContainer {
     // m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.shoot(m_shooter, m_feeder, m_indexer))
     //                         .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
     // .alongWith(new DriveWithController(()->0, ()->0, ()->0, ()->true, ()->true, m_poseEstimation::getAngleToSpeaker, ()-> false, m_poseEstimation::getAngleToAmp, ()->false, m_poseEstimation::getAngleToStage, ()->false, ()-> false, ()-> 0, ()->0, m_drivetrain, m_poseEstimation))
-    m_operator.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
+    m_driver.rightTrigger().whileTrue(NoteHandlingCommandBuilder.autoShooterSpeaker(m_pivot, m_shooter, m_feeder, m_indexer))
                              .whileFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
 
-    m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
-                  .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.y().whileTrue(NoteHandlingCommandBuilder.shooterSpeaker(m_shooter, m_feeder, m_indexer))
+    //               .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
-    m_operator.x().whileTrue(NoteHandlingCommandBuilder.shooterPasser(m_shooter, m_feeder, m_indexer))
-              .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
-    m_operator.b().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
-                   .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.x().whileTrue(NoteHandlingCommandBuilder.shooterPasser(m_shooter, m_feeder, m_indexer))
+    //           .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
+    // m_operator.b().whileTrue(NoteHandlingCommandBuilder.shootTrap(m_shooter, m_feeder, m_indexer))
+    //                .whileFalse(NoteHandlingCommandBuilder.shooterOff(m_shooter, m_feeder, m_indexer));
 
 
-    m_operator.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
+    m_driver.upperPOV().onTrue(NoteHandlingCommandBuilder.pivotToAmp(m_pivot));
 
-    m_operator.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
+    m_driver.lowerPOV().onTrue(NoteHandlingCommandBuilder.pivotDown(m_pivot));
 
     // m_operator.b().onTrue(NoteHandlingCommandBuilder.autoAmp(m_drivetrain, m_pivot, m_shooter, m_feeder, m_indexer, m_poseEstimation))
     //                         .onFalse(NoteHandlingCommandBuilder.autoShooterOff(m_pivot, m_shooter, m_feeder, m_indexer, m_intake));
